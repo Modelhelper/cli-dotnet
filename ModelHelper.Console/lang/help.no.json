@@ -1,0 +1,18 @@
+{
+    "commands": [
+        {
+            "key": "init",
+            "longDescription": "",
+            "shortDescription": "",
+            "options": [
+                { "key": "--option", "aliases": []},
+            ],
+            "console": [
+                {"key": "runSetup", "value": "Kjør setup (Y/n)?"},
+                {"key": "afterInstall", "value": "På '{modelHelperLocal}' er det opprettet en config.json fil."},
+                {"key": "listTemplates", "value": "Liste opp de installerte malene (Y/n)?"},
+                {"key": "showValidCommands", "value": "Vis gyldige kommandoer (Y/n)?"},
+            ]
+        }
+    ]
+}

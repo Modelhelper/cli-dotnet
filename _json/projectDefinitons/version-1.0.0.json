@@ -1,0 +1,49 @@
+{
+    "name": "",
+    "description": "",
+    "customer": "",
+    "projectVersion": "1.0.0",
+    "rootPath": "",
+    "database": {
+        "connection": "",
+        "dbType": "mssql",
+        "defaultSchema": "dbo",        
+        "columnMapping": [
+            {
+                "name": "",
+                "IsIgnored": true,
+                "IsCreatedDate": true
+            }
+        ]
+    },
+    "code": {
+        "useQueryOptions": true,
+        "connection": {
+            "Interface": "",
+            "Variable": "",
+            "Method": ""
+        },
+        "queryOptions": {
+            "className": "",
+            "namespace": "",
+            "userIdProperty": "",
+            "userIdType": "",
+            "useClaimsPrincipalExtension": true,
+            "claimsPrincipalExtensionMethod": "",
+            "claimsPrincipalExtensionNamespace": ""
+        },
+        "locations": [
+            {
+                "Key": "",
+                "Namespace": "",
+                "Path": ""
+            }
+        ],
+        "api": {
+            "UseLogger": false,
+            "UseTelemetry": false,
+            "UseUserRepository": false
+        }
+    },
+    "options": []    
+}

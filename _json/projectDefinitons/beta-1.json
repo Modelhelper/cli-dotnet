@@ -1,0 +1,41 @@
+{
+    "name": "",
+    "customer": "",
+    "descripton": "",
+    "interfaces": {
+        "namespace": "",
+        "filePath": ""
+    },
+    "models": {
+        "namespace": "",
+        "filePath": ""
+    },
+    "repositories": {
+        "namespace": "",
+        "filePath": ""
+    },
+    "controllers": {
+        "namespace": "",
+        "filePath": ""
+    },
+    "database": {
+        "connection": "",
+        "connectionInterface": "",
+        "connectionVariable": "",
+        "connectionMethod": "",
+        "useQueryOptions": false,
+        "queryOptionsClassName": "",
+        "ignoredColumns": [],
+        "Translations": [],
+        "nameMap": [
+            {
+                "key": "",
+                "value": ""
+            }
+        ]
+    },
+    "api": {
+        "useLogger": true,
+        "useTelemetry": true
+    }
+}
