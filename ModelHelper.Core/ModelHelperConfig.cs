@@ -63,6 +63,9 @@ namespace ModelHelper.Core
 
         public static string RemoteTemplateLocation => _config != null ? _config.RemoteTemplateLocation :"";
         public static string RemoteBinaryLocation => _config != null ? _config.RemoteBinaryLocation : "";
+
+        //public static string ScriptLocation => _config != null ? _config.ScriptLocation : "";
+
     }
 
     //public class ConfigReader

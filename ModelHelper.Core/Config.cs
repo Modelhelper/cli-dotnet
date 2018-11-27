@@ -5,5 +5,7 @@
         public  string RemoteTemplateLocation { get; set; }
         public string RemoteBinaryLocation { get; set; }
 
+        public string ScriptLocation { get; set; }
+
     }
 }
