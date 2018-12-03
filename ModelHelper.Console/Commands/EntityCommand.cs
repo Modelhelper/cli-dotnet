@@ -164,16 +164,22 @@ namespace ModelHelper.Commands
                         if (Evaluate)
                         {
                             var table = repo.GetEntity(entityName, true).Result;
-                            var evaluator = new TableEvaluator();
-                            var evaluatorResult = evaluator.Evaluate(table);
-                            ConsoleExtensions.WriteConsoleSubTitle("Entity evaluation");
-                            if (evaluatorResult.Result != EvaluationResultOption.Passes)
+
+                            if (table.Type.Equals("table", StringComparison.InvariantCultureIgnoreCase))
                             {
-                                Console.WriteLine(evaluatorResult.Message);
-                            }
-                            else
-                            {
-                                Console.WriteLine("This entity looks perfect :-)");
+
+
+                                var evaluator = new TableEvaluator();
+                                var evaluatorResult = evaluator.Evaluate(table);
+                                ConsoleExtensions.WriteConsoleSubTitle("Entity evaluation");
+                                if (evaluatorResult.Result != EvaluationResultOption.Passes)
+                                {
+                                    Console.WriteLine(evaluatorResult.Message);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("This entity looks perfect :-)");
+                                }
                             }
                         }
                     }
