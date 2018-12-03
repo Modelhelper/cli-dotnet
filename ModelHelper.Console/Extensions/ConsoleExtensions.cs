@@ -170,7 +170,7 @@ namespace ModelHelper.Extensions
 
         public static string UserTemplateDirectory()
         {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
             var modelHelperData =
                 Path.Combine(appData, "ModelHelper", "templates");
 
