@@ -127,34 +127,44 @@ namespace ModelHelper.Core.Extensions
         public static List<TemplateFile> GetTemplateFiles(this string folderPath, string scope)
         {
             var templateFiles = new List<TemplateFile>();
-            if (Directory.Exists(folderPath))
+
+            try
             {
-                var templateDirectory = new DirectoryInfo(folderPath);
-                var customFiles = templateDirectory.GetFiles("*.json", SearchOption.AllDirectories).ToList();
-                //var customFiles = Directory.GetFiles(folderPath, "*.json").Select(f => new FileInfo(f))
-                //    .ToList();
-
-                //foreach (var fileInfo in customFiles)
-                //{
-                //    var fileKey = fileInfo.FullName.Replace(folderPath, "").Replace("\\", "-").TrimStart('-').Replace(fileInfo.Extension, "");
-                //    var templateName = fileInfo.Name.LastIndexOf(".", StringComparison.Ordinal) > 0
-                //        ? fileInfo.Name.Substring(0, fileInfo.Name.LastIndexOf(".", StringComparison.Ordinal))
-                //        : fileInfo.Name;
-
-                //}
-
-                templateFiles.AddRange(customFiles.Select(fileInfo => new TemplateFile
+                if (Directory.Exists(folderPath))
                 {
-                    FileInfo = fileInfo,
-                    Location = fileInfo.FullName,
-                    Scope = scope,
-                    SubFolder = fileInfo.FullName.Replace(folderPath, "").TrimStart('\\'),
-                    Name = fileInfo.FullName.Replace(folderPath, "").Replace("\\", "-").TrimStart('-').Replace(fileInfo.Extension, "")
-                //Name = fileInfo.Name.LastIndexOf(".", StringComparison.Ordinal) > 0
-                //        ? fileInfo.Name.Substring(0, fileInfo.Name.LastIndexOf(".", StringComparison.Ordinal))
-                //        : fileInfo.Name
-                }));
+                    var templateDirectory = new DirectoryInfo(folderPath);
+                    var customFiles = templateDirectory.GetFiles("*.json", SearchOption.AllDirectories).ToList();
+                    //var customFiles = Directory.GetFiles(folderPath, "*.json").Select(f => new FileInfo(f))
+                    //    .ToList();
+
+                    //foreach (var fileInfo in customFiles)
+                    //{
+                    //    var fileKey = fileInfo.FullName.Replace(folderPath, "").Replace("\\", "-").TrimStart('-').Replace(fileInfo.Extension, "");
+                    //    var templateName = fileInfo.Name.LastIndexOf(".", StringComparison.Ordinal) > 0
+                    //        ? fileInfo.Name.Substring(0, fileInfo.Name.LastIndexOf(".", StringComparison.Ordinal))
+                    //        : fileInfo.Name;
+
+                    //}
+
+                    templateFiles.AddRange(customFiles.Select(fileInfo => new TemplateFile
+                    {
+                        FileInfo = fileInfo,
+                        Location = fileInfo.FullName,
+                        Scope = scope,
+                        SubFolder = fileInfo.FullName.Replace(folderPath, "").TrimStart('\\'),
+                        Name = fileInfo.FullName.Replace(folderPath, "").Replace("\\", "-").TrimStart('-').Replace(fileInfo.Extension, "")
+                        //Name = fileInfo.Name.LastIndexOf(".", StringComparison.Ordinal) > 0
+                        //        ? fileInfo.Name.Substring(0, fileInfo.Name.LastIndexOf(".", StringComparison.Ordinal))
+                        //        : fileInfo.Name
+                    }));
+                }
             }
+            catch (Exception)
+            {
+
+                //throw;
+            }
+            
 
             return templateFiles;
         }
