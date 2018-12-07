@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Data.SqlClient;
@@ -1368,7 +1368,7 @@ select SCHEMA_NAME(t.schema_id), t.name, t.[type] from sys.tables t where object
             };
         }
 
-        public async Task<IEnumerable<IEntity>> GetEntities(bool tablesOnly = false, bool viewsOnly = false, string filter = "")
+        public async Task<IEnumerable<IEntity>> GetEntities(bool tablesOnly = false, bool viewsOnly = false, string filter = "", string columnName = "")
         {
             if (string.IsNullOrEmpty(_connectionString))
             {
@@ -1378,7 +1378,7 @@ select SCHEMA_NAME(t.schema_id), t.name, t.[type] from sys.tables t where object
             {
                 var entityFilter = tablesOnly ? "('U')" : viewsOnly ? "('V')" : "('U', 'V')";
                 var tableFilter = !string.IsNullOrEmpty(filter) ? "AND o.name like @filter" : "";
-
+                var columnFilter = !string.IsNullOrEmpty(columnName) ? "AND o.object_id in (select object_id from sys.columns where name like @columnName)": "";
                 var sql = $@"        
                     with rowcnt (object_id, rowcnt) as (
 SELECT p.object_id, SUM(CASE WHEN (p.index_id < 2) AND (a.type = 1) THEN p.rows ELSE 0 END) 
@@ -1402,10 +1402,11 @@ left join sys.extended_properties ep on o.object_id = ep.major_id and minor_id =
 where o.name not in ('sysdiagrams') 
     and type in {entityFilter}
     {tableFilter}
+    {columnFilter}
 order by s.name, o.[type], o.name";
 
                 connection.Open();
-                var entityItems = await connection.QueryAsync<Table>(sql, new { filter });
+                var entityItems = await connection.QueryAsync<Table>(sql, new { filter, columnName });
                 var items = entityItems.ToList();
 
                 foreach (var table in items)

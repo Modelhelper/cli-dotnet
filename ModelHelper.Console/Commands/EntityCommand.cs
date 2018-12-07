@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -60,12 +60,22 @@ namespace ModelHelper.Commands
         public bool Dump { get; set; } = false;
         public string DumpPath { get; set; }
 
+        [Option(Key = "--column", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "ColumnName", Aliases = new[] { "-c" })]
+        public bool WithColumn { get; set; } = false;
+        public string ColumnName { get; set; }
 
         [Option(Key = "--import", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "ImportPath", Aliases = new[] { "-i" })]
         public bool Import { get; set; } = false;
         public string ImportPath { get; set; }
 
+        [Option(Key = "--no-pk", IsRequired = false)]
+        public bool WithNoPrimaryKey { get; set; } = false;
 
+        [Option(Key = "--no-clustered", IsRequired = false)]
+        public bool WithNoClusteredPrimaryKey { get; set; } = false;
+
+        [Option(Key = "--no-fk", IsRequired = false)]
+        public bool WithNoForeignKey { get; set; } = false;
 
         public override bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator)
         {
@@ -444,7 +454,8 @@ namespace ModelHelper.Commands
 
         private void ListEntities(SqlServerRepository repo, bool evaluate = false, string filter = "")
         {
-            var entities = repo.GetEntities(TablesOnly, ViewsOnly, filter).Result.ToList();
+            var columnName = WithColumn && !string.IsNullOrEmpty(ColumnName) ? ColumnName: "";
+            var entities = repo.GetEntities(TablesOnly, ViewsOnly, filter, columnName).Result.ToList();
 
             if (entities.Count > 0)
             {

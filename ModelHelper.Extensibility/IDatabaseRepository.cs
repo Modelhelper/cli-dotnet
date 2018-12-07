@@ -12,7 +12,7 @@ namespace ModelHelper.Extensibility
         
         [Obsolete]
         Task<IEnumerable<IEntity>> GetTables(bool includeViews = false, string filter = "");
-        Task<IEnumerable<IEntity>> GetEntities(bool tablesOnly = false, bool viewsOnly = false, string filter = "");
+        Task<IEnumerable<IEntity>> GetEntities(bool tablesOnly = false, bool viewsOnly = false, string filter = "", string columnName = "");
 
         Task<IEnumerable<IIndex>> GetIndexes(string entityName);
 
