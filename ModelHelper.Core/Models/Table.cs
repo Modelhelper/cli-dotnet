@@ -29,6 +29,8 @@ namespace ModelHelper.Core.Models
         public IEnumerable<ITableRelation> ParentRelations { get; set; }
         public IEnumerable<ITableRelation> ChildRelations { get; set; }
         public IEnumerable<IIndex> Indexes { get; set; } = new List<Index>();
+
+        public string Description { get; set; }
     }
 
     public class Index : IIndex

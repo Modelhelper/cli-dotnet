@@ -41,5 +41,7 @@
         string ReferencesTable { get; set; }
         string ReferencesColumn { get; set; }
 
+        string Description { get; set; }
+
     }
 }

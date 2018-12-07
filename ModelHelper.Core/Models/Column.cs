@@ -30,5 +30,7 @@ namespace ModelHelper.Core.Models
         public bool IsReserved { get; set; }
         public string ReferencesTable { get; set; }
         public string ReferencesColumn { get; set; }
+
+        public string Description { get; set; }
     }
 }

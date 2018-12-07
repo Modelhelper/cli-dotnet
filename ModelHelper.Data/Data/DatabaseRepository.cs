@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Data.SqlClient;
@@ -230,12 +230,14 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
             , UsePrecision = cast(case when st.user_type_id in (108,106) then 1 else 0 end as bit)
             , ReferencesColumn = fkc.ReferencedColumn
             , ReferencesTable = object_name(fkc.ReferencedObjectId)
+            , Description = isnull(ep.value, '')
         from sys.columns c         
         left join sys.types st on st.user_type_id = c.user_type_id
        -- left join IgnoredColumns s on s.Name = c.name
         left join Reserved r on r.name = c.name
         left join PrimaryKeyColumns pkc on pkc.ColumnId = c.column_id and pkc.ObjectId = c.object_id -- c.name
         left join ForeignKeyColumns fkc on fkc.ColumnId = c.column_id and c.object_id = fkc.ObjectId
+        left join sys.extended_properties ep on c.object_id = ep.major_id and minor_id = c.column_id and ep.name = 'MS_description'
         where object_id = object_id(@table)
         order by c.column_id";
 
@@ -314,8 +316,10 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
 	o.name
 	,type = CASE when o.type = 'U' then 'Table' when o.type = 'V' then 'View' end  
 	,[Schema] = s.name
+    , description =  isnull(ep.value, '')
 from sys.objects o
 join sys.schemas s on s.schema_id = o.schema_id
+left join sys.extended_properties ep on o.object_id = ep.major_id and minor_id = 0 and ep.name = 'MS_description'
 where o.object_id = object_id(@entityName)";
 
                 connection.Open();
@@ -420,10 +424,12 @@ select
 	,type = CASE when o.type = 'U' then 'Table' when o.type = 'V' then 'View' end  
 	,[Schema] = s.name
     , Alias = Left(o.name, 1)
-	, [RowCount] = rc.RowCnt
+	, [RowCount] = isnull(rc.RowCnt, 0)
+    , Description = isnull(ep.value, '')
 from sys.objects o
 join sys.schemas s on s.schema_id = o.schema_id
 left join rowcnt rc on rc.object_id = o.object_id    
+left join sys.extended_properties ep on o.object_id = ep.major_id and minor_id = 0 and ep.name = 'MS_description'
 where o.name not in ('sysdiagrams') 
     and type in {entityFilter}
     {tableFilter}
@@ -1387,10 +1393,12 @@ select
 	,type = CASE when o.type = 'U' then 'Table' when o.type = 'V' then 'View' end  
 	,[Schema] = s.name
     , Alias = Left(o.name, 1)
-	, [RowCount] = rc.RowCnt
+	, [RowCount] = isnull(rc.RowCnt, 0)
+    , Description = isnull(ep.value, '')
 from sys.objects o
 join sys.schemas s on s.schema_id = o.schema_id
 left join rowcnt rc on rc.object_id = o.object_id    
+left join sys.extended_properties ep on o.object_id = ep.major_id and minor_id = 0 and ep.name = 'MS_description'
 where o.name not in ('sysdiagrams') 
     and type in {entityFilter}
     {tableFilter}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -41,6 +41,12 @@ namespace ModelHelper.Commands
 
         [Option(Key = "--table-only", IsRequired = false, Aliases = new []{"-to"})]
         public bool TablesOnly { get; set; } = false;
+
+        [Option(Key = "--description-only", IsRequired = false, Aliases = new[] { "-do" })]
+        public bool DescriptionOnly { get; set; } = false;
+
+        [Option(Key = "--with-description", IsRequired = false, Aliases = new[] { "-d" })]
+        public bool WithDescription { get; set; } = false;
         //[Option(Key = "--describe", Aliases = new[] { "-d" })]
         //public bool DescribeTableLayout { get; set; }
 
@@ -275,6 +281,15 @@ namespace ModelHelper.Commands
             }
         }
 
+        internal static string GetColumnDescription(IColumn column)
+        {
+            if (column.IsIdentity | column.IsForeignKey | column.IsPrimaryKey)
+            {
+                var id = column.IsIdentity ? "ID" : "";
+            }
+
+            return "";
+        }
         private static void ListEntityContent(string entityName, SqlServerRepository repo)
         {
             var tableDef = entityName.Split('.');
@@ -288,7 +303,15 @@ namespace ModelHelper.Commands
             var maxLenName = table.Columns.Max(c => c.Name.Length);
             var maxLenType = table.Columns.Max(c => c.DataType.Length);
 
+
             ConsoleExtensions.WriteConsoleTitle($"Entity content for {entityName}");
+
+            if (!string.IsNullOrEmpty(table.Description))
+            {
+                ConsoleExtensions.WriteConsoleGray("Description:");
+                Console.WriteLine(table.Description);
+            }
+            
             ConsoleExtensions.WriteConsoleSubTitle("Columns");
 
             table.Columns.Select(c => new
@@ -296,10 +319,11 @@ namespace ModelHelper.Commands
                 Name = c.Name,
                 DataType = c.DataType,
                 Nullable = c.IsNullable.ToString(),
-                IsIdentity = c.IsIdentity.ToString(),
-                PK = c.IsPrimaryKey.ToString(),
-                FK = c.IsForeignKey.ToString(),
-                Collation = !string.IsNullOrEmpty(c.Collation) ? c.Collation : ""
+                IsIdentity = c.IsIdentity ? "ID" : "",
+                PK = c.IsPrimaryKey ? "PK" : "",
+                FK = c.IsForeignKey ? "FK" : "",
+                // Collation = !string.IsNullOrEmpty(c.Collation) ? c.Collation : "",
+                c.Description
             }).ToList()
             .ToConsoleTable()
             .WriteToConsole();
@@ -433,7 +457,39 @@ namespace ModelHelper.Commands
                 Console.WriteLine();
                 if (!evaluate)
                 {
-                    entities.Select(t => new { t.Name, t.Alias, t.Type, t.RowCount }).ToConsoleTable().WriteToConsole();
+
+                   
+                    if (WithDescription || DescriptionOnly)
+                    {
+                        if (DescriptionOnly)
+                        {
+                            entities.Select(t => new {
+                                t.Name,                                
+                                t.Description
+                            }).ToConsoleTable().WriteToConsole();
+                        }
+                        else
+                        {
+                            entities.Select(t => new {
+                                T = t.Type.Substring(0, 1),
+                                Name = $"{t.Name} (rows: {t.RowCount.ToString("N0")})",                                
+                                t.Description
+                            }).ToConsoleTable().WriteToConsole();
+                        }
+                    }
+                    else
+                    {
+                        entities.Select(t => new {
+                            t.Name,
+                            t.Alias,                            
+                            t.Type,
+                            t.RowCount,
+
+                        }).ToConsoleTable().WriteToConsole();
+                    }
+                    
+                    
+                    
                 }
                 else
                 {
