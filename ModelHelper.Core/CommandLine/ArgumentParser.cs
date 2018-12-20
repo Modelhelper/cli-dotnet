@@ -51,6 +51,13 @@ namespace ModelHelper.Core.CommandLine
                             prop.SetValue(command, argumentDictionary[key], null);
                         }
                     }
+                    else if (prop.PropertyType == typeof(int))
+                    {
+                        if (exists)
+                        {
+                            prop.SetValue(command, Convert.ToInt32(argumentDictionary[key]), null);
+                        }
+                    }
                     else if (prop.PropertyType == typeof(IEnumerable<string>) || prop.PropertyType == typeof(List<string>))
                     {
 
@@ -67,8 +74,20 @@ namespace ModelHelper.Core.CommandLine
                         var paramProperty = commandType.GetProperty(att.ParameterProperty);
                         if (paramProperty != null)
                         {
-
-                            paramProperty.SetValue(command, argumentValue);
+                            
+                            if (paramProperty.PropertyType == typeof(int))
+                            {
+                                paramProperty.SetValue(command, Convert.ToInt32(argumentValue));
+                            }
+                            else if (paramProperty.PropertyType == typeof(bool))
+                            {
+                                paramProperty.SetValue(command, Convert.ToBoolean(argumentValue));
+                            }
+                            else 
+                            {
+                                paramProperty.SetValue(command, Convert.ToString(argumentValue));
+                            }
+                            //paramProperty.SetValue(command, argumentValue);
                         }
                     }
 
