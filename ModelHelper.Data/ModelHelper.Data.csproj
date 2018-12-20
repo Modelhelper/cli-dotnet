@@ -48,7 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\DatabaseRepository.cs" />
+    <Compile Include="Data\SampleSourceRepository.cs" />
+    <Compile Include="Data\SqlServerRepository.cs" />
     <Compile Include="Data\DatatypeConverters.cs" />
     <Compile Include="Data\SqlScriptGenerators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
