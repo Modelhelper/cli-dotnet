@@ -31,6 +31,8 @@ namespace ModelHelper.Extensibility
         IEnumerable<ITableRelation> ChildRelations { get; set; }
 
         IEnumerable<IIndex> Indexes { get; set; }
+
+        string Description { get; set; }
     }
 
     public interface IIndex

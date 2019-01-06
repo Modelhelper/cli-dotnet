@@ -29,6 +29,10 @@ namespace ModelHelper.Data
 
         public bool CanRebuildIndexes => true;
 
+        public string DatabaseType => "mssql";
+
+        public bool CanTraverseRelations => true;
+
         public SqlServerRepository()
         {
 
@@ -230,12 +234,14 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
             , UsePrecision = cast(case when st.user_type_id in (108,106) then 1 else 0 end as bit)
             , ReferencesColumn = fkc.ReferencedColumn
             , ReferencesTable = object_name(fkc.ReferencedObjectId)
+            , Description = isnull(ep.value, '')
         from sys.columns c         
         left join sys.types st on st.user_type_id = c.user_type_id
        -- left join IgnoredColumns s on s.Name = c.name
         left join Reserved r on r.name = c.name
         left join PrimaryKeyColumns pkc on pkc.ColumnId = c.column_id and pkc.ObjectId = c.object_id -- c.name
         left join ForeignKeyColumns fkc on fkc.ColumnId = c.column_id and c.object_id = fkc.ObjectId
+        left join sys.extended_properties ep on c.object_id = ep.major_id and minor_id = c.column_id and ep.name = 'MS_description'
         where object_id = object_id(@table)
         order by c.column_id";
 
@@ -314,8 +320,10 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
 	o.name
 	,type = CASE when o.type = 'U' then 'Table' when o.type = 'V' then 'View' end  
 	,[Schema] = s.name
+    , description =  isnull(ep.value, '')
 from sys.objects o
 join sys.schemas s on s.schema_id = o.schema_id
+left join sys.extended_properties ep on o.object_id = ep.major_id and minor_id = 0 and ep.name = 'MS_description'
 where o.object_id = object_id(@entityName)";
 
                 connection.Open();
@@ -420,10 +428,12 @@ select
 	,type = CASE when o.type = 'U' then 'Table' when o.type = 'V' then 'View' end  
 	,[Schema] = s.name
     , Alias = Left(o.name, 1)
-	, [RowCount] = rc.RowCnt
+	, [RowCount] = isnull(rc.RowCnt, 0)
+    , Description = isnull(ep.value, '')
 from sys.objects o
 join sys.schemas s on s.schema_id = o.schema_id
 left join rowcnt rc on rc.object_id = o.object_id    
+left join sys.extended_properties ep on o.object_id = ep.major_id and minor_id = 0 and ep.name = 'MS_description'
 where o.name not in ('sysdiagrams') 
     and type in {entityFilter}
     {tableFilter}
@@ -1362,7 +1372,7 @@ select SCHEMA_NAME(t.schema_id), t.name, t.[type] from sys.tables t where object
             };
         }
 
-        public async Task<IEnumerable<IEntity>> GetEntities(bool tablesOnly = false, bool viewsOnly = false, string filter = "")
+        public async Task<IEnumerable<IEntity>> GetEntities(bool tablesOnly = false, bool viewsOnly = false, string filter = "", string columnName = "")
         {
             if (string.IsNullOrEmpty(_connectionString))
             {
@@ -1372,7 +1382,7 @@ select SCHEMA_NAME(t.schema_id), t.name, t.[type] from sys.tables t where object
             {
                 var entityFilter = tablesOnly ? "('U')" : viewsOnly ? "('V')" : "('U', 'V')";
                 var tableFilter = !string.IsNullOrEmpty(filter) ? "AND o.name like @filter" : "";
-
+                var columnFilter = !string.IsNullOrEmpty(columnName) ? "AND o.object_id in (select object_id from sys.columns where name like @columnName)": "";
                 var sql = $@"        
                     with rowcnt (object_id, rowcnt) as (
 SELECT p.object_id, SUM(CASE WHEN (p.index_id < 2) AND (a.type = 1) THEN p.rows ELSE 0 END) 
@@ -1387,17 +1397,20 @@ select
 	,type = CASE when o.type = 'U' then 'Table' when o.type = 'V' then 'View' end  
 	,[Schema] = s.name
     , Alias = Left(o.name, 1)
-	, [RowCount] = rc.RowCnt
+	, [RowCount] = isnull(rc.RowCnt, 0)
+    , Description = isnull(ep.value, '')
 from sys.objects o
 join sys.schemas s on s.schema_id = o.schema_id
 left join rowcnt rc on rc.object_id = o.object_id    
+left join sys.extended_properties ep on o.object_id = ep.major_id and minor_id = 0 and ep.name = 'MS_description'
 where o.name not in ('sysdiagrams') 
     and type in {entityFilter}
     {tableFilter}
+    {columnFilter}
 order by s.name, o.[type], o.name";
 
                 connection.Open();
-                var entityItems = await connection.QueryAsync<Table>(sql, new { filter });
+                var entityItems = await connection.QueryAsync<Table>(sql, new { filter, columnName });
                 var items = entityItems.ToList();
 
                 foreach (var table in items)
@@ -1720,6 +1733,203 @@ drop table #t_maintenance
                 catch (Exception)
                 {
                     return false;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+
+            }
+        }
+
+        public async Task<IEnumerable<IRelation>> TraverseRelations(string baseTable, int depth = 1, int maxLevel = -1)
+        {
+             using (var connection = new SqlConnection(_connectionString))
+            {
+                var depth2 = depth == 2 ? "union all select * from track_reference_parent" : string.Empty;
+                var levelFilter = maxLevel > -1  ? $"and lvl between -{maxLevel} and {maxLevel}" : string.Empty;
+                // var entityFilter = tablesOnly ? "('U')" : viewsOnly ? "('V')" : "('U', 'V')";
+                // var tableFilter = !string.IsNullOrEmpty(filter) ? "AND o.name like @filter" : "";
+
+                var sql = $@"
+;with track_parent as (
+
+-- select lvl = 1, p.name, p.parent_object_id, referenced_object_id, family = p.parent_object_id, path = cast(object_name(referenced_object_id) + ' > ' + object_name(parent_object_id) as nvarchar(1000) )
+select 
+     direction = -1
+    , lvl = -1, p.name, p.parent_object_id, p.referenced_object_id
+    , ParentTable = object_name(p.parent_object_id)
+    , ParentColumn = cp.name
+    , ReferencedTable = object_name(p.referenced_object_id)
+    , ReferencedColumn = cc.name
+    , family = p.referenced_object_id
+    -- , Tree = cast('- ' + object_name(p.parent_object_id) as nvarchar(1000))
+    , path = cast(object_name(p.parent_object_id) + ' > ' + object_name(p.referenced_object_id) as nvarchar(1000) )
+from sys.foreign_keys p
+join sys.foreign_key_columns fkc on p.parent_object_id = fkc.parent_object_id and fkc.referenced_object_id = p.referenced_object_id
+join sys.columns cp on cp.column_id = fkc.parent_column_id and cp.object_id = fkc.parent_object_id
+join sys.columns cc on cc.column_id = fkc.referenced_column_id and cc.object_id = fkc.referenced_object_id
+--join sys.objects o on o.object_id = p.referenced_object_id
+where p.parent_object_id = object_id(@tablename)
+union all
+select
+      direction
+    , lvl = lvl - 1, fk.name, fk.parent_object_id, fk.referenced_object_id
+    , ParentTable = object_name(fk.parent_object_id)
+    , ParentColumn = cp.name
+    , ReferencedTable = object_name(fk.referenced_object_id)
+    , ReferencedColumn = cc.name
+    , t.family
+    -- , Tree = cast('|-' + replicate('-', lvl + 1) + '> ' + object_name (fk.parent_object_id) as nvarchar(1000))
+    , path = cast(path  + ' > ' + object_name(fk.referenced_object_id) as nvarchar(1000))
+from sys.foreign_keys fk
+join sys.foreign_key_columns fkc on fk.parent_object_id = fkc.parent_object_id and fkc.referenced_object_id = fk.referenced_object_id
+join sys.columns cp on cp.column_id = fkc.parent_column_id and cp.object_id = fkc.parent_object_id
+join sys.columns cc on cc.column_id = fkc.referenced_column_id and cc.object_id = fkc.referenced_object_id
+--join sys.objects o on o.object_id = fk.parent_object_id
+join track_parent t on t.referenced_object_id = fk.parent_object_id
+
+), track_references as (
+
+-- select lvl = 1, p.name, p.parent_object_id, referenced_object_id, family = p.parent_object_id, path = cast(object_name(referenced_object_id) + ' > ' + object_name(parent_object_id) as nvarchar(1000) )
+select 
+    direction = 1
+    , lvl = 1, p.name, p.parent_object_id, p.referenced_object_id
+    , ParentTable = object_name(p.parent_object_id)
+    , ParentColumn = cp.name
+    , ReferencedTable = object_name(p.referenced_object_id)
+    , ReferencedColumn = cc.name
+    , family = p.parent_object_id
+    -- , Tree = cast('- ' + object_name(p.parent_object_id) as nvarchar(1000))
+    , path = cast(object_name(p.referenced_object_id) + ' < ' + object_name(p.parent_object_id) as nvarchar(1000) )
+from sys.foreign_keys p
+join sys.foreign_key_columns fkc on p.parent_object_id = fkc.parent_object_id and fkc.referenced_object_id = p.referenced_object_id
+join sys.columns cp on cp.column_id = fkc.parent_column_id and cp.object_id = fkc.parent_object_id
+join sys.columns cc on cc.column_id = fkc.referenced_column_id and cc.object_id = fkc.referenced_object_id
+--join sys.objects o on o.object_id = p.referenced_object_id
+where p.referenced_object_id = object_id(@tablename)
+union all
+select 
+    direction
+    , lvl = lvl + 1, fk.name, fk.parent_object_id, fk.referenced_object_id
+    , ParentTable = object_name(fk.parent_object_id)
+    , ParentColumn = cp.name
+    , ReferencedTable = object_name(fk.referenced_object_id)
+    , ReferencedColumn = cc.name
+    , t.family
+    -- , Tree = cast('|-' + replicate('-', lvl + 1) + '> ' + object_name (fk.parent_object_id) as nvarchar(1000))
+    , path = cast(path  + ' < ' + object_name(fk.parent_object_id) as nvarchar(1000))
+from sys.foreign_keys fk
+join sys.foreign_key_columns fkc on fk.parent_object_id = fkc.parent_object_id and fkc.referenced_object_id = fk.referenced_object_id
+join sys.columns cp on cp.column_id = fkc.parent_column_id and cp.object_id = fkc.parent_object_id
+join sys.columns cc on cc.column_id = fkc.referenced_column_id and cc.object_id = fkc.referenced_object_id
+--join sys.objects o on o.object_id = fk.parent_object_id
+join track_references t on t.parent_object_id = fk.referenced_object_id
+), track_reference_parent as (
+
+    -- select lvl = 1, p.name, p.parent_object_id, referenced_object_id, family = p.parent_object_id, path = cast(object_name(referenced_object_id) + ' > ' + object_name(parent_object_id) as nvarchar(1000) )
+    select 
+        direction = 1
+        , lvl = tr.lvl + 1, p.name, p.parent_object_id, p.referenced_object_id
+        , ParentTable = object_name(p.parent_object_id)
+        , ParentColumn = cp.name
+        , ReferencedTable = object_name(p.referenced_object_id)
+        , ReferencedColumn = cc.name
+        , family = tr.family    
+        , path = cast(tr.path + ' > ' + object_name(p.referenced_object_id) as nvarchar(1000) ) --object_name(p.parent_object_id) + ' > ' + + ' > ' + object_name(p.referenced_object_id)
+    from sys.foreign_keys p
+    join track_references tr on tr.parent_object_id = p.parent_object_id
+    join sys.foreign_key_columns fkc on p.parent_object_id = fkc.parent_object_id and fkc.referenced_object_id = p.referenced_object_id
+    join sys.columns cp on cp.column_id = fkc.parent_column_id and cp.object_id = fkc.parent_object_id
+    join sys.columns cc on cc.column_id = fkc.referenced_column_id and cc.object_id = fkc.referenced_object_id
+    --join sys.objects o on o.object_id = p.referenced_object_id
+    where p.parent_object_id = p.parent_object_id
+    union all
+    select
+        direction
+        , lvl = lvl + 1, fk.name, fk.parent_object_id, fk.referenced_object_id
+        , ParentTable = object_name(fk.parent_object_id)
+        , ParentColumn = cp.name
+        , ReferencedTable = object_name(fk.referenced_object_id)
+        , ReferencedColumn = cc.name
+        , t.family    
+        , path = cast(path  + ' > ' + object_name(fk.referenced_object_id) as nvarchar(1000))
+    from sys.foreign_keys fk
+    join sys.foreign_key_columns fkc on fk.parent_object_id = fkc.parent_object_id and fkc.referenced_object_id = fk.referenced_object_id
+    join sys.columns cp on cp.column_id = fkc.parent_column_id and cp.object_id = fkc.parent_object_id
+    join sys.columns cc on cc.column_id = fkc.referenced_column_id and cc.object_id = fkc.referenced_object_id
+    --join sys.objects o on o.object_id = fk.parent_object_id
+    join track_reference_parent t on t.referenced_object_id = fk.parent_object_id
+
+), complete_tree as (
+    
+    select * 
+    from track_parent t
+    union all 
+    select * from track_references
+    {depth2}
+), cleanup as (
+    select 
+        [idx] = row_number() over (partition by [name], family order by direction, [path])
+        , sorting = row_number() over (order by direction, [path]), p= [path] , *
+    from complete_tree ct
+    )
+    select
+        SortIndex = sorting
+        , FullPath = [path]
+        , ReferenceName = name
+        , [Level] = lvl
+        , family = object_name(family)
+        , ParentTableName = ParentTable
+        , ParentColumnName = ParentColumn
+        , ParentColumnType = ''
+        , ReferencedTableName = ReferencedTable
+        , ReferencedColumnName = ReferencedColumn
+        , ReferencedColumnType = ''
+    from cleanup
+    where idx = 1 
+        {levelFilter}
+    order by sorting
+;
+
+";
+
+                connection.Open();
+
+                try
+                {
+                    return await connection.QueryAsync<Relation>(sql, new { connection.Database, TableName = baseTable });
+                   
+                }
+                catch (Exception)
+                {
+
+                    return null;
+                }
+                finally
+                {
+                    connection.Close();
+                }             
+            }
+        }
+
+        public async Task<IDatabaseInformation> TestConnectionAsync()
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var sql = $@"select [Version] = @@VERSION, [ServerName] = @@SERVERNAME ";
+
+                connection.Open();
+
+                try
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<DatabaseInformation>(sql);
+                    
+                    return result;
+                }
+                catch (Exception)
+                {
+                    return null;
                 }
                 finally
                 {
