@@ -53,7 +53,7 @@ namespace ModelHelper.Commands
         //[Option(Key = "--groups", Aliases = new[] { "-g" })]
         //public bool ShowGroup { get; set; }
 
-        [Option(Key = "--except", Aliases = new []{"-e", "--except-table"})]
+        [Option(Key = "--except", Aliases = new []{"-x", "--except-table"})]
         public List<string> ExceptEntities { get; set; } = new List<string>();
 
         [Option(Key = "--dump", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "DumpPath", Aliases = new []{"-d"})]
@@ -392,7 +392,7 @@ namespace ModelHelper.Commands
                 if (table.ParentRelations.Any())
                 {
                     Console.WriteLine("");
-                    ConsoleExtensions.WriteConsoleSubTitle("mange til en", "(model.Table.ParentRelations)");
+                    ConsoleExtensions.WriteConsoleSubTitle("many to one", "(model.Table.ParentRelations)");
 
                     table.ParentRelations.Select(c => new
                     {
