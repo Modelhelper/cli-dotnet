@@ -25,6 +25,7 @@ namespace ModelHelper
             help.Commands.Add(Init());
             help.Commands.Add(New());
             help.Commands.Add(Project());
+            help.Commands.Add(Optimize());
             help.Commands.Add(Entity());
             help.Commands.Add(ColumnMapping());
             help.Commands.Add(CodeLocation());
@@ -34,7 +35,10 @@ namespace ModelHelper
 
         internal static HelpItem Optimize()
         {
-            var help = new HelpItem { Key = "optimize", Alias = "o" };
+            var help = new HelpItem { Key = "optimize <table-name>", Alias = "o <table-name>" };
+
+            help.Alias = "o";
+            help.ShortDescription = "Rebuilds index(es) on the <table-name> if it more than 30% fragmented";
 
             return help;
         }
