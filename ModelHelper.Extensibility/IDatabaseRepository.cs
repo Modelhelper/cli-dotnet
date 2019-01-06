@@ -6,12 +6,13 @@ namespace ModelHelper.Extensibility
 {
     public interface IDatabaseRepository
     {
+        string DatabaseType {get;}
         Task<IEnumerable<ITableRelation>> GetParentEntityRelations(string entityName, bool includeColumns = false);
         Task<IEnumerable<ITableRelation>> GetRelatedChildren(string entityName, bool includeColumns = false);
         Task<IEnumerable<IColumn>> GetColumns(string schema, string entityName);
         
-        [Obsolete]
-        Task<IEnumerable<IEntity>> GetTables(bool includeViews = false, string filter = "");
+        //[Obsolete]
+        //Task<IEnumerable<IEntity>> GetTables(bool includeViews = false, string filter = "");
         Task<IEnumerable<IEntity>> GetEntities(bool tablesOnly = false, bool viewsOnly = false, string filter = "", string columnName = "");
 
         Task<IEnumerable<IIndex>> GetIndexes(string entityName);
@@ -32,11 +33,22 @@ namespace ModelHelper.Extensibility
 
         bool CanReorganizeIndexes { get; }
         bool CanRebuildIndexes { get; }
+        bool CanTraverseRelations { get; }
 
         Task<bool> ReorganizeIndex(string indexName, string entityName);
         Task<bool> RebuildIndex(string indexName, string entityName, double fillFactor = 80);
+
+        Task<IEnumerable<IRelation>> TraverseRelations(string baseTable, int depth = 1, int maxLevel = -1);
+        
+        Task<IDatabaseInformation> TestConnectionAsync();
     }
 
+    public interface IDatabaseInformation
+    {
+        string Version {get;}
+        string ServerName {get;}
+        
+    }
     public interface IDatabaseMetaData
     {
         string Database { get; }        

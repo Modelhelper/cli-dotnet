@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using ModelHelper.Core;
 using ModelHelper.Core.Extensions;
-using ModelHelper.Core.Project;
 using ModelHelper.Core.Rules;
 using ModelHelper.Extensions;
 
@@ -47,7 +44,7 @@ namespace ModelHelper.Commands
 
             CheckForNewVersion(execAssembly);            
 
-            "\nKlarer du å finne 'easter'- egget????\n".WriteConsoleGray();
+            
 
                     }
 

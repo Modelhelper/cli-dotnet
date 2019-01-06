@@ -25,6 +25,7 @@ namespace ModelHelper
             help.Commands.Add(Init());
             help.Commands.Add(New());
             help.Commands.Add(Project());
+            help.Commands.Add(Optimize());
             help.Commands.Add(Entity());
             help.Commands.Add(ColumnMapping());
             help.Commands.Add(CodeLocation());
@@ -34,7 +35,10 @@ namespace ModelHelper
 
         internal static HelpItem Optimize()
         {
-            var help = new HelpItem { Key = "optimize", Alias = "o" };
+            var help = new HelpItem { Key = "optimize <table-name>", Alias = "o <table-name>" };
+
+            help.Alias = "o";
+            help.ShortDescription = "Rebuilds index(es) on the <table-name> if it more than 30% fragmented";
 
             return help;
         }
@@ -196,17 +200,28 @@ Run the command 'mh template' to list all available templates.
             var item = new HelpItem();
 
             item.Key = "entity";
+            item.Alias ="e";
             item.ShortDescription = "Lists all entities (table and views) or the content of a named table or view";
             item.LongDescription = "";
             //item.Signature = "table [tablename] --evaluate";
             item.Options = new List<HelpOption>
             {                
-                new HelpOption{Key = "--evaluate", ShortDescription = "Evaluates the structure of an entity"},
+                new HelpOption{Key = "--except", ShortDescription = "List all tables except for this list of tables", Aliases = new List<string>{"-x", "--except-table"}},
+                new HelpOption{Key = "--with-description", ShortDescription = "If the tables/columns are documented, this option will show descriptions", Aliases = new List<string>{"-r"}},
+                new HelpOption{Key = "--description-only", ShortDescription = "If the tables/columns are documented, this option will show only descriptions", Aliases = new List<string>{"-r"}},
+                new HelpOption{Key = "--evaluate", ShortDescription = "Evaluates the structure of an entity", Aliases = new List<string>{"-r"}},
                 new HelpOption{Key = "--model", ShortDescription = "Shows the complete model that is sent to the template engine"},                
                 new HelpOption{Key = "--model-entity", ShortDescription = "Shows the entity part of the model that is sent the template engine"},
                 // new HelpOption{Key = "--dump \"<path>\"", ShortDescription = "Dumps the selected entity or set of entities to a json file."},                
                 new HelpOption{Key = "--view-only", ShortDescription = "Lists only views"},
                 new HelpOption{Key = "--table-only", ShortDescription = "Lists only tables"},
+                new HelpOption{Key = "--column", ShortDescription = "Lists tables that contains the named column", Aliases = new List<string>{"-c"}},
+                new HelpOption{Key = "--traverse-relations", ShortDescription = "Builds a relation tree for the given table", Aliases = new List<string>{"-tr", "--traverse"}},
+                new HelpOption{Key = "--depth", ShortDescription = "Specifies the depth when traversing relations. Default value is 1"},
+                new HelpOption{Key = "--max-level", ShortDescription = "Specifies how many levels to to check when traversing relations"},
+                new HelpOption{Key = "--no-pk", ShortDescription = "Lists tables without primary key(s)"},
+                new HelpOption{Key = "--no-fk", ShortDescription = "Lists tables without foreign key(s)"},
+                new HelpOption{Key = "--no-clustered", ShortDescription = "Lists tables without clustered primary key(s)"},
                 // new HelpOption{Key = "--analyze", ShortDescription = "Lists only tables"},
             };
                         

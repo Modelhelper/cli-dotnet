@@ -53,7 +53,7 @@ namespace ModelHelper.Commands
         //[Option(Key = "--groups", Aliases = new[] { "-g" })]
         //public bool ShowGroup { get; set; }
 
-        [Option(Key = "--except", Aliases = new []{"-e", "--except-table"})]
+        [Option(Key = "--except", Aliases = new []{"-x", "--except-table"})]
         public List<string> ExceptEntities { get; set; } = new List<string>();
 
         [Option(Key = "--dump", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "DumpPath", Aliases = new []{"-d"})]
@@ -76,7 +76,18 @@ namespace ModelHelper.Commands
 
         [Option(Key = "--no-fk", IsRequired = false)]
         public bool WithNoForeignKey { get; set; } = false;
+        
+        [Option(Key = "--traverse-relations", IsRequired = false, Aliases = new[] { "-tr", "--traverse" })]
+        public bool TraverseRelations { get; set; } = false;
 
+        //[Option(Key = "--depth", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "Depth")]
+        [Option(Key = "--depth", IsRequired = false)]
+        public int Depth { get; set; } = 1;
+
+        [Option(Key = "--max-level", IsRequired = false)]
+        public int MaxLevel { get; set; } = -1;
+
+        //public int Depth {get;set;};
         public override bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator)
         {
             throw new System.NotImplementedException();
@@ -244,7 +255,7 @@ namespace ModelHelper.Commands
 
         }
 
-        private static void DescribeEntity(string entityName, SqlServerRepository repo)
+        private void DescribeEntity(string entityName, SqlServerRepository repo)
         {
             var tableDef = entityName.Split('.');
             var schema = tableDef.Length > 1 ? tableDef[0] : "dbo";
@@ -268,7 +279,7 @@ namespace ModelHelper.Commands
             }
         }
 
-        private static void ListAnalyzeResult(string entityName, SqlServerRepository repo)
+        private void ListAnalyzeResult(string entityName, SqlServerRepository repo)
         {
             var tableDef = entityName.Split('.');
             var schema = tableDef.Length > 1 ? tableDef[0] : "dbo";
@@ -291,7 +302,7 @@ namespace ModelHelper.Commands
             }
         }
 
-        internal static string GetColumnDescription(IColumn column)
+        internal string GetColumnDescription(IColumn column)
         {
             if (column.IsIdentity | column.IsForeignKey | column.IsPrimaryKey)
             {
@@ -300,7 +311,7 @@ namespace ModelHelper.Commands
 
             return "";
         }
-        private static void ListEntityContent(string entityName, SqlServerRepository repo)
+        private void ListEntityContent(string entityName, SqlServerRepository repo)
         {
             var tableDef = entityName.Split('.');
             var schema = tableDef.Length > 1 ? tableDef[0] : "dbo";
@@ -333,7 +344,9 @@ namespace ModelHelper.Commands
                 PK = c.IsPrimaryKey ? "PK" : "",
                 FK = c.IsForeignKey ? "FK" : "",
                 // Collation = !string.IsNullOrEmpty(c.Collation) ? c.Collation : "",
-                c.Description
+                Description = !string.IsNullOrEmpty(c.Description) && c.Description.Length > 80 
+                    ? c.Description.Substring(0, 80) + "..." 
+                    : c.Description
             }).ToList()
             .ToConsoleTable()
             .WriteToConsole();
@@ -352,17 +365,7 @@ namespace ModelHelper.Commands
                 }).ToList()
                 .ToConsoleTable()
                 .WriteToConsole();
-            }
-            
-            // Console.WriteLine(
-            //     $"{"Name".PadRight(maxLenName + 5)}{"DataType".PadRight(20)}{"Nullable".PadRight(15)}{"IsIdentity".ToString().PadRight(15)}{"PK".ToString().PadRight(15)}{"FK".ToString().PadRight(15)}{"Collation".ToString().PadRight(30)}");
-            // Console.WriteLine($"{"".PadRight(maxLenName + 55 + 60, '-')}");
-            // foreach (var column in table.Columns)
-            // {
-            //     var collation = !string.IsNullOrEmpty(column.Collation) ? column.Collation : "";
-            //     Console.WriteLine(
-            //         $"{column.Name.PadRight(maxLenName + 5)}{column.DataType.PadRight(20)}{column.IsNullable.ToString().PadRight(15)}{column.IsIdentity.ToString().PadRight(15)}{column.IsPrimaryKey.ToString().PadRight(15)}{column.IsForeignKey.ToString().PadRight(15)}{collation.PadRight(30)}");
-            // }
+            }                        
 
             if (table.ChildRelations.Any() || table.ParentRelations.Any())
             {
@@ -370,16 +373,7 @@ namespace ModelHelper.Commands
                 if (table.ChildRelations.Any())
                 {
                     ConsoleExtensions.WriteConsoleSubTitle("One to Many", "(model.Table.ChildRelations)");
-                    // var relLenName = table.ChildRelations.Max(c => c.Name.Length) + 5;
-                    // var relLenParentCol = table.ChildRelations.Max(c => c.ParentColumnName.Length) + 5;
-                    // var relLenChildCol = table.ChildRelations.Max(c => c.ChildColumnName.Length) + 5;
-                    // var totalLength = relLenName + relLenChildCol + relLenParentCol + 10;
-
-                    // Console.WriteLine(
-                    //     $"{"Schema".PadRight(10)}{"Table".PadRight(relLenName)}{"Child Col".PadRight(relLenChildCol)}{"Parent Col".PadRight(relLenParentCol)}");
-
-                    // Console.WriteLine($"{"".PadRight(totalLength, '-')}");
-
+                    
                     var relations = table.ChildRelations.Select(c => new
                     {
                         Schema = c.Schema,
@@ -390,13 +384,7 @@ namespace ModelHelper.Commands
                     });
 
                     relations.ToList().ToConsoleTable().WriteToConsole();
-
-                    // foreach (var relation in table.ChildRelations)
-                    // {
-                        
-                    //     Console.WriteLine(
-                    //         $"{relation.Schema.PadRight(10)}{relation.Name.PadRight(relLenName)}{relation.ChildColumnName.PadRight(relLenChildCol)}{relation.ParentColumnName.PadRight(relLenParentCol)}");
-                    // }
+                    
                 }
 
 
@@ -404,7 +392,7 @@ namespace ModelHelper.Commands
                 if (table.ParentRelations.Any())
                 {
                     Console.WriteLine("");
-                    ConsoleExtensions.WriteConsoleSubTitle("mange til en", "(model.Table.ParentRelations)");
+                    ConsoleExtensions.WriteConsoleSubTitle("many to one", "(model.Table.ParentRelations)");
 
                     table.ParentRelations.Select(c => new
                     {
@@ -414,27 +402,32 @@ namespace ModelHelper.Commands
                         ParentCol = $"{c.ParentColumnName} ({c.ParentColumnType})",
                         Constraint = c.ConstraintName
                     }).ToConsoleTable().WriteToConsole();
-
-                    // var relLenName = table.ParentRelations.Max(c => c.Name.Length) + 5;
-                    // var relLenParentCol = table.ParentRelations.Max(c => c.ParentColumnName.Length) + 5;
-                    // var relLenChildCol = table.ParentRelations.Max(c => c.ChildColumnName.Length) + 5;
-                    // var totalLength = relLenName + relLenChildCol + relLenParentCol + 10;
-
-                    // Console.WriteLine(
-                    //     $"{"Schema".PadRight(10)}{"Table".PadRight(relLenName)}{"Child Col".PadRight(relLenChildCol)}{"Parent Col".PadRight(relLenParentCol)}");
-
-                    // Console.WriteLine($"{"".PadRight(totalLength, '-')}");
-
-                    // foreach (var relation in table.ParentRelations)
-                    // {
-                    //     Console.WriteLine(
-                    //         $"{relation.Schema.PadRight(10)}{relation.Name.PadRight(relLenName)}{relation.ChildColumnName.PadRight(relLenChildCol)}{relation.ParentColumnName.PadRight(relLenParentCol)}");
-                    // }
+                    
                 }
 
 
             }
 
+
+            if (TraverseRelations && repo.CanTraverseRelations)
+            {
+
+                "Relation Tree".WriteConsoleSubTitle();
+                var relations = repo.TraverseRelations(entityName, Depth, MaxLevel).Result;
+
+                if (relations != null)
+                {
+
+                    relations.Select(t => new {                        
+                        t.FullPath
+                    }).ToList().ToConsoleTable().WriteToConsole();
+                }
+                else
+                {
+                    $"Cannot traverse {entityName}".WriteConsoleError();
+                }
+                
+            }
         }
 
         private void ImportJsonData(SqlServerRepository repo, IEntity entity, string dataPath)
