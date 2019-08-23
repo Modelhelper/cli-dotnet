@@ -19,12 +19,14 @@ namespace ModelHelper.Core.Extensions
             Template.RegisterTag<SqlColumnToPropertyList>("columnList");
             Template.RegisterTag<PrimaryKeyList>("primaryKeyList");
             Template.RegisterTag<PropertyList>("propertyList");
+            Template.RegisterTag<Snippet>("snippet");
 
             Template.RegisterTag<SqlInsert>("sqlInsert");
             Template.RegisterTag<SqlUpdate>("sqlUpdate");
             Template.RegisterTag<SqlDelete>("sqlDelete");
             Template.RegisterTag<SqlSelectAll>("sqlSelectAll");
             Template.RegisterTag<SqlSelectSingle>("sqlSelectSingle");
+            Template.RegisterTag<DictionaryValue>("dictionary");
         }
         public static string Render(this ITemplate template)
         {
@@ -75,6 +77,26 @@ namespace ModelHelper.Core.Extensions
         {
             var output = "";
 
+            if (template.Dictionary != null)
+            {
+                if (model.Dictionary == null)
+                {
+                    model.Dictionary = new Dictionary<string, string>();
+                }
+
+                foreach (var pair in template.Dictionary)
+                {
+                    if (!model.Dictionary.ContainsKey(pair.Key))
+                    {
+                        model.Dictionary.Add(pair.Key.ToLowerInvariant(), pair.Value);
+                    }
+                    else
+                    {
+                        model.Dictionary[pair.Key.ToLowerInvariant()] = pair.Value;
+                    }
+                }
+                
+            }
             if (template != null)
             {
                 output = Render(template.Body, model);                                

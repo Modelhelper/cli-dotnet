@@ -1,5 +1,6 @@
 ﻿using ModelHelper.Core.Project;
 using DotLiquid;
+using ModelHelper.Core.Project.V1;
 
 namespace ModelHelper.Core.Drops
 {
@@ -12,17 +13,17 @@ namespace ModelHelper.Core.Drops
         public bool UseQueryOptions { get; }
 
         public QueryOptionDrop QueryOption { get; }
-        public DatabaseDrop(IProject project)
+        public DatabaseDrop(IProject project, string dbType = "mssql")
         {
-            ConnectionInterface = project.Code.Connection.Interface;
-            ConnectionMethod = project.Code.Connection.Method;
-            ConnectionVariable = project.Code.Connection.Variable;
-            QueryOptionsClassName =project.Code.QueryOptions.ClassName;
-            UseQueryOptions = project.Code.UseQueryOptions;
+            ConnectionInterface = project?.Code?.Connection != null ? project.Code.Connection.Interface : string.Empty;
+            ConnectionMethod = project?.Code?.Connection != null ? project.Code.Connection.Method : string.Empty;
+            ConnectionVariable = project?.Code?.Connection != null ? project.Code.Connection.Variable : string.Empty;
+            QueryOptionsClassName =project?.Code?.QueryOptions != null ? project.Code.QueryOptions.ClassName : string.Empty;
+            UseQueryOptions = project?.Code?.UseQueryOptions ?? false;
 
-            DataSource = string.IsNullOrEmpty(project.DataSource.Type)
+            DataSource = string.IsNullOrEmpty(dbType)
                 ? "mssql"
-                : project.DataSource.Type;
+                : dbType;
 
             QueryOption = new QueryOptionDrop(project.Code.QueryOptions);
         }

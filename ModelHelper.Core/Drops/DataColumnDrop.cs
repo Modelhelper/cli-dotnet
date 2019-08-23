@@ -15,6 +15,7 @@ namespace ModelHelper.Core.Drops
             
         }
 
+        public string Description => _column.Description;
         public bool IsForeignKey => _column.IsForeignKey;
         public bool IsPrimaryKey => _column.IsPrimaryKey;
         public bool IsIdentity => _column.IsIdentity;

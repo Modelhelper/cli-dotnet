@@ -9,7 +9,9 @@
         string ChildColumnName { get; set; }
         string ChildColumnType { get; set; }
 
+        bool ParentColumnNullable { get; set; }
         bool IsSelfJoin { get; set; }
+        bool ChildColumnNullable { get; set; }
     }
 
     public interface IRelation

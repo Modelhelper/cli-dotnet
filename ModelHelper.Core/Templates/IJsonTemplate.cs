@@ -19,5 +19,7 @@ namespace ModelHelper.Core.Templates
         IEnumerable<string> Tags { get; set; }
 
         IEnumerable<string> Body { get; set; }
+
+        IEnumerable<KeyValuePair<string, string>> Dictionary {get;set;}
     }
 }

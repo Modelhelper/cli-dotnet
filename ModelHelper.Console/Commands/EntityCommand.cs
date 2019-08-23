@@ -13,6 +13,9 @@ using Newtonsoft.Json;
 using ModelHelper.Core.CommandLine;
 using ModelHelper.Extensibility;
 using System.Text;
+using ModelHelper.Core.Drops;
+using ModelHelper.Core.Extensions;
+using ModelHelper.Core.Project.V1;
 
 namespace ModelHelper.Commands
 {
@@ -60,9 +63,13 @@ namespace ModelHelper.Commands
         public bool Dump { get; set; } = false;
         public string DumpPath { get; set; }
 
-        [Option(Key = "--column", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "ColumnName", Aliases = new[] { "-c" })]
+        [Option(Key = "--column", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "ColumnName")]
         public bool WithColumn { get; set; } = false;
         public string ColumnName { get; set; }
+
+        [Option(Key = "--connection", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "ConnectionName", Aliases = new[] { "-c" })]
+        public bool WithConnection { get; set; } = false;
+        public string ConnectionName { get; set; }
 
         [Option(Key = "--import", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "ImportPath", Aliases = new[] { "-i" })]
         public bool Import { get; set; } = false;
@@ -87,6 +94,9 @@ namespace ModelHelper.Commands
         [Option(Key = "--max-level", IsRequired = false)]
         public int MaxLevel { get; set; } = -1;
 
+        [Option(Key = "--dump-model", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "DumpModelPath", Aliases = new[] { "-dm" })]
+        public bool DumpModel { get; set; } = false;
+        public string DumpModelPath { get; set; }
         //public int Depth {get;set;};
         public override bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator)
         {
@@ -99,13 +109,14 @@ namespace ModelHelper.Commands
             var args = arguments;
 
             var entityName = args.Count > 0 && !args[0].StartsWith("-") ? args[0] : "";
-            var projectReader = new ProjectJsonReader();
+            var projectReader = new DefaultProjectReader();
             var project = projectReader.Read(Path.Combine(Directory.GetCurrentDirectory(), ".model-helper"));
             var entityFilter = !string.IsNullOrEmpty(entityName) && entityName.Contains("%") ? entityName : "";
 
             if (project != null)
             {
-                var repo = new ModelHelper.Data.SqlServerRepository(project.DataSource.Connection, project);
+                var repo = WithConnection ? project.CreateRepository(ConnectionName) : project.CreateRepository();
+                // new ModelHelper.Data.SqlServerRepository(project.DataSource.Connection, project);
 
                 
                 if (!string.IsNullOrEmpty(entityName) && string.IsNullOrEmpty(entityFilter))
@@ -127,6 +138,42 @@ namespace ModelHelper.Commands
                     return;
                     }
 
+                    if (DumpModel)
+                    {
+                        if (string.IsNullOrEmpty(DumpModelPath))
+                        {
+                            throw new Exception("A valid path must be provided");
+
+                        }
+
+                        if (!Directory.Exists(DumpModelPath))
+                        {
+                            Directory.CreateDirectory(DumpModelPath);
+                        }
+
+                        var e = repo.GetEntity(entityName, true).Result;
+                        var model = new TemplateModel
+                        {
+                            IncludeChildren = true,
+                            IncludeParents = true,
+                            Table = e,
+                            Project = project
+                        };
+                        
+                        var modelDrop = new ModelDrop(model);
+                        var json = JsonConvert.SerializeObject(modelDrop);
+
+                        var fileName = Path.Combine(DumpModelPath, $"{e.Name}-model.json");
+
+                        if (File.Exists(fileName))
+                        {
+                            File.Delete(fileName);
+                        }
+
+                        File.AppendAllText(fileName, json, Encoding.UTF8);
+
+                        return;
+                    }
                     if (Import)
                     {
                         if (string.IsNullOrEmpty(ImportPath))
@@ -311,7 +358,7 @@ namespace ModelHelper.Commands
 
             return "";
         }
-        private void ListEntityContent(string entityName, SqlServerRepository repo)
+        private void ListEntityContent(string entityName, IDatabaseRepository repo)
         {
             var tableDef = entityName.Split('.');
             var schema = tableDef.Length > 1 ? tableDef[0] : "dbo";
@@ -338,7 +385,7 @@ namespace ModelHelper.Commands
             table.Columns.Select(c => new
             {
                 Name = c.Name,
-                DataType = c.DataType,
+                DataType = c.DbType, // .DataType,
                 Nullable = c.IsNullable.ToString(),
                 IsIdentity = c.IsIdentity ? "ID" : "",
                 PK = c.IsPrimaryKey ? "PK" : "",
@@ -430,7 +477,7 @@ namespace ModelHelper.Commands
             }
         }
 
-        private void ImportJsonData(SqlServerRepository repo, IEntity entity, string dataPath)
+        private void ImportJsonData(IDatabaseRepository repo, IEntity entity, string dataPath)
         {
             if (File.Exists(dataPath) && entity != null)
             {
@@ -445,7 +492,7 @@ namespace ModelHelper.Commands
             }
         }
 
-        private void ListEntities(SqlServerRepository repo, bool evaluate = false, string filter = "")
+        private void ListEntities(IDatabaseRepository repo, bool evaluate = false, string filter = "")
         {
             var columnName = WithColumn && !string.IsNullOrEmpty(ColumnName) ? ColumnName: "";
             var entities = repo.GetEntities(TablesOnly, ViewsOnly, filter, columnName).Result.ToList();

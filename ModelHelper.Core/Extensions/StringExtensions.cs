@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Humanizer;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 using Newtonsoft.Json;
 
 namespace ModelHelper.Core.Extensions
@@ -171,7 +172,7 @@ namespace ModelHelper.Core.Extensions
             return result;
         }
 
-        public static string NameMapValue(this string input, List<ColumnExtra> nameMap)
+        public static string NameMapValue(this string input, List<ProjectDataColumnMapping> nameMap)
         {
             var result = input;
 

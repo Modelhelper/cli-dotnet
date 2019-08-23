@@ -5,11 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using DotLiquid.FileSystems;
+using ModelHelper.Core;
 using ModelHelper.Core.CommandLine;
 using ModelHelper.Core.Database;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Help;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 using ModelHelper.Core.Rules;
 using ModelHelper.Core.Templates;
 using ModelHelper.Extensibility;
@@ -95,6 +97,11 @@ namespace ModelHelper.Commands
 
         public string ExportPath { get; set; }
 
+        [Option(Key = "--connection", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "ConnectionName", Aliases = new[] { "-c" })]
+        public bool WithConnection { get; set; } = false;
+
+        public string ConnectionName { get; set; } = "";
+
         public override bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator)
         {
             return true;
@@ -103,7 +110,7 @@ namespace ModelHelper.Commands
         internal List<TemplateFile> GetTemplateFiles()
         {
             var templateFiles = new List<TemplateFile>();
-            var customTemplatePath = Path.Combine(Directory.GetCurrentDirectory(), "templates");
+            var customTemplatePath = ModelHelperConfig.TemplateLocation;
             templateFiles.AddRange(customTemplatePath.GetTemplateFiles("project"));
             templateFiles.AddRange(ConsoleExtensions.UserTemplateDirectory().GetTemplateFiles("core"));
 
@@ -143,11 +150,11 @@ namespace ModelHelper.Commands
             }
 
             var list = new List<string>();
-            var repo = new ModelHelper.Data.SqlServerRepository(project.DataSource.Connection, project);            
-
+            var repo = WithConnection ? project.CreateRepository(ConnectionName) : project.CreateRepository();
+            
             if (Entities.Any() && Entities.Count() == 1 && Entities[0] == "*")
             {
-                var allTables = repo.GetEntities(TablesOnly, ViewsOnly).Result;
+                var allTables = repo.GetEntities(false, false).Result;
                 list = allTables.Select(t => $"{t.Schema}.{t.Name}").ToList();
             }
             else if (EntityGroups.Any())
@@ -267,7 +274,7 @@ namespace ModelHelper.Commands
                     return;
                 }                
 
-                var projectReader = new ProjectJsonReader();
+                var projectReader = new DefaultProjectReader();
                 var project = projectReader.Read(Path.Combine(Directory.GetCurrentDirectory(), ".model-helper"));
 
                 log.Add("read project");
@@ -280,7 +287,8 @@ namespace ModelHelper.Commands
 
                     var totalResult = new StringBuilder();
 
-                    var repo = new ModelHelper.Data.SqlServerRepository(project.DataSource.Connection, project);
+                    //var repo = new ModelHelper.Data.SqlServerRepository(project.DataSource.Connection, project);
+                    var repo = WithConnection ? project.CreateRepository(ConnectionName) : project.CreateRepository();
 
                     var templateFiles = GetTemplateFiles();
 
@@ -312,7 +320,7 @@ namespace ModelHelper.Commands
                         if (selectedTemplate != null)
                         {
                             log.Add("generate for template: " + selectedTemplate.Name);
-                            var template = templateReader.Read(selectedTemplate.FileInfo.FullName);
+                            var template = templateReader.Read(selectedTemplate.FileInfo.FullName, selectedTemplate.Name);
                             log.Add("template loaded");
                             if (template != null)
                             {
@@ -455,7 +463,7 @@ namespace ModelHelper.Commands
                         //
 
                         Console.WriteLine(
-                            "\n\nNB! Innholdet er også kopiert til utklippstavlen, bruk Ctrl + v for å lime inn hvis du trenger det");
+                            "\n\nNB! The generated content has also copied to the clip board, use Ctrl + v to paste if needed");
                         Console.ResetColor();
                     }
 
@@ -529,7 +537,7 @@ namespace ModelHelper.Commands
                 //var fileInfo = new FileInfo(customFile);
                 try
                 {
-                    var template = templateReader.Read(templateFile.FileInfo.FullName);
+                    var template = templateReader.Read(templateFile.FileInfo.FullName, templateFile.Name);
                     //if (template != null && template.Groups != null && template.Groups.Any() && !template.Groups.Except(groups).Any())
                     if (template != null && template.Groups != null && template.Groups.Any())
                     {

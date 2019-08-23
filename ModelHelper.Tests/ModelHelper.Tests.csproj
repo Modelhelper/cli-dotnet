@@ -66,6 +66,7 @@
     <Compile Include="SqlTemplateTests.cs" />
     <Compile Include="TableExtensionsTests.cs" />
     <Compile Include="TemplateExtensionsPrimaryColumnTests.cs" />
+    <Compile Include="TemplateTagTests.cs" />
     <Compile Include="TextExtensionsTests.cs" />
     <Compile Include="TextFilterExtensionTests.cs" />
   </ItemGroup>

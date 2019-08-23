@@ -1,13 +1,16 @@
 {
     "name": "",
     "description": "",
-    "customer": "",
-    "projectVersion": "1.0.0",
+    "rootNamespace": "",
+    "projectVersion": "2.0.0",
     "rootPath": "",
-    "database": {
+    "data": {
+        "defaultConnection": "mssql",
         "connections": [
             {
                 "name": "mssql",
+                "isDefault": true,
+                "connectionString": "",
                 "dbType": "mssql",
                 "defaultSchema": "dbo",
                 "columnMapping": [
@@ -16,14 +19,31 @@
                         "IsIgnored": true,
                         "IsCreatedDate": true
                     }
-                ]
+                ],            
+                "Interface": "",
+                "Variable": "",
+                "Method": "",
+                "queryOptions": {
+                    "className": "",
+                    "namespace": "",
+                    "userIdProperty": "",
+                    "userIdType": "",
+                    "useClaimsPrincipalExtension": true,
+                    "claimsPrincipalExtensionMethod": "",
+                    "claimsPrincipalExtensionNamespace": ""
+                }
+            
             }
         ],        
         "columnMapping": [
             {
                 "name": "",
+                "propertyName": "",
+                "translation": "",
                 "IsIgnored": true,
-                "IsCreatedDate": true
+                "IncludeInViewModel": true,
+                "usedAs": "createdDate | createdBy | modifiedDate | modifiedUser | isActive | deletedMarker",
+                
             }
         ]
     },

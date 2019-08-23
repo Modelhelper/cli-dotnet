@@ -49,9 +49,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\SampleSourceRepository.cs" />
+    <Compile Include="Data\SelectOneSqlGenerator.cs" />
     <Compile Include="Data\SqlServerRepository.cs" />
-    <Compile Include="Data\DatatypeConverters.cs" />
-    <Compile Include="Data\SqlScriptGenerators.cs" />
+    <Compile Include="Data\SqlToPostgresConverter.cs" />
+    <Compile Include="Data\CreateTableSqlGenerator.cs" />
+    <Compile Include="Data\SqlToCSharpDatatypeConvert.cs" />
+    <Compile Include="Data\SqlToMySqlConverter.cs" />
+    <Compile Include="Data\SqlToTypeScriptConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

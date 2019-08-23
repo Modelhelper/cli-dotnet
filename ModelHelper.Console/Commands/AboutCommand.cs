@@ -37,6 +37,9 @@ namespace ModelHelper.Commands
             Console.WriteLine($"App name: \t\t{name.Name}.exe");
             Console.WriteLine($"Location: \t\t{Assembly.GetExecutingAssembly().Location}");
             Console.WriteLine($"Configuration: \t\t{ModelHelperExtensions.RootFolder}");
+            Console.WriteLine($"Templates: \t\t{ModelHelperConfig.TemplateLocation}");
+            
+            //Console.WriteLine($"Remote Templates: \t\t{ModelHelperConfig.RemoteTemplateLocation}");
 
             Console.WriteLine("");
             CommandExtensions.PrintProjectInfo();

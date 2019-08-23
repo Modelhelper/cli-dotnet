@@ -1,5 +1,6 @@
 ﻿using DotLiquid;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 
 namespace ModelHelper.Core.Drops
 {

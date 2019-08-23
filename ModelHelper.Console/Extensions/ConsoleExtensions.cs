@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ModelHelper.Core.Extensions;
+using ModelHelper.Core.Database;
 
 namespace ModelHelper.Extensions
 {

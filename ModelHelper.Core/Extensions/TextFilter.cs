@@ -28,6 +28,11 @@ namespace ModelHelper.Core.Extensions
 
         }
 
+        public static string Dictionary(string input)
+        {
+            return input.ToUpper();
+        }
+
         private static Dictionary<string, string> SqlTypeToTypeScript()
         {
             
@@ -96,10 +101,10 @@ namespace ModelHelper.Core.Extensions
                 {"binary", "Byte[]"},
                 {"bit", "bool"},
                 {"char", "char"},
-                {"date", "DateTime"},
-                {"datetime", "DateTime"},
-                {"datetime2", "DateTime"},
-                {"datetimeoffset", "DateTime"},
+                {"date", "DateTimeOffset"},
+                {"datetime", "DateTimeOffset"},
+                {"datetime2", "DateTimeOffset"},
+                {"datetimeoffset", "DateTimeOffset"},
                 {"decimal", "decimal"},
                 {"float", "decimal"},
                 {"geography", "string"},
@@ -116,7 +121,7 @@ namespace ModelHelper.Core.Extensions
                 {"smallint", "decimal"},
                 {"smallmoney", "decimal"},
                 {"text", "string"},
-                {"time", "DateTime"},
+                {"time", "DateTimeOffset"},
                 {"timestamp", "string"},
                 {"tinyint", "number"},
                 {"uniqueidentifier", "Guid"},

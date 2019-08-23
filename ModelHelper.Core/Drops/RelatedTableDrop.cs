@@ -104,9 +104,11 @@ namespace ModelHelper.Core.Drops
         public bool IsSelfJoin => _relation.IsSelfJoin;
         public string ParentColumnName => _relation.ParentColumnName;
         public string ParentColumnType => _relation.ParentColumnType;
+        public bool ParentColumnNullable => _relation.ParentColumnNullable;
+        
         public string ChildColumnName => _relation.ChildColumnName;
         public string ChildColumnType => _relation.ChildColumnType;
-
+        public bool ChildColumnNullable => _relation.ChildColumnNullable;
         public string ModelName => _relation.ModelName;
 
         public string Name => _relation.Name;
