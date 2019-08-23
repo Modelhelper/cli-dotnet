@@ -1,4 +1,6 @@
-﻿namespace ModelHelper.Core
+﻿using System.Security.Policy;
+
+namespace ModelHelper.Core
 {
     public class Config
     {
@@ -7,5 +9,8 @@
 
         public string ScriptLocation { get; set; }
 
+        public string TemplateLocation { get; set; }
+
+        public string DefaultConnectionString { get; set; }
     }
 }
