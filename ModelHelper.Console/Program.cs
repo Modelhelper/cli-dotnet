@@ -12,12 +12,14 @@ using System.Threading.Tasks;
 using ModelHelper.Commands;
 using ModelHelper.Core;
 using ModelHelper.Core.Extensions;
+using ModelHelper.Core.Templates;
 using ModelHelper.Extensions;
 
 namespace ModelHelper
 {    
     class Program
     {
+
         private CompositionContainer _container;
 
         [Import(typeof(ICommandExecutor))]
@@ -72,7 +74,20 @@ namespace ModelHelper
             else if (!playTetris)
             {
                 ModelHelperConfig.ReadConfig();
-                
+
+                var modelHelperData = ConsoleExtensions.UserTemplateDirectory();
+
+                var templateReader = new JsonTemplateReader();
+                var customTemplatePath = ModelHelperConfig.TemplateLocation; // Path.Combine(Directory.GetCurrentDirectory(), "templates");
+
+                var templateFiles = new List<TemplateFile>();
+
+                templateFiles.AddRange(customTemplatePath.GetTemplateFiles("project"));
+                templateFiles.AddRange(modelHelperData.GetTemplateFiles("mh"));
+
+                ModelHelperConfig.Templates =
+                    templateFiles.Select(t => templateReader.Read(t.FileInfo.FullName, t.Name)).ToList();
+
                 p.CommandExecutor.Execute(key, options);
                 
             }
