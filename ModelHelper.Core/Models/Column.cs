@@ -32,5 +32,6 @@ namespace ModelHelper.Core.Models
         public string ReferencesColumn { get; set; }
 
         public string Description { get; set; }
+        public string ContextualName { get; set; }
     }
 }

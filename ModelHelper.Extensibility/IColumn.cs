@@ -4,6 +4,7 @@
     {
         string Name { get; set; }
         string PropertyName { get; set; }
+        string ContextualName { get; set; }
 
         string DbType { get; set; }
         string DataType { get; set; }

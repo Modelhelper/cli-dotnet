@@ -6,7 +6,8 @@ using ModelHelper.Core.Project;
 using ModelHelper.Core.Project.V1;
 using Xunit;
 using ModelHelper.Data;
-
+using ModelHelper.Core.Extensions;
+using ModelHelper.Core.Drops;
 
 namespace ModelHelper.Tests
 {
@@ -37,6 +38,18 @@ namespace ModelHelper.Tests
         }
 
         [Fact]
+        public async Task Column_Contextual_Name_Should_Be_Name()
+        {
+            var column = new Column{Name = "TestTableName"};
+            var expected = "Name";
+           
+            var actual = column.ExtractContextualName("TestTable");
+
+            Assert.Equal(expected, actual);
+        }
+
+
+        [Fact]
         public async Task An_Empty_Ignored_Columns_Creates_A_Union_List_of_One()
         {
             
@@ -63,6 +76,19 @@ select Name = 'ModifiedBy'";
 
             Assert.Equal(expected, actual);
 
+        }
+    }
+
+    public class DropTableTests
+    {
+        [Fact]
+        public void ContextualName_Should_be_Name()
+        {
+            var column = new Column{Name = "TestTableName"};
+            column.ContextualName = column.ExtractContextualName("TestTable");
+            var drop = new DataColumnDrop(column);
+
+            Assert.Equal(drop.ContextualName, "Name");
         }
     }
 }

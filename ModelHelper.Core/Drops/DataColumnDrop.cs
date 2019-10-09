@@ -29,6 +29,7 @@ namespace ModelHelper.Core.Drops
 
         public string Name => _column.Name;
         public string PropertyName => _column.PropertyName;
+        public string ContextualName => _column.ContextualName;
         public string Collation => _column.Collation;
         public string ReferencesColumn => _column.ReferencesColumn;
         public string ReferencesTable => _column.ReferencesTable;
