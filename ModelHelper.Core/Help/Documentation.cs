@@ -1,20 +1,23 @@
-using ModelHelper.Core.CommandLine;
+﻿using ModelHelper.Core.CommandLine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ModelHelper.Core.Help
 {
-    public class HelpItem
+    public static class Documentation
     {
         public static HelpItem FromAttributes(Type t)
         {
             var helpItem = new HelpItem();
 
-
+            var metaAttribute = (CommandMetadataAttribute)Attribute.GetCustomAttribute(t, typeof(CommandMetadataAttribute));
             var shortDescAttribute = (ShortDescriptionAttribute)Attribute.GetCustomAttribute(t, typeof(ShortDescriptionAttribute));
             var longDescAttribute = (LongDescriptionAttribute)Attribute.GetCustomAttribute(t, typeof(LongDescriptionAttribute));
             var sampleAttributes = t.GetCustomAttributes(typeof(CommandSampleAttribute), false).ToList();
+
+            helpItem.Key = metaAttribute != null ? metaAttribute.Key : string.Empty;
+            helpItem.Alias = metaAttribute != null ? metaAttribute.Alias : string.Empty;
 
             helpItem.ShortDescription = shortDescAttribute != null ? shortDescAttribute.Text : string.Empty;
             helpItem.LongDescription = longDescAttribute != null ? longDescAttribute.Text : string.Empty;
@@ -40,51 +43,33 @@ namespace ModelHelper.Core.Help
                 var shortPropDescAttribute = (ShortDescriptionAttribute)Attribute.GetCustomAttribute(p, typeof(ShortDescriptionAttribute));
                 var optionAttribute = (OptionAttribute)Attribute.GetCustomAttribute(p, typeof(OptionAttribute));
 
-                if (optionAttribute != null)
+                try
                 {
-                    var optionItem = new HelpOption
+                    if (optionAttribute != null)
                     {
-                        Aliases = optionAttribute.Aliases.ToList(),
-                        IsOptional = !optionAttribute.IsRequired,
-                        ShortDescription = shortPropDescAttribute != null ? shortPropDescAttribute.Text : string.Empty,
-                        Key = optionAttribute.Key,
+                        var optionItem = new HelpOption
+                        {
+                            Aliases = optionAttribute.Aliases != null && optionAttribute.Aliases.Any() ? optionAttribute.Aliases.ToList() : new List<string>(),
+                            IsOptional = !optionAttribute.IsRequired,
+                            ShortDescription = shortPropDescAttribute != null ? shortPropDescAttribute.Text : string.Empty,
+                            Key = optionAttribute.Key,
 
-                    };
+                        };
 
+                        helpItem.Options.Add(optionItem);
+                    }
                 }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
+                
 
 
             }
 
             return helpItem;
         }
-
-        public HelpItem()
-        {
-            Options = new List<HelpOption>();
-            ConsoleMessages = new Dictionary<string, string>();
-            Samples = new List<HelpSample>();
-        }
-        public string Key { get; set; }
-        public string Alias { get; set; }
-        public string ShortDescription { get; set; }
-        public string LongDescription { get; set; }
-        public List<HelpOption> Options { get; set; }
-
-        public List<HelpSample> Samples { get; set; }
-        public string GetMessage(string key, params string[] args)
-        {
-            if (ConsoleMessages.ContainsKey(key))
-            {
-                return ConsoleMessages[string.Format(key, args)];
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
-        public Dictionary<string, string> ConsoleMessages { get; set; }
-        public string Title { get; set; }
-        public string Signature { get; set; }
     }
 }

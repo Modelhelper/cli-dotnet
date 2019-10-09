@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -75,10 +76,10 @@ namespace ModelHelper
             {
                 ModelHelperConfig.ReadConfig();
 
-                var modelHelperData = ConsoleExtensions.UserTemplateDirectory();
+                var modelHelperData = ModelHelperConfig.TemplateLocation; // ConsoleExtensions.UserTemplateDirectory();
 
                 var templateReader = new JsonTemplateReader();
-                var customTemplatePath = ModelHelperConfig.TemplateLocation; // Path.Combine(Directory.GetCurrentDirectory(), "templates");
+                var customTemplatePath = Path.Combine(Directory.GetCurrentDirectory(), "templates");
 
                 var templateFiles = new List<TemplateFile>();
 

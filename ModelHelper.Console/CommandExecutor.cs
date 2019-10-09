@@ -6,6 +6,7 @@ using System.Linq;
 using ModelHelper.Commands;
 using ModelHelper.Core.CommandLine;
 using ModelHelper.Core.Extensions;
+using ModelHelper.Core.Help;
 using ModelHelper.Core.Project;
 using ModelHelper.Core.Project.V1;
 using ModelHelper.Extensibility;
@@ -74,7 +75,11 @@ Please run the following command to upgrade (use ctrl + v to paste the command)"
                     }
                     else
                     {
-                        command.Value.Help.WriteToConsole();
+                        var t = command.Value.GetType();
+                        //Console.WriteLine(t.ToString());
+                        Documentation.FromAttributes(t).WriteToConsole();
+                        
+                        //command.Value.Help.WriteToConsole();
 
                     }
                     
