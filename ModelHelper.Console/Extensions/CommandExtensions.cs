@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using ModelHelper.Core.Help;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 
 namespace ModelHelper.Extensions
 {
@@ -366,63 +367,59 @@ namespace ModelHelper.Extensions
         {
             
 
-            $"Prosjekt".WriteConsoleSubTitle();
+            $"Current ModelHelper Project".WriteConsoleSubTitle();
 
             if (project != null)
             {
-                var connectionString = new SqlConnectionStringBuilder(project.DataSource.Connection);
-                var list = new Dictionary<string, string> {
-                    {"Navn", project.Name },
-                    {"Kunde", project.Customer },
-                    {"Server", connectionString.DataSource },
-                    {"Database", connectionString.InitialCatalog },
 
+
+                var list = new Dictionary<string, string>
+                {
+                    {"Name", project.Name},
+                    {"Customer", project.Customer},
+                    {
+                        "Version", project.Version
+                        
+                    }
                 };
+
                 var padding = list.Max(i => i.Key.Length) + 1;
 
+                var connections = project.Data.Connections.Select(i => new {
+                        Name = i.Name, i.DbType, DefaultSchema = string.IsNullOrEmpty(i.DefaultSchema) ? "": i.DefaultSchema,
+                        Server = new SqlConnectionStringBuilder(i.ConnectionString).DataSource,
+                        Database = new SqlConnectionStringBuilder(i.ConnectionString).InitialCatalog
+
+                    });
+
+                
                 foreach (var item in list)
                 {
                     Console.WriteLine($"{ item.Key.PadRight(padding)}{":".PadRight(3)} {item.Value}");
                 }
 
+
+                $"Connections".WriteConsoleSubTitle();
+                connections.ToConsoleTable().WriteToConsole();
+
+                "\n\nFor more about the current project use the 'mh project --verbose' command".WriteConsoleWarning();
             }
             else
             {
-                Console.WriteLine($"Finner ingen gyldig .model-helper fil på {Path.Combine(Directory.GetCurrentDirectory())}");
+                
+                $"\nFinner ingen gyldig .model-helper fil på {Path.Combine(Directory.GetCurrentDirectory())}"
+                    .WriteConsoleError();
             }
         }
 
         public static void PrintProjectInfo()
         {
-            var projectReader = new ProjectJsonReader();
+            var projectReader = new DefaultProjectReader();
             var project = projectReader.Read(Path.Combine(Directory.GetCurrentDirectory(), ".model-helper"));
 
-            ConsoleExtensions.WriteConsoleSubTitle($"Current Prosjekt");
+            WriteToConsole(project);
 
-            if (project != null)
-            {
-                var connectionString = new SqlConnectionStringBuilder(project.DataSource.Connection);
-                var list = new Dictionary<string, string> {
-                    {"Navn", project.Name },
-                    {"Kunde", project.Customer },
-                    {"Server", connectionString.DataSource },
-                    {"Database", connectionString.InitialCatalog },
-                   // {"Use Query options", project.Code.QueryOptions.UseQueryOptions.ToString() },
-                };
-                var padding = list.Max(i => i.Key.Length) + 1;
-
-                foreach (var item in list)
-                {
-                    Console.WriteLine($"{ item.Key.PadRight(padding)}{":".PadRight(3)} {item.Value}");
-                }
-
-
-                Console.WriteLine("For more about the current project use th 'mh project --verbose' command");
-            }
-            else
-            {
-                Console.WriteLine($"Finner ingen gyldig .model-helper fil på {Path.Combine(Directory.GetCurrentDirectory())}");
-            }
+            
         }
     }
 }

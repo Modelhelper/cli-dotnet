@@ -31,11 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.50.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.50.4\lib\net451\Dapper.dll</HintPath>
+    <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -49,13 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\SampleSourceRepository.cs" />
+    <Compile Include="Data\SelectOneSqlGenerator.cs" />
     <Compile Include="Data\SqlServerRepository.cs" />
-    <Compile Include="Data\DatatypeConverters.cs" />
-    <Compile Include="Data\SqlScriptGenerators.cs" />
+    <Compile Include="Data\SqlToPostgresConverter.cs" />
+    <Compile Include="Data\CreateTableSqlGenerator.cs" />
+    <Compile Include="Data\SqlToCSharpDatatypeConvert.cs" />
+    <Compile Include="Data\SqlToMySqlConverter.cs" />
+    <Compile Include="Data\SqlToTypeScriptConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ModelHelper.Core\ModelHelper.Core.csproj">
@@ -66,6 +67,9 @@
       <Project>{97b73426-01c5-4b03-bd77-53226dfd402e}</Project>
       <Name>ModelHelper.Extensibility</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

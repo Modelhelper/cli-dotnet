@@ -86,12 +86,12 @@ namespace ModelHelper.Commands
             }
 
             var templateReader = new JsonTemplateReader();
-            var customTemplatePath = Path.Combine(Directory.GetCurrentDirectory(), "templates");
-
+            var customTemplatePath = Path.Combine(Directory.GetCurrentDirectory(), "templates");  //ModelHelperConfig.TemplateLocation; // 
+            var rootTemplates = ModelHelperConfig.TemplateLocation;
             var templateFiles = new List<TemplateFile>();
 
             templateFiles.AddRange(customTemplatePath.GetTemplateFiles("project"));
-            templateFiles.AddRange(modelHelperData.GetTemplateFiles("mh"));
+            templateFiles.AddRange(rootTemplates.GetTemplateFiles("mh"));
 
 
             if (string.IsNullOrEmpty(templateName))
@@ -106,7 +106,7 @@ namespace ModelHelper.Commands
                     if (ShowTemplatesByExportType)
                     {
                         var templateGroups = templateFiles
-                        .Select(t => new { Name = t.Name, t.Scope, Template = templateReader.Read(t.FileInfo.FullName) }).ToList()
+                        .Select(t => new { Name = t.Name, t.Scope, Template = templateReader.Read(t.FileInfo.FullName, t.Name) }).ToList()
                         .Select(t => new { t.Name, t.Scope, Groups =t.Template?.Groups?.AsCommaSeparatedString() ?? "", ExportType = t.Template?.ExportType ?? "no type", CanExport = t.Template?.CanExport ?? false }).ToList();  //{Name = t.Name, t.Scope, t.}})
                         //.GroupBy(g => string.Join(",", g.Groups)).Select(gg => gg.First()).ToArray();
                         //.GroupBy(g => g.Groups).GroupBy(g2 => g2).Select(grp => new { Name = grp.Key, Items = grp.ToList() });
@@ -169,7 +169,7 @@ namespace ModelHelper.Commands
                     if (!ShowTemplatesByGroup)
                     {
                         templateFiles
-                        .Select(t => new { Name = t.Name, t.Scope, Template = templateReader.Read(t.FileInfo.FullName) }).ToList()
+                        .Select(t => new { Name = t.Name, t.Scope, Template = templateReader.Read(t.FileInfo.FullName, t.Name) }).ToList()
                         .Select(t => new { t.Name, t.Scope, Groups = t.Template?.Groups?.AsCommaSeparatedString() ?? "", ExportType = t.Template?.ExportType ?? "", CanExport = t.Template?.CanExport ?? false })  //{Name = t.Name, t.Scope, t.}})
                         .ToConsoleTable()
                         .WriteToConsole();
@@ -179,7 +179,7 @@ namespace ModelHelper.Commands
                     {
                         
                         var templateGroups = templateFiles
-                        .Select(t => new { Name = t.Name, t.Scope, Template = templateReader.Read(t.FileInfo.FullName) }).ToList()
+                        .Select(t => new { Name = t.Name, t.Scope, Template = templateReader.Read(t.FileInfo.FullName, t.Name) }).ToList()
                         .Select(t => new { t.Name, t.Scope, Groups = t.Template != null && t.Template.Groups.Any(g => g.Length > 0) ? t.Template?.Groups : new List<string> { "no group" }, ExportType = t.Template?.ExportType ?? "", CanExport = t.Template?.CanExport ?? false }).ToList();  //{Name = t.Name, t.Scope, t.}})
                         //.GroupBy(g => string.Join(",", g.Groups)).Select(gg => gg.First()).ToArray();
                         //.GroupBy(g => g.Groups).GroupBy(g2 => g2).Select(grp => new { Name = grp.Key, Items = grp.ToList() });
@@ -253,7 +253,7 @@ namespace ModelHelper.Commands
                 if (selectedTemplate != null)
                 {
                     ("Selected template " + templateName).WriteConsoleTitle();
-                    var template = templateReader.Read(selectedTemplate.Location);
+                    var template = templateReader.Read(selectedTemplate.Location, selectedTemplate.Name);
 
                     if (template != null)
                     {

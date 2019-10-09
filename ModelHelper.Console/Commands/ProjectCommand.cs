@@ -8,6 +8,7 @@ using ModelHelper.Core.CommandLine;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Help;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 using ModelHelper.Core.Rules;
 using ModelHelper.Extensions;
 using ModelHelper.Core.Project.VersionCheckers;
@@ -55,14 +56,14 @@ namespace ModelHelper.Commands
         {
             var argumentMap = this.Parse(args);
 
-            var writer = new ProjectJsonWriter();
-            var projectReader = new ProjectJsonReader();
+            var writer = new DefaultProjectWriter();
+            var projectReader = new DefaultProjectReader();
             var projectPath = Path.Combine(Directory.GetCurrentDirectory(), ".model-helper");
 
             if (File.Exists(projectPath))
             {
                 var version = projectReader.CheckVersion(projectPath);
-                var runUpgrade = Upgrade && version != null && (version.Version != "1.0.0" || version.IsBeta);
+                var runUpgrade = Upgrade && version.MustUpdate; // version != null && (version.Version != "1.0.0" || version.IsBeta);
 
                 if (runUpgrade) 
                 {
@@ -120,7 +121,7 @@ namespace ModelHelper.Commands
             
         }
 
-        private static void AddLocation(IProject project, ProjectJsonWriter writer, string projectPath)
+        private static void AddLocation(IProject project, DefaultProjectWriter writer, string projectPath)
         {
             var location = new ProjectCodeStructure();
             Console.Write("Enter a unique key: ");

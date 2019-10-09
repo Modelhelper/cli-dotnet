@@ -5,11 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using DotLiquid.FileSystems;
+using ModelHelper.Core;
 using ModelHelper.Core.CommandLine;
 using ModelHelper.Core.Database;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Help;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 using ModelHelper.Core.Rules;
 using ModelHelper.Core.Templates;
 using ModelHelper.Extensibility;
@@ -18,14 +20,53 @@ using ModelHelper.Extensions;
 namespace ModelHelper.Commands
 {
 
-    [Export(typeof(ICommand))]    
+    
+    
+    [Export(typeof(ICommand))]
+     [CommandSample(CommandText = "mh generate --entity * --template sql-select-all --show\nor...\n> mh g -e * -t sql-select-all -s", Description = "This will generate code for all entities in the database")]
+[CommandSample(CommandText = "mh generate --entity * --table-only --template sql-select-all --show\nor...\n> mh g -e * -to -t sql-select-all -s", Description = "This will generate code for all tables found in the database")]
+[CommandSample(CommandText = "mh generate --entity * --view-only --template sql-select-all --show\nor...\n> mh g -e * -vo -t sql-select-all -s", Description = "This will generate code for all views found in the database")]
+[CommandSample(CommandText = "mh generate --entity * --except \"Order, OrderItem\" --template sql-select-all --show", Description = "This will generate code for all entities in the database except for the Order and OrderItem table")]
+[CommandSample(CommandText = "mh generate --entity \"Order, OrderItem\" --template sql-select-all --show", Description = "This will generate code for both Order and OrderItem entity ")]
+[CommandSample(CommandText = "mh g --entity Order% --template sql-select-all --show", Description = @"This will generate code for all entities that starts with Order 
+By including either --table-only or --view-only you can further limit the collection of the returned entities")]
+[CommandSample(CommandText = "mh g --entity myTable --template-group CoreWebApi --show", Description = @"This will generate code for the myTable entity using a template group called CoreWebApi. 
+The number of code files generated depends on how many templates that is specified in the group.")]
+
+[CommandSample(CommandText = "mh generate --entity * --template-group CoreWebApi -ir -sc --export-bykey", Description = @"This will generate code for all tables and views in the database using the templates found in
+the CoreWebApi template group. If the database contains 20 tables and views and the CoreWebApi consist of 5 templates 
+(Controller, Entity model, Repository, Interface and View model) a total of 20 * 5 = 100 code files will be created based on 
+the code.location section of the .model-helper project file.
+Read more about setting up the project file with path and nameapsace for the --export-bykey:
+> mh help CodeLocation
+")]
+    [CommandSample(Description = "Generate code for all entities in the database", CommandText = "mh generate --entity * --table-only --template sql-select-all --show\nor...\n> mh g -e * -to -t sql-select-all -s")]
+    [ShortDescription("Generates code based on the selected entity and template")]
+    [LongDescription(Text = @"
+
+
+Use various options to decide how and what to generate.
+For --entity and --template it's possible to select more entities by separating each with , (comma).
+
+Example: mh generate --entity 'entity1, entity2' --template 'tpl1, tpl2'
+
+The example above will generate a total of 4 code files (entity count * template count)
+
+If --export option is provided without a path specification the generated code will be created
+in a temp folder.
+
+To export to a file the template the 'canExport' property must be set to true.
+")]
+    [CommandMetadata(Key = "generate", Alias ="g")]
     public class GenerateCommand : BaseCommand
     {
         public GenerateCommand()
         {
             Key = "generate";
             Alias = "g";
-            Help = HelpFactory.Generate(); // GetHelp();
+
+            //Help = HelpItem.FromAttributes(this.GetType());
+            //Help = Documentation.  GetType().FromAttributes(); // Help.FromAttributes(typeof(GenerateCommand)); // GetHelp();
         }
 
         [ImportMany]
@@ -34,8 +75,15 @@ namespace ModelHelper.Commands
         [ImportMany]
         IEnumerable<Lazy<IDatatypeConverter>> _dataTypeConverters;
 
+        [ShortDescription("Use this to provide another name")]
+        [Option(Key = "--contextual-name", IsRequired = false, Aliases = new[] { "-cn" })]
+        public string ContextualName { get;set;}
 
-        [Option(Key = "--include-relations", IsRequired = false, Aliases = new[] { "-ir", "-r" })]
+        [ShortDescription("Use module to create an upper level parent")]
+        [Option(Key = "--module", IsRequired = false, Aliases = new[] { "-m" })]
+        public string Module { get; set; }
+
+        [Option(Key = "--include-relations", IsRequired = false, Aliases = new[] { "-ir", "-r" })]        
         public bool IncludeRelations { get; set; }
 
         [Option(Key = "--show", Aliases = new[] { "-s" })]
@@ -95,6 +143,11 @@ namespace ModelHelper.Commands
 
         public string ExportPath { get; set; }
 
+        [Option(Key = "--connection", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "ConnectionName", Aliases = new[] { "-c" })]
+        public bool WithConnection { get; set; } = false;
+
+        public string ConnectionName { get; set; } = "";
+
         public override bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator)
         {
             return true;
@@ -103,8 +156,11 @@ namespace ModelHelper.Commands
         internal List<TemplateFile> GetTemplateFiles()
         {
             var templateFiles = new List<TemplateFile>();
-            var customTemplatePath = Path.Combine(Directory.GetCurrentDirectory(), "templates");
-            templateFiles.AddRange(customTemplatePath.GetTemplateFiles("project"));
+            var customTemplatePath = ModelHelperConfig.TemplateLocation;
+            var projectTemplatePath = Path.Combine(Directory.GetCurrentDirectory(), "templates");
+
+            templateFiles.AddRange(projectTemplatePath.GetTemplateFiles("project"));
+            templateFiles.AddRange(customTemplatePath.GetTemplateFiles("custom"));
             templateFiles.AddRange(ConsoleExtensions.UserTemplateDirectory().GetTemplateFiles("core"));
 
             return templateFiles;
@@ -143,11 +199,18 @@ namespace ModelHelper.Commands
             }
 
             var list = new List<string>();
-            var repo = new ModelHelper.Data.SqlServerRepository(project.DataSource.Connection, project);            
+            var repo = WithConnection ? project.CreateRepository(ConnectionName) : project.CreateRepository();
+            
 
             if (Entities.Any() && Entities.Count() == 1 && Entities[0] == "*")
             {
-                var allTables = repo.GetEntities(TablesOnly, ViewsOnly).Result;
+                var allTables = repo.GetEntities(false, false).Result;
+                list = allTables.Select(t => $"{t.Schema}.{t.Name}").ToList();
+            }
+            else if (Entities.Any(t => t.Contains("%")) && Entities.Count() == 1)
+            {
+                var filterTable = Entities[0];
+                var allTables = repo.GetEntities(false, false, filter: filterTable).Result;
                 list = allTables.Select(t => $"{t.Schema}.{t.Name}").ToList();
             }
             else if (EntityGroups.Any())
@@ -164,7 +227,7 @@ namespace ModelHelper.Commands
                 list = list.Where(tbl => !ExceptEntities.Contains(tbl.ToLowerInvariant())).ToList();
             }
 
-            return list;
+            return list.OrderBy(t=>t).Distinct().ToList();
         }
 
         internal List<LogItem> ExecutionLog { get; set; } = new List<LogItem>();
@@ -267,7 +330,7 @@ namespace ModelHelper.Commands
                     return;
                 }                
 
-                var projectReader = new ProjectJsonReader();
+                var projectReader = new DefaultProjectReader();
                 var project = projectReader.Read(Path.Combine(Directory.GetCurrentDirectory(), ".model-helper"));
 
                 log.Add("read project");
@@ -280,7 +343,8 @@ namespace ModelHelper.Commands
 
                     var totalResult = new StringBuilder();
 
-                    var repo = new ModelHelper.Data.SqlServerRepository(project.DataSource.Connection, project);
+                    //var repo = new ModelHelper.Data.SqlServerRepository(project.DataSource.Connection, project);
+                    var repo = WithConnection ? project.CreateRepository(ConnectionName) : project.CreateRepository();
 
                     var templateFiles = GetTemplateFiles();
 
@@ -312,7 +376,7 @@ namespace ModelHelper.Commands
                         if (selectedTemplate != null)
                         {
                             log.Add("generate for template: " + selectedTemplate.Name);
-                            var template = templateReader.Read(selectedTemplate.FileInfo.FullName);
+                            var template = templateReader.Read(selectedTemplate.FileInfo.FullName, selectedTemplate.Name);
                             log.Add("template loaded");
                             if (template != null)
                             {
@@ -455,7 +519,7 @@ namespace ModelHelper.Commands
                         //
 
                         Console.WriteLine(
-                            "\n\nNB! Innholdet er også kopiert til utklippstavlen, bruk Ctrl + v for å lime inn hvis du trenger det");
+                            "\n\nNB! The generated content has also copied to the clip board, use Ctrl + v to paste if needed");
                         Console.ResetColor();
                     }
 
@@ -529,7 +593,7 @@ namespace ModelHelper.Commands
                 //var fileInfo = new FileInfo(customFile);
                 try
                 {
-                    var template = templateReader.Read(templateFile.FileInfo.FullName);
+                    var template = templateReader.Read(templateFile.FileInfo.FullName, templateFile.Name);
                     //if (template != null && template.Groups != null && template.Groups.Any() && !template.Groups.Except(groups).Any())
                     if (template != null && template.Groups != null && template.Groups.Any())
                     {

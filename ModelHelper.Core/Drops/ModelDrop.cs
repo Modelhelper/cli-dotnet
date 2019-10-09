@@ -10,10 +10,11 @@ namespace ModelHelper.Core.Drops
 {
     public class ModelDrop : Drop
     {
-        private readonly ITemplateModel _templateModel;
+        public ITemplateModel TemplateModel { get; }
+
         public ModelDrop(ITemplateModel templateModel, bool includeChildTables = false) //:base(templateModel.Table)
         {
-            _templateModel = templateModel;
+            TemplateModel = templateModel;
             SqlScriptGenerators = templateModel.SqlScriptGenerators;
             DatatypeConverters = templateModel.DatatypeConverters;
 
@@ -33,29 +34,37 @@ namespace ModelHelper.Core.Drops
             OptionKeys = new List<string> ();
 
             QueryOptions = new QueryOptionDrop(templateModel.Project.Code.QueryOptions);
+            UserContext = new UserContextDrop(templateModel.Project.Code.UserContext);
 
-            ConnectionInterface = templateModel.Project.Code.Connection.Interface;
-            ConnectionVariable = templateModel.Project.Code.Connection.Variable;
-            ConnectionMethod = templateModel.Project.Code.Connection.Method;
+            ConnectionInterface = templateModel?.Project?.Code?.Connection != null ? templateModel.Project.Code.Connection.Interface : string.Empty;
+            ConnectionVariable = templateModel?.Project?.Code?.Connection != null ? templateModel.Project.Code.Connection.Variable : string.Empty;
+            ConnectionMethod = templateModel?.Project?.Code?.Connection != null ? templateModel.Project.Code.Connection.Method : string.Empty;
 
-            UseQueryOptions = templateModel.Project.Code.UseQueryOptions;
+            UseQueryOptions = templateModel?.Project?.Code?.UseQueryOptions ?? false;
+            InjectUserContext = templateModel?.Project?.Code?.InjectUserContext ?? false;
 
-            foreach (var location in templateModel.Project.Code.Locations)
+            if (templateModel?.Project?.Code?.Locations != null)
             {
-                Namespaces.Add(location.Key, location.Namespace);
-            }
-
-            foreach (var pair in templateModel.Project.Options.Select(p => new KeyValuePair<string, object>(p.Key, p.Value)))
-            {
-                if (!Options.ContainsKey(pair.Key))
+                foreach (var location in templateModel.Project.Code.Locations)
                 {
-                    Options.Add(pair.Key, pair.Value);
-                    OptionValues.Add(pair.Value);
-                    OptionKeys.Add(pair.Key);
+                    Namespaces.Add(location.Key, location.Namespace);
                 }
-               // OptionsList.Add(pair);
-                //Options.Add(pair);
             }
+
+            if (templateModel?.Project?.Options != null)
+            {
+                foreach (var pair in templateModel.Project.Options.Select(p => new KeyValuePair<string, object>(p.Key, p.Value)))
+                {
+                    if (!Options.ContainsKey(pair.Key))
+                    {
+                        Options.Add(pair.Key, pair.Value);
+                        OptionValues.Add(pair.Value);
+                        OptionKeys.Add(pair.Key);
+                    }
+                    
+                }
+            }
+            
 
             if (templateModel.Options != null)
             {
@@ -77,6 +86,7 @@ namespace ModelHelper.Core.Drops
         }
 
         public bool UseQueryOptions { get; }
+        public bool InjectUserContext { get; }
         public string ConnectionInterface { get; }
         public string ConnectionVariable { get; }
         public string ConnectionMethod { get; }
@@ -84,7 +94,10 @@ namespace ModelHelper.Core.Drops
         public List<ISqlGenerator> SqlScriptGenerators { get; }
         public List<IDatatypeConverter> DatatypeConverters { get; }
 
+        public Dictionary<string, string> Dictionary => TemplateModel.Dictionary ?? new Dictionary<string, string>();
+
         public QueryOptionDrop QueryOptions { get; set; }
+        public UserContextDrop UserContext { get; set; }
 
         public DatabaseDrop Database { get; set; }
         public ProjectDrop Project { get;  }        

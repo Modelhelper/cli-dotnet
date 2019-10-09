@@ -11,6 +11,8 @@ namespace ModelHelper.Core.Models
         public string ChildColumnName { get; set; }
         public string ParentColumnType { get; set; }
         public string ChildColumnType { get; set; }
+        public bool ParentColumnNullable { get; set; }
+        public bool ChildColumnNullable { get; set; }
         public bool IsSelfJoin { get; set; }
     }
 

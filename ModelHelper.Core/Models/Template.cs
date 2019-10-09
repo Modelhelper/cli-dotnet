@@ -5,6 +5,10 @@ namespace ModelHelper.Core.Models
 {
     public class Template : ITemplate
     {
+        public Template()
+        {
+            Dictionary = new Dictionary<string, string>();
+        }
         public string Key { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -16,6 +20,8 @@ namespace ModelHelper.Core.Models
         public string InsertIdentifier { get; set; }
         public IEnumerable<string> Groups { get; set; }
         public IEnumerable<string> Tags { get; set; }
+        public Dictionary<string, string> Dictionary { get; set; } 
+
         public string Body { get; set; }
     }
 }

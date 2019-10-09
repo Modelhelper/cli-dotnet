@@ -1,12 +1,20 @@
-{   
+{
     "name": "",
     "supportedProjectVersion": "1.x.x",
     "description": null,
+    "entityIsMandatory": false,
     "language": "",
     "canExport": true,
     "exportFileName": "",
     "exportType": "",
     "templateType": 0,
+    "typeMapper": "points to name",
+    "dictionary": [
+        {
+            "key": "string",
+            "value": "StringType"
+        }
+    ],
     "groups": [],
     "tags": [],
     "body": []

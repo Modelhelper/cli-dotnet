@@ -6,12 +6,27 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Humanizer;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 using Newtonsoft.Json;
 
 namespace ModelHelper.Core.Extensions
 {
     public static class StringExtensions
     {
+        public static string ContextualName(this string name, string tableName)
+        {
+            var length = tableName.Length;
+            var startsWithTableName = name.StartsWith(tableName, StringComparison.InvariantCultureIgnoreCase);
+
+            if (!startsWithTableName || name.Length == length)
+            {
+                return name;
+            }
+
+            var contextual = name.Substring(length);
+            return contextual;
+        }
+
         public static List<string> WordExceptions = new List<string>
         {
             "process", "status"
@@ -171,7 +186,7 @@ namespace ModelHelper.Core.Extensions
             return result;
         }
 
-        public static string NameMapValue(this string input, List<ColumnExtra> nameMap)
+        public static string NameMapValue(this string input, List<ProjectDataColumnMapping> nameMap)
         {
             var result = input;
 

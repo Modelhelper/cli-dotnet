@@ -10,11 +10,11 @@ using ModelHelper.Core;
 using ModelHelper.Core.Database;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Models;
-using ModelHelper.Core.Project;
 using ModelHelper.Core.Templates;
 using Dapper;
 using ModelHelper.Extensibility;
 using System.IO;
+using ModelHelper.Core.Project.V1;
 
 namespace ModelHelper.Data
 {
@@ -22,8 +22,13 @@ namespace ModelHelper.Data
     [ExportMetadata("Key", "mssql")]
     public class SqlServerRepository : IDatabaseRepository
     {
+        private readonly RepositoryConfig _config;
+
+        [Obsolete]
         private readonly string _connectionString;
-        private readonly IProject _project;
+
+        [Obsolete]
+        private readonly IProjectV1 _project;
 
         public bool CanReorganizeIndexes => true;
 
@@ -38,20 +43,27 @@ namespace ModelHelper.Data
 
         }
 
-        public SqlServerRepository(string connectionString, IProject project)
+        public SqlServerRepository(RepositoryConfig config)
+        {
+            _config = config;
+            _connectionString = config.ConnectionString;
+        }
+
+        [Obsolete]
+        public SqlServerRepository(string connectionString, IProjectV1 project)
         {
             _connectionString = connectionString;
             _project = project;
         }
         public async Task<IEnumerable<ITableRelation>> GetParentEntityRelations(string tableName, bool includeColumns = false)
         {
-            if (string.IsNullOrEmpty(_connectionString))
+            if (string.IsNullOrEmpty(_config.ConnectionString))
             {
                 throw new Exception("The connection string cannot be null");
             }
 
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 var sql = @"        
 select 
@@ -59,9 +71,13 @@ select
     type = CASE when p1.type = 'U' then 'Table' when p1.type = 'V' then 'View' end,  	
 	ParentColumnName = cp.name, 
 	ParentColumnType = type_name(cp.user_type_id),
+    ParentColumnNullable = cp.is_nullable,
+
     ChildColumnName = cc.name,
     ChildColumnType = type_name(cc.user_type_id),
-	ConstraintName = o1.name
+    ChildColumnNullable = cc.is_nullable,
+	
+ConstraintName = o1.name
 	--, refName = r1.name
 	, parentName = p1.name
 	, [Schema] = SCHEMA_NAME(p1.schema_id)
@@ -87,6 +103,7 @@ where fkc.parent_object_id = OBJECT_ID(@tableName)
                     {
                         foreach (var relation in list)
                         {
+                            //relation.ContextualName = relation.Name.ContextualName(relation..Name);
                             relation.Columns = new List<IColumn>(await GetColumns(relation.Schema, relation.Name));
                         }
 
@@ -109,11 +126,11 @@ where fkc.parent_object_id = OBJECT_ID(@tableName)
 
         public async Task<IEnumerable<ITableRelation>> GetRelatedChildren(string tableName, bool includeColumns = false)
         {
-            if (string.IsNullOrEmpty(_connectionString))
+            if (string.IsNullOrEmpty(_config.ConnectionString))
             {
                 throw new Exception("The connection string cannot be null");
             }
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 var sql = @"        
 select 	GroupIndex = row_number() over (partition by p1.name order by p1.create_date desc),
@@ -121,8 +138,12 @@ select 	GroupIndex = row_number() over (partition by p1.name order by p1.create_
     type = CASE when p1.type = 'U' then 'Table' when p1.type = 'V' then 'View' end,  	
 	ParentColumnName = cp.name, 
     ParentColumnType = type_name(cp.user_type_id),
+    ParentColumnNullable = cp.is_nullable,
+    
 	ChildColumnName = cc.name,
     ChildColumnType = type_name(cc.user_type_id),
+    ChildColumnNullable = cc.is_nullable,
+
 	ConstraintName = o1.name
 	--, refName = r1.name
 	, parentName = p1.name
@@ -141,28 +162,35 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
 
                 connection.Open();
 
-
-                var relations = await connection.QueryAsync<ModelHelper.Core.Models.TableRelation>(sql, new { tableName });
-
-                var list = relations.ToList();
-                if (includeColumns)
+                try
                 {
-                    foreach (var relation in list)
+                    var relations = await connection.QueryAsync<ModelHelper.Core.Models.TableRelation>(sql, new { tableName });
+
+                    var list = relations.ToList();
+                    if (includeColumns)
                     {
-                        relation.Columns = new List<IColumn>(await GetColumns(relation.Schema, relation.Name));
+                        foreach (var relation in list)
+                        {
+                            relation.Columns = new List<IColumn>(await GetColumns(relation.Schema, relation.Name));
+                        }
+
                     }
 
+
+                    connection.Close();
+                    return list;
                 }
-
-
-                connection.Close();
-                return list;
+                catch (Exception e)
+                {
+                    return new  List<ITableRelation>();
+                }
+                
             }
         }
 
         public async Task<IEnumerable<IColumn>> GetColumns(string schema, string tableName)
         {
-            if (string.IsNullOrEmpty(_connectionString))
+            if (string.IsNullOrEmpty(_config.ConnectionString))
             {
                 throw new Exception("The connection string cannot be null");
             }
@@ -172,7 +200,7 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
             //var nameMap = GetUnionList("select Name = '{0}', Aka = '{1}'", _nameMap);
             // var ignoreColumns = GetUnionList("select Name = '{0}'", _project.Database.IgnoredColumns);
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 var sql = $@"
         with Reserved as (
@@ -261,34 +289,33 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
                 //TODO need the name map here
                 foreach (var column in items)
                 {
-                    // TODO fix
-                    var propertyName = column.Name.NameMapValue(_project.DataSource.ColumnMapping).CleanInput()
+                    // TODO fix _project.DataSource.ColumnMapping
+                    var propertyName = column.Name.NameMapValue(_config.ColumnMapping).CleanInput()
                         .AsUpperCamelCase();
 
                     column.UseInViewModel = list.Any(f => propertyName.ToLowerInvariant().EndsWith(f));
 
 
-                    var columnExtra = _project.DataSource.ColumnMapping.FirstOrDefault(ce =>
+                    var columnExtra = _config.ColumnMapping.FirstOrDefault(ce =>
                         ce.Name.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase));
 
                     if (columnExtra != null)
                     {
                         column.IsIgnored = columnExtra.IsIgnored;
-                        column.IsDeletedMarker = columnExtra.IsDeletedMarker;
-                        column.IsCreatedByUser = columnExtra.IsCreatedByUser;
-                        column.IsCreatedDate = columnExtra.IsCreatedDate;
-                        column.IsModifiedByUser = columnExtra.IsModifiedByUser;
-                        column.IsModifiedDate = columnExtra.IsModifiedDate;
+                        column.IsDeletedMarker = columnExtra.UsedAs == "DeletedMarker";
+                        column.IsCreatedByUser = columnExtra.UsedAs == "CreatedByUser" || columnExtra.UsedAs == "CreatedBy";
+                        column.IsCreatedDate = columnExtra.UsedAs == "CreatedOn" || columnExtra.UsedAs == "CreatedDate";
+                        column.IsModifiedByUser = columnExtra.UsedAs == "ModifiedBy" || columnExtra.UsedAs == "ModifiedByUser";
+                        column.IsModifiedDate = columnExtra.UsedAs == "ModifiedOn" || columnExtra.UsedAs == "ModifiedDate" || columnExtra.UsedAs == "ChangedOn" || columnExtra.UsedAs == "ChangedDate";
 
                         column.UseInViewModel = column.UseInViewModel || columnExtra.IncludeInViewModel;
 
                     }
 
-
-
                     column.IsReserved = reserved.Contains(column.Name.ToLowerInvariant());
 
                     column.PropertyName = propertyName;
+                    column.ContextualName = column.ExtractContextualName(tableName); // .Name.StartsWith(tableName)
 
                     if (column.UseLength)
                     {
@@ -306,14 +333,14 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
                 return items;
             }
         }
-
+        
         public async Task<IEntity> GetEntity(string entityName, bool includeRelations = false)
         {
-            if (string.IsNullOrEmpty(_connectionString))
+            if (string.IsNullOrEmpty(_config.ConnectionString))
             {
                 throw new Exception("The connection string cannot be null");
             }
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 var sql = @"        
                     select 
@@ -347,13 +374,17 @@ where o.object_id = object_id(@entityName)";
                     entity.UsesIdentityColumn = entity.Columns.Any(c => c.IsIdentity);
                     entity.UsesGuidAsPrimaryKey = entity.Columns.Any(c => c.IsPrimaryKey && c.DataType.ToLowerInvariant() == "uniqueidentifier");
 
-                    var deleteColumn = entity.Columns.FirstOrDefault(c => markAsDeletedColumns.Contains(c.Name.ToLowerInvariant()));
+                    var deleteColumn = entity.Columns.FirstOrDefault(c => c.IsDeletedMarker);
 
-                    entity.UsesDeletedColumn = deleteColumn != null;
+                    entity.UsesDeletedColumn = entity.Columns.Any(c => c.IsDeletedMarker);
                     entity.DeletedColumnName = deleteColumn != null ? deleteColumn.Name : "";
 
-                    entity.Indexes = new List<IIndex>(await GetIndexes(entityName));
+                    if (entity.Type == "Table")
+                    {
+                        entity.Indexes = new List<IIndex>(await GetIndexes(entityName));
+                    }
 
+                   
                     if (includeRelations)
                     {
                         // get relations
@@ -405,11 +436,11 @@ where o.object_id = object_id(@entityName)";
         [Obsolete("Will be removed in version 3, Use GetEntities instead")]
         public async Task<IEnumerable<IEntity>> GetTables(bool includeViews = false, string filter = "")
         {
-            if (string.IsNullOrEmpty(_connectionString))
+            if (string.IsNullOrEmpty(_config.ConnectionString))
             {
                 throw new Exception("The connection string cannot be null");
             }
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 var entityFilter = includeViews ? "('U', 'V')" : "('U')";
                 var tableFilter = !string.IsNullOrEmpty(filter) ? "AND o.name like @filter" : "";
@@ -445,6 +476,7 @@ order by s.name, o.[type], o.name";
 
                 foreach (var table in items)
                 {
+                    table.ContextualName = table.Name.ContextualName(table.Name);
                     table.ModelName = table.Name.AsUpperCamelCase();
                     table.Alias = table.Name.Abrevation();
                 }
@@ -515,11 +547,11 @@ order by s.name, o.[type], o.name";
 
         public async Task<IEnumerable<IEntityName>> SuggestEntityGroupName(string tableName)
         {
-            if (string.IsNullOrEmpty(_connectionString))
+            if (string.IsNullOrEmpty(_config.ConnectionString))
             {
                 throw new Exception("The connection string cannot be null");
             }
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 var sql = @"        
  select [Schema] = SCHEMA_NAME(t.schema_id), Name = t.name, [Type] = t.[type] from sys.tables t where object_id = object_id(@table)
@@ -1374,11 +1406,11 @@ select SCHEMA_NAME(t.schema_id), t.name, t.[type] from sys.tables t where object
 
         public async Task<IEnumerable<IEntity>> GetEntities(bool tablesOnly = false, bool viewsOnly = false, string filter = "", string columnName = "")
         {
-            if (string.IsNullOrEmpty(_connectionString))
+            if (string.IsNullOrEmpty(_config.ConnectionString))
             {
                 throw new Exception("The connection string cannot be null");
             }
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 var entityFilter = tablesOnly ? "('U')" : viewsOnly ? "('V')" : "('U', 'V')";
                 var tableFilter = !string.IsNullOrEmpty(filter) ? "AND o.name like @filter" : "";
@@ -1434,11 +1466,11 @@ order by s.name, o.[type], o.name";
         public async Task<bool> DumpContentAsJson(string entityName, string path, int limit = -1)
         {
 
-            if (string.IsNullOrEmpty(_connectionString))
+            if (string.IsNullOrEmpty(_config.ConnectionString))
             {
                 throw new Exception("The connection string cannot be null");
             }
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 // var entityFilter = tablesOnly ? "('U')" : viewsOnly ? "('V')" : "('U', 'V')";
                 // var tableFilter = !string.IsNullOrEmpty(filter) ? "AND o.name like @filter" : "";
@@ -1471,7 +1503,7 @@ order by s.name, o.[type], o.name";
         {
             var result = -1;
             
-            if (string.IsNullOrEmpty(_connectionString))
+            if (string.IsNullOrEmpty(_config.ConnectionString))
             {
                 throw new Exception("The connection string cannot be null");
             }
@@ -1489,7 +1521,7 @@ order by s.name, o.[type], o.name";
 
                 
 
-                using (var connection = new SqlConnection(_connectionString))
+                using (var connection = new SqlConnection(_config.ConnectionString))
                 {
 
 
@@ -1535,7 +1567,7 @@ With (
         }
         public async Task<IEnumerable<IIndex>> GetIndexes(string entityName)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 
                 // var entityFilter = tablesOnly ? "('U')" : viewsOnly ? "('V')" : "('U', 'V')";
@@ -1612,7 +1644,7 @@ for json path, INCLUDE_NULL_VALUES
 
         public async Task<bool> OptimizeDatabase()
         {
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
 
                 // var entityFilter = tablesOnly ? "('U')" : viewsOnly ? "('V')" : "('U', 'V')";
@@ -1685,7 +1717,7 @@ drop table #t_maintenance
 
         public async Task<bool> ReorganizeIndex(string indexName, string entityName)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
 
                 // var entityFilter = tablesOnly ? "('U')" : viewsOnly ? "('V')" : "('U', 'V')";
@@ -1714,7 +1746,7 @@ drop table #t_maintenance
         }
         public async Task<bool> RebuildIndex(string indexName, string entityName, double fillFactor = 80)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
 
                 // var entityFilter = tablesOnly ? "('U')" : viewsOnly ? "('V')" : "('U', 'V')";
@@ -1744,7 +1776,7 @@ drop table #t_maintenance
 
         public async Task<IEnumerable<IRelation>> TraverseRelations(string baseTable, int depth = 1, int maxLevel = -1)
         {
-             using (var connection = new SqlConnection(_connectionString))
+             using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 var depth2 = depth == 2 ? "union all select * from track_reference_parent" : string.Empty;
                 var levelFilter = maxLevel > -1  ? $"and lvl between -{maxLevel} and {maxLevel}" : string.Empty;
@@ -1915,7 +1947,7 @@ join track_references t on t.parent_object_id = fk.referenced_object_id
 
         public async Task<IDatabaseInformation> TestConnectionAsync()
         {
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_config.ConnectionString))
             {
                 var sql = $@"select [Version] = @@VERSION, [ServerName] = @@SERVERNAME ";
 

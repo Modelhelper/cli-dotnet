@@ -1,11 +1,12 @@
 ﻿using ModelHelper.Core.Project;
 using DotLiquid;
+using ModelHelper.Core.Project.V1;
 
 namespace ModelHelper.Core.Drops
 {
     public class ApiDrop : Drop
     {
-        public ApiDrop(ProjectApiModel api)
+        public ApiDrop(ProjectApiModelV1 api)
         {
             if (api != null)
             {

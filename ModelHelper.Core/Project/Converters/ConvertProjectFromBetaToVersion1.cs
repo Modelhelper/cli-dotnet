@@ -1,118 +1,28 @@
 using System;
-using System.IO;
-using Newtonsoft.Json;
-using ModelHelper.Core.Project.VersionCheckers;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using ModelHelper.Core.Project.V0;
+using ModelHelper.Core.Project.V1;
+using Newtonsoft.Json;
 
-namespace ModelHelper.Core.Project
+namespace ModelHelper.Core.Project.Converters
 {
-    public class ProjectJsonReader : IProjectReader
+    internal class ConvertProjectFromBetaToVersion1 : IProjectConverter<IBetaProject, IProjectV1>
     {
-        public string CurrentVersion { get => "1.0.0"; }
-
-        public ProjectVersion CheckVersion(string path)
-        {
-            var version = new ProjectVersion();
-
-            if (File.Exists(path))
-            {
-                var content = System.IO.File.ReadAllText(path);
-
-                if (string.IsNullOrEmpty(content))
-                {
-                    return null;
-                }
-
-                version = JsonConvert.DeserializeObject<ProjectVersion>(content);
-
-                return version;
-            }
-
-            return null;
-        }
-
-        public IProject Read(string path)
-        {
-
-            if (File.Exists(path))
-            {
-                
-                var content = System.IO.File.ReadAllText(path);
-
-                if (string.IsNullOrEmpty(content))
-                {
-                    return null;
-                }
-
-                var project = JsonConvert.DeserializeObject<Project>(content);
-
-                //if (project?.Database?.QueryOption != null)
-                //{
-
-                //    if (string.IsNullOrEmpty(project.Database.QueryOption.ClassName) &&
-                //        !string.IsNullOrEmpty(project.Database.QueryOptionsClassName) )
-                //    {
-                //        var len = project.Database.QueryOptionsClassName.LastIndexOf(".", StringComparison.Ordinal);
-
-                //        project.Database.QueryOption.ClassName = len > 0 && len > len + 1
-                //            ? project.Database.QueryOptionsClassName.Substring(len+1)
-                //            : project.Database.QueryOptionsClassName;
-
-                //        project.Database.QueryOption.Namespace = len > 0
-                //            ? project.Database.QueryOptionsClassName.Substring(0, len)
-                //            : "";
-
-                //        project.Database.QueryOption.UseQueryOptions = project.Database.UseQueryOptions;
-                //    }
-
-                //    if (string.IsNullOrEmpty(project.Database.QueryOption.UserIdProperty))
-                //    {
-                //        project.Database.QueryOption.UserIdProperty = "UserId";
-                //    }
-
-                //    if (string.IsNullOrEmpty(project.Database.QueryOption.UserIdType))
-                //    {
-                //        project.Database.QueryOption.UserIdType = "int";
-                //    }
-
-                //    if (string.IsNullOrEmpty(project.Database.QueryOption.ClassName))
-                //    {
-                //        project.Database.QueryOption.UseQueryOptions = false;
-                //    }
-
-                //    if (string.IsNullOrEmpty(project.Database.QueryOption.ClaimsPrincipalExtensionMethod))
-                //    {
-                //        project.Database.QueryOption.UseClaimsPrincipalExtension = false;
-                //    }
-
-                //    project.Database.UseQueryOptions = project.Database.QueryOption.UseQueryOptions;
-                //    project.Database.QueryOptionsClassName = $"{project.Database.QueryOption.Namespace}.{project.Database.QueryOption.ClassName}" ;
-
-                //}
-                return project;
-            }
-
-            return null;
-            
-        }
-    }
-
-    internal class ConvertProjectFromBetaToVersion1 : IProjectConverter
-    {
-        public IProject Convert(string path)
+        public IProjectV1 Convert(IBetaProject betaProject)
         {
             //var result = new ConversionResult {
             //    Converted = false               
             //};
 
-            var betaProject = this.LoadBetaProject(path);
+            //var betaProject = this.LoadBetaProject(path);
             //var projectWriter = new ProjectJsonWriter();
            
 
             if (betaProject != null)
             {
-                var project = new Project();
+                var project = new ProjectV1();
                 project.Customer = betaProject.Customer;
                 project.Name = betaProject.Name;
                 project.Options = betaProject.Options;
@@ -128,7 +38,7 @@ namespace ModelHelper.Core.Project
 
 
                 return project;
-               // projectWriter.Write(path, project);
+                // projectWriter.Write(path, project);
 
                 //result.Converted = true;
                 //result.Version = project.Version;
@@ -139,9 +49,9 @@ namespace ModelHelper.Core.Project
             return null;
         }
 
-        private ConnectionSection GetCodeConnection(BetaProject betaProject)
+        private CodeConnectionSection GetCodeConnection(IBetaProject betaProject)
         {
-            var connection = new ConnectionSection();
+            var connection = new CodeConnectionSection();
 
             connection.Interface = betaProject.Database.ConnectionInterface;
             connection.Method = betaProject.Database.ConnectionMethod;
@@ -175,24 +85,24 @@ namespace ModelHelper.Core.Project
             return qo;
         }
 
-        private ProjectSourceSection GetSource(BetaDataSection section)
+        private ProjectSourceSectionV1 GetSource(BetaDataSection section)
         {
-            var source = new ProjectSourceSection();
+            var source = new ProjectSourceSectionV1();
             source.Connection = section.Connection;
 
             if (section.ColumnExtras != null && section.ColumnExtras.Any())
             {
-                source.ColumnMapping = section.ColumnExtras.Select(c => new ColumnExtra {
-                        Name = c.Name,
-                        IsCreatedByUser = c.IsCreatedByUser,
-                        IsCreatedDate = c.IsCreatedDate,
-                        IncludeInViewModel = c.IncludeInViewModel,
-                        IsDeletedMarker = c.IsDeletedMarker,
-                        IsIgnored = c.IsIgnored,
-                        IsModifiedByUser = c.IsModifiedByUser,
-                        IsModifiedDate = c.IsModifiedDate,
-                        PropertyName = c.PropertyName,
-                        Translation = c.Translation
+                source.ColumnMapping = section.ColumnExtras.Select(c => new ColumnExtraV1 {
+                    Name = c.Name,
+                    IsCreatedByUser = c.IsCreatedByUser,
+                    IsCreatedDate = c.IsCreatedDate,
+                    IncludeInViewModel = c.IncludeInViewModel,
+                    IsDeletedMarker = c.IsDeletedMarker,
+                    IsIgnored = c.IsIgnored,
+                    IsModifiedByUser = c.IsModifiedByUser,
+                    IsModifiedDate = c.IsModifiedDate,
+                    PropertyName = c.PropertyName,
+                    Translation = c.Translation
                 }).ToList();
             }
 
@@ -207,7 +117,7 @@ namespace ModelHelper.Core.Project
                     }
                     else
                     {
-                        source.ColumnMapping.Add(new ColumnExtra { Name = ic, IsIgnored = true });
+                        source.ColumnMapping.Add(new ColumnExtraV1 { Name = ic, IsIgnored = true });
                     }
                 }
             }
@@ -215,7 +125,7 @@ namespace ModelHelper.Core.Project
 
             return source;
         }
-        private List<ProjectCodeStructure> GetCodeLocations(BetaProject project)
+        private List<ProjectCodeStructure> GetCodeLocations(IBetaProject project)
         {
             var list = new List<ProjectCodeStructure>();
 
@@ -247,7 +157,7 @@ namespace ModelHelper.Core.Project
 
             return list;
         }
-        private BetaProject LoadBetaProject(string path)
+        public BetaProject LoadBetaProject(string path)
         {
             if (File.Exists(path))
             {
@@ -266,5 +176,4 @@ namespace ModelHelper.Core.Project
             return null;
         }
     }
-
 }

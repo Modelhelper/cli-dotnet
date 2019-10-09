@@ -6,8 +6,8 @@ namespace ModelHelper.Extensibility
     {
         string Name { get; set; }
 
-        string ModelName { get; set; }
-
+        string ModelName { get; set; }        
+        string ContextualName { get; set; }
         string Type { get; set; }
         string Schema { get; set; }
 

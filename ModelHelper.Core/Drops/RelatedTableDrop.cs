@@ -20,6 +20,7 @@ namespace ModelHelper.Core.Drops
             AllColumns = new List<DataColumnDrop>();
             IgnoredColumns = new List<DataColumnDrop>();
             ViewModelColumns = new List<DataColumnDrop>();
+            UsedAsColumns = new List<DataColumnDrop>();
             IncludeChildRelations = false;
             IncludeParentRelations = false;
             var hasViewModelColumn = relation.Columns.Any(c => c.UseInViewModel);
@@ -104,9 +105,11 @@ namespace ModelHelper.Core.Drops
         public bool IsSelfJoin => _relation.IsSelfJoin;
         public string ParentColumnName => _relation.ParentColumnName;
         public string ParentColumnType => _relation.ParentColumnType;
+        public bool ParentColumnNullable => _relation.ParentColumnNullable;
+        
         public string ChildColumnName => _relation.ChildColumnName;
         public string ChildColumnType => _relation.ChildColumnType;
-
+        public bool ChildColumnNullable => _relation.ChildColumnNullable;
         public string ModelName => _relation.ModelName;
 
         public string Name => _relation.Name;
@@ -127,6 +130,8 @@ namespace ModelHelper.Core.Drops
         public List<DataColumnDrop> IgnoredColumns { get; }
         public List<DataColumnDrop> PrimaryKeys { get; }
         public List<DataColumnDrop> ViewModelColumns { get; }
+        public List<DataColumnDrop> UsedAsColumns { get; }
+        
         public bool IncludeParentRelations { get; }
         public bool IncludeChildRelations { get; }
     }

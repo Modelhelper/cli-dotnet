@@ -14,6 +14,7 @@ namespace ModelHelper.Core.Models
         }
         public string Name { get; set; }
         public string ModelName { get; set; }
+        public string ContextualName { get; set; }
         public string Type { get; set; }
         public string Schema { get; set; }
         public string Alias { get; set; }

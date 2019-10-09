@@ -114,7 +114,7 @@ namespace ModelHelper.Core.CommandLine
     }
 
 
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class OptionAttribute : Attribute
     {        
         public string Key { get; set; }
@@ -126,7 +126,67 @@ namespace ModelHelper.Core.CommandLine
         public string ParameterProperty { get; set; }
 
         public object DefaultValue { get; set; }
+        
     }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public class CommandMetadataAttribute : Attribute
+    {
+        public string Key { get; set; }
+        public string Alias { get; set; }
+       
+
+    }
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = false)]
+    public class ShortDescriptionAttribute : Attribute
+    {
+        public ShortDescriptionAttribute()
+        {
+
+        }
+
+        public ShortDescriptionAttribute(string text)
+        {
+            Text = text;
+        }
+
+        public string Text { get; set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public class LongDescriptionAttribute : Attribute
+    {
+        public LongDescriptionAttribute()
+        {
+
+        }
+
+        public LongDescriptionAttribute(string text)
+        {
+            Text = text;
+        }
+
+        public string Text { get; set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    public class CommandSampleAttribute : Attribute
+    {
+        public string CommandText { get; set; }
+        public string Description { get; set; }
+        public string Important { get; set; }
+        public string Result { get; set; }
+
+    }
+
+    //[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    //public class HelpDescriptionAttribute : Attribute
+    //{
+    //    public string ShortDescription { get; set; }
+    //    public string LongDescription { get; set; }
+    //}
+
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public class ParameterForAttribute : Attribute

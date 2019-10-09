@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 using ModelHelper.Core.Rules;
 
 namespace ModelHelper.Commands
@@ -50,30 +51,36 @@ namespace ModelHelper.Commands
             {
 
 
-                var project = new ModelHelper.Core.Project.Project();
-                var projectWriter = new ModelHelper.Core.Project.ProjectJsonWriter();
+                var project = new Project();
+                var projectWriter = new DefaultProjectWriter();
 
 
-                Console.WriteLine("\nDu blir nå presentert noen få spørsmål\n");
+                Console.WriteLine("\nDu blir nï¿½ presentert noen fï¿½ spï¿½rsmï¿½l\n");
 
                 if (string.IsNullOrEmpty(projectName))
                 {
-                    Console.Write("Prosektnavn: ");
+                    Console.Write("Project Name: ");
                     projectName = Console.ReadLine();
                 }
 
                 project.Name = projectName;
 
-                Console.Write("Kundenavn: ");
+                Console.Write("Customer Name: ");
                 project.Customer = Console.ReadLine();
 
-                Console.Write("Legg inn 'ConnectionString' nå? (Y/n): ");
+                Console.Write("Root Namespace: ");
+                project.RootNamespace = Console.ReadLine();
+
+                Console.Write("Add a connection now? (Y/n): ");
                 var createConnection = Console.ReadLine();
                 if (string.IsNullOrEmpty(createConnection) ||
                     (!string.IsNullOrEmpty(createConnection) &&
                      createConnection.Equals("y", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     var connectionstring = new SqlConnectionStringBuilder();
+
+                    Console.Write("Connection Name: ");
+                    var connectionName = Console.ReadLine();
 
                     Console.Write("MS Sql Server name: ");
                     var sqlServer = Console.ReadLine();
@@ -125,12 +132,18 @@ namespace ModelHelper.Commands
                         connectionstring.ConnectTimeout = 10;
                         connectionstring.ApplicationName = "ModelHelper";
 
-                        project.DataSource.Connection = connectionstring.ConnectionString;
+                        project.Data.Connections.Add(new ProjectDataConnection
+                        {
+                            Name = connectionName,
+                            ConnectionString = connectionstring.ConnectionString,
+                            DefaultSchema = "dbo",
+                            DbType = "mssql"
+                        }); 
 
 
                     }
                 }
-                project.Code.Connection = new ConnectionSection {
+                project.Code.Connection = new CodeConnectionSection {
                     Method = "",
                     Interface = "",
                     Variable = ""

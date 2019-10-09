@@ -6,7 +6,9 @@ using System.Linq;
 using ModelHelper.Commands;
 using ModelHelper.Core.CommandLine;
 using ModelHelper.Core.Extensions;
+using ModelHelper.Core.Help;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 using ModelHelper.Extensibility;
 using ModelHelper.Extensions;
 
@@ -24,7 +26,7 @@ namespace ModelHelper
         {
             
             var command = _commands?.FirstOrDefault(c => c.Value.Key == key || c.Value.Alias == key);
-            var projectReader = new ProjectJsonReader();
+            var projectReader = new DefaultProjectReader();
             var projectPath = Path.Combine(Directory.GetCurrentDirectory(), ".model-helper");
 
             if (command != null)
@@ -38,7 +40,7 @@ namespace ModelHelper
                         if (File.Exists(projectPath))
                         {
                             var version = projectReader.CheckVersion(projectPath);
-                            var runUpgrade = version != null && (version.Version != "1.0.0" || version.IsBeta);
+                            var runUpgrade = version != null && version.MustUpdate;
 
                             if (runUpgrade)
                             {
@@ -73,7 +75,11 @@ Please run the following command to upgrade (use ctrl + v to paste the command)"
                     }
                     else
                     {
-                        command.Value.Help.WriteToConsole();
+                        var t = command.Value.GetType();
+                        //Console.WriteLine(t.ToString());
+                        Documentation.FromAttributes(t).WriteToConsole();
+                        
+                        //command.Value.Help.WriteToConsole();
 
                     }
                     

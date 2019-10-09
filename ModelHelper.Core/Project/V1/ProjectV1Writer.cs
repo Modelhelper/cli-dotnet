@@ -1,10 +1,10 @@
 using Newtonsoft.Json;
 
-namespace ModelHelper.Core.Project
+namespace ModelHelper.Core.Project.V1
 {
-    public class ProjectJsonWriter : IProjectWriter
+    public class ProjectV1Writer : IProjectWriter<IProjectV1>
     {
-        public void Write(string path, IProject project)
+        public void Write(string path, IProjectV1 project)
         {
             var settings = new JsonSerializerSettings();
             

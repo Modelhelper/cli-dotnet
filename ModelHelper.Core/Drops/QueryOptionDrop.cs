@@ -1,5 +1,6 @@
 ﻿using DotLiquid;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 
 namespace ModelHelper.Core.Drops
 {
@@ -24,5 +25,22 @@ namespace ModelHelper.Core.Drops
 
 
     }
-    
+
+    public class UserContextDrop : Drop
+    {
+        private readonly UserContext _userContext;
+
+        public UserContextDrop(UserContext userContext)
+        {
+            _userContext = userContext;
+        }
+
+        public string InterfaceName => _userContext.InterfaceName;
+        public string VariableName => _userContext.VariableName;
+        public string Namespace => _userContext.Namespace;
+        public string UserProperty => _userContext.UserProperty;
+        public string UserType => _userContext.UserType;
+        
+
+    }
 }

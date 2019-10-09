@@ -18,10 +18,13 @@ namespace ModelHelper.Core.Drops
             AllColumns = new List<DataColumnDrop>();
             IgnoredColumns = new List<DataColumnDrop>();
             PrimaryKeys = new List<DataColumnDrop>();
+            UsedAsColumns = new List<DataColumnDrop>();
+
             ChildRelations = new List<RelatedTableDrop>();
             ParentRelations = new List<RelatedTableDrop>();
             IncludeChildRelations = includeChildRelations;
             IncludeParentRelations = includeParentRelations;
+
             foreach (var childRelation in table.ChildRelations)
             {
                 ChildRelations.Add(new RelatedTableDrop(childRelation, table));
@@ -56,6 +59,11 @@ namespace ModelHelper.Core.Drops
                 {
                     Columns.Add(drop);
                 }
+
+                if (column.IsCreatedByUser | column.IsCreatedDate | column.IsModifiedByUser | column.IsModifiedDate | column.IsDeletedMarker)
+                {
+                    UsedAsColumns.Add(drop);
+                }
             }
 
             //foreach (var column in _table.Columns.Where(c => c.IsPrimaryKey))
@@ -69,6 +77,8 @@ namespace ModelHelper.Core.Drops
         public string ModelName => _table.ModelName;
         public string Schema => _table.Schema;
         public string Alias => _table.Alias;
+
+        public string Description => _table.Description;
 
         public bool UsesIdentityColumn => _table.UsesIdentityColumn;
         public bool UsesGuidAsPrimaryKey => _table.UsesGuidAsPrimaryKey;
@@ -84,6 +94,9 @@ namespace ModelHelper.Core.Drops
         public List<DataColumnDrop> AllColumns { get;  }
         public List<DataColumnDrop> IgnoredColumns { get;  }
         public List<DataColumnDrop> PrimaryKeys { get;  }
+
+        public List<DataColumnDrop> UsedAsColumns { get; }
+        
         public bool IncludeParentRelations { get; }
         public bool IncludeChildRelations { get; }
     }

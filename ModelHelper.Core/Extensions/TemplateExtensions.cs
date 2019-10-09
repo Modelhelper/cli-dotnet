@@ -19,12 +19,14 @@ namespace ModelHelper.Core.Extensions
             Template.RegisterTag<SqlColumnToPropertyList>("columnList");
             Template.RegisterTag<PrimaryKeyList>("primaryKeyList");
             Template.RegisterTag<PropertyList>("propertyList");
+            Template.RegisterTag<Snippet>("snippet");
 
             Template.RegisterTag<SqlInsert>("sqlInsert");
             Template.RegisterTag<SqlUpdate>("sqlUpdate");
             Template.RegisterTag<SqlDelete>("sqlDelete");
             Template.RegisterTag<SqlSelectAll>("sqlSelectAll");
             Template.RegisterTag<SqlSelectSingle>("sqlSelectSingle");
+            Template.RegisterTag<DictionaryValue>("dictionary");
         }
         public static string Render(this ITemplate template)
         {
@@ -75,6 +77,28 @@ namespace ModelHelper.Core.Extensions
         {
             var output = "";
 
+            if (template.Dictionary != null)
+            {
+                if (model.Dictionary == null)
+                {
+                    model.Dictionary = new Dictionary<string, string>();
+                }
+
+                foreach (var pair in template.Dictionary)
+                {
+                    var key = pair.Key.ToLowerInvariant();
+
+                    if (!model.Dictionary.ContainsKey(key))
+                    {
+                        model.Dictionary.Add(key, pair.Value);
+                    }
+                    else
+                    {
+                        model.Dictionary[key] = pair.Value;
+                    }
+                }
+                
+            }
             if (template != null)
             {
                 output = Render(template.Body, model);                                
@@ -125,11 +149,11 @@ namespace ModelHelper.Core.Extensions
 
                 if (column.IsModifiedDate)
                 {
-                    columnText = $"[{column.Name}] = GETDATE()";
+                    columnText = $"[{column.Name}] = @Date";
                 }
                 else if (column.IsModifiedByUser)
                 {
-                    columnText = $"[{column.Name}] = @ApplicationUserId";
+                    columnText = $"[{column.Name}] = @User";
                 }
                 else if (column.IsDeletedMarker)
                 {
@@ -180,7 +204,7 @@ namespace ModelHelper.Core.Extensions
             
             if (table.UsesDeletedColumn)
             {
-                stringBuilder.AppendLine($"UPDATE [{table.Schema}].[{table.Name}] Set {table.DeletedColumnName} = 1 WHERE {table.PrimaryKeys.PrimaryKeyList("sql")}");
+                stringBuilder.AppendLine($"UPDATE [{table.Schema}].[{table.Name}] Set {table.DeletedColumnName} = 0 WHERE {table.PrimaryKeys.PrimaryKeyList("sql")}");
             }
             else
             {
@@ -190,20 +214,52 @@ namespace ModelHelper.Core.Extensions
             return stringBuilder.ToString();
         }
 
-        public static string PropertyList(this List<DataColumnDrop> columns, string itemOwner)
+        public static string PropertyList(this ModelDrop model, string itemOwner)
         {
             var stringBuilder = new StringBuilder();
 
-            for (int i = 0; i < columns.Count; i++)
+            for (int i = 0; i < model.Table.AllColumns.Count; i++)
             {
                 
                 var comma = i == 0 ? "  " : ", ";
-                var column = columns[i];
+                var column = model.Table.AllColumns[i];
 
                 var comment = column.IsIgnored ? "// " : "";
                 var propertyText = column.IsIgnored ? $"{column.PropertyName} = ?? // TODO: Get proper insert value" : $"{itemOwner}.{column.PropertyName}";
 
-                stringBuilder.AppendLine($"\t{comment}{comma}{propertyText}");
+                if (column.IsModifiedDate)
+                {
+                    stringBuilder.AppendLine($"\t{comma}Date = System.DateTime.UtcNow");
+                }
+                else if (column.IsModifiedByUser)
+                { var user = "String.Empty";
+                    
+                    if (model.InjectUserContext && model.UserContext != null)
+                    {
+                        var userName = model.UserContext.UserProperty;
+                        var userContext = $"_{model.UserContext.VariableName}";
+
+                        user = $"{ userContext}.{userName}";
+                    }
+                    else if (model.UseQueryOptions && model.QueryOptions != null)
+                    {
+                        var userName = model.QueryOptions.UserIdProperty;
+                        var userContext = $"{model.QueryOptions.ClassName}";
+
+                        user = $"{ userContext}.{userName}";
+                    }
+
+                    stringBuilder.AppendLine($"\t{comma}User = {user}");
+                }       
+                else if (column.IsIgnored)
+                {
+                    // do nothing
+                }
+                else
+                {
+                    stringBuilder.AppendLine($"\t{comment}{comma}{propertyText}");
+                }
+                
             }
 
             return stringBuilder.ToString();
@@ -279,17 +335,17 @@ namespace ModelHelper.Core.Extensions
                 if (column.IsCreatedDate || column.IsModifiedDate)
                 {
                     sbColumns.AppendLine($"\t{comma}[{column.Name}]");
-                    sbProperties.AppendLine($"\t{comma}GETDATE()");
+                    sbProperties.AppendLine($"\t{comma}@Date");
                 }
                 else if (column.IsCreatedByUser || column.IsModifiedByUser)
                 {
                     sbColumns.AppendLine($"\t{comma}[{column.Name}]");
-                    sbProperties.AppendLine($"\t{comma}@ApplicationUserId");
+                    sbProperties.AppendLine($"\t{comma}@User");
                 }
                 else if (column.IsDeletedMarker)
                 {
                     sbColumns.AppendLine($"\t{comma}[{column.Name}]");
-                    sbProperties.AppendLine($"\t{comma}0");
+                    sbProperties.AppendLine($"\t{comma}@{column.PropertyName}");
                 }
                 else if (column.IsIgnored)
                 {

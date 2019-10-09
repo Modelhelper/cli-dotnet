@@ -5,6 +5,7 @@ using DotLiquid;
 using ModelHelper.Core.Database;
 using ModelHelper.Core.Drops;
 using ModelHelper.Core.Templates;
+using ModelHelper.Extensibility;
 
 namespace ModelHelper.Core.Extensions
 {
@@ -18,5 +19,24 @@ namespace ModelHelper.Core.Extensions
                 model = modelDrop
             });
         }       
+
+
+    }
+
+    public static class ColumnExtensions
+    {
+        public static string ExtractContextualName(this IColumn column, string tableName)
+        {
+            var length = tableName.Length;
+            var startsWithTableName = column.Name.StartsWith(tableName, StringComparison.InvariantCultureIgnoreCase);
+
+            if (!startsWithTableName || column.Name.Length == length)
+            {
+                return column.Name;
+            }
+
+            var contextual = column.Name.Substring(length);
+            return contextual;
+        }
     }
 }

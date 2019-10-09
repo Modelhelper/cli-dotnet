@@ -1,6 +1,6 @@
-namespace ModelHelper.Core.Project
+namespace ModelHelper.Core.Project.V1
 {
-    public class ProjectApiModel
+    public class ProjectApiModelV1
     {
         public bool UseLogger { get; set; }
         public bool UseTelemetry { get; set; }

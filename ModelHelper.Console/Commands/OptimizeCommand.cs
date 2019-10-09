@@ -11,6 +11,7 @@ using ModelHelper.Data;
 using ModelHelper.Extensions;
 using Newtonsoft.Json;
 using ModelHelper.Core.CommandLine;
+using ModelHelper.Core.Project.V1;
 using ModelHelper.Extensibility;
 
 namespace ModelHelper.Commands
@@ -37,6 +38,10 @@ namespace ModelHelper.Commands
         [Option(Key = "--update-statistics")]
         public bool UpdateStatistics { get; set; }
 
+        [Option(Key = "--connection", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "ConnectionName", Aliases = new[] { "-c" })]
+        public bool WithConnection { get; set; } = false;
+        public string ConnectionName { get; set; }
+
         public override bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator)
         {
             return true;
@@ -47,13 +52,13 @@ namespace ModelHelper.Commands
             var map = ArgumentParser.Parse(this, arguments);
 
             var entityName = arguments.Count > 0 && !arguments[0].StartsWith("-") ? arguments[0] : "";
-            var projectReader = new ProjectJsonReader();
+            var projectReader = new DefaultProjectReader();
             var project = projectReader.Read(Path.Combine(Directory.GetCurrentDirectory(), ".model-helper"));
             var entityFilter = !string.IsNullOrEmpty(entityName) && entityName.Contains("%") ? entityName : "";
 
             if (project != null)
             {
-                var repo = new ModelHelper.Data.SqlServerRepository(project.DataSource.Connection, project);
+                var repo = WithConnection ? project.CreateRepository(ConnectionName) : project.CreateRepository();
 
                 if (!string.IsNullOrEmpty(entityName))
                 {

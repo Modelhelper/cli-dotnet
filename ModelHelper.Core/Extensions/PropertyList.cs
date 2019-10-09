@@ -21,7 +21,7 @@ namespace ModelHelper.Core.Extensions
             if (context["model"] is ModelDrop drop)
             {
                 
-                result.Write(drop.Table.Columns.PropertyList(_itemOwner));                
+                result.Write(drop.PropertyList(_itemOwner));                
 
             }
         }

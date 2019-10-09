@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ModelHelper.Core.Database;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Project;
+using ModelHelper.Core.Project.V1;
 using ModelHelper.Extensibility;
 
 namespace ModelHelper.Core.Templates
@@ -15,7 +16,8 @@ namespace ModelHelper.Core.Templates
         }
         public IEntity Table { get; set; }
         public IProject Project { get; set; }
-        public Dictionary<string, object> Options { get; set; }
+        public Dictionary<string, object> Options { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, string> Dictionary { get; set; } = new Dictionary<string, string>();
         public List<ISqlGenerator> SqlScriptGenerators { get; set; }
         public List<IDatatypeConverter> DatatypeConverters { get; set; }
 
