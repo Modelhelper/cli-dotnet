@@ -86,12 +86,12 @@ namespace ModelHelper.Commands
             }
 
             var templateReader = new JsonTemplateReader();
-            var customTemplatePath = ModelHelperConfig.TemplateLocation; // Path.Combine(Directory.GetCurrentDirectory(), "templates");
-
+            var customTemplatePath = Path.Combine(Directory.GetCurrentDirectory(), "templates");  //ModelHelperConfig.TemplateLocation; // 
+            var rootTemplates = ModelHelperConfig.TemplateLocation;
             var templateFiles = new List<TemplateFile>();
 
             templateFiles.AddRange(customTemplatePath.GetTemplateFiles("project"));
-            templateFiles.AddRange(modelHelperData.GetTemplateFiles("mh"));
+            templateFiles.AddRange(rootTemplates.GetTemplateFiles("mh"));
 
 
             if (string.IsNullOrEmpty(templateName))
