@@ -18,6 +18,8 @@ namespace ModelHelper.Core.Drops
             AllColumns = new List<DataColumnDrop>();
             IgnoredColumns = new List<DataColumnDrop>();
             PrimaryKeys = new List<DataColumnDrop>();
+            UsedAsColumns = new List<DataColumnDrop>();
+
             ChildRelations = new List<RelatedTableDrop>();
             ParentRelations = new List<RelatedTableDrop>();
             IncludeChildRelations = includeChildRelations;
@@ -57,6 +59,11 @@ namespace ModelHelper.Core.Drops
                 {
                     Columns.Add(drop);
                 }
+
+                if (column.IsCreatedByUser | column.IsCreatedDate | column.IsModifiedByUser | column.IsModifiedDate | column.IsDeletedMarker)
+                {
+                    UsedAsColumns.Add(drop);
+                }
             }
 
             //foreach (var column in _table.Columns.Where(c => c.IsPrimaryKey))
@@ -87,6 +94,9 @@ namespace ModelHelper.Core.Drops
         public List<DataColumnDrop> AllColumns { get;  }
         public List<DataColumnDrop> IgnoredColumns { get;  }
         public List<DataColumnDrop> PrimaryKeys { get;  }
+
+        public List<DataColumnDrop> UsedAsColumns { get; }
+        
         public bool IncludeParentRelations { get; }
         public bool IncludeChildRelations { get; }
     }

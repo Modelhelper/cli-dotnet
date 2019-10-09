@@ -20,6 +20,7 @@ namespace ModelHelper.Core.Drops
             AllColumns = new List<DataColumnDrop>();
             IgnoredColumns = new List<DataColumnDrop>();
             ViewModelColumns = new List<DataColumnDrop>();
+            UsedAsColumns = new List<DataColumnDrop>();
             IncludeChildRelations = false;
             IncludeParentRelations = false;
             var hasViewModelColumn = relation.Columns.Any(c => c.UseInViewModel);
@@ -129,6 +130,8 @@ namespace ModelHelper.Core.Drops
         public List<DataColumnDrop> IgnoredColumns { get; }
         public List<DataColumnDrop> PrimaryKeys { get; }
         public List<DataColumnDrop> ViewModelColumns { get; }
+        public List<DataColumnDrop> UsedAsColumns { get; }
+        
         public bool IncludeParentRelations { get; }
         public bool IncludeChildRelations { get; }
     }

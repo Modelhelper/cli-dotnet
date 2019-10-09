@@ -103,6 +103,7 @@ where fkc.parent_object_id = OBJECT_ID(@tableName)
                     {
                         foreach (var relation in list)
                         {
+                            //relation.ContextualName = relation.Name.ContextualName(relation..Name);
                             relation.Columns = new List<IColumn>(await GetColumns(relation.Schema, relation.Name));
                         }
 
@@ -302,10 +303,10 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
                     {
                         column.IsIgnored = columnExtra.IsIgnored;
                         column.IsDeletedMarker = columnExtra.UsedAs == "DeletedMarker";
-                        column.IsCreatedByUser = columnExtra.UsedAs == "CreatedByUser";
-                        column.IsCreatedDate = columnExtra.UsedAs == "CreatedDate";
-                        column.IsModifiedByUser = columnExtra.UsedAs == "ModifiedByUser";
-                        column.IsModifiedDate = columnExtra.UsedAs == "ModifiedDate";
+                        column.IsCreatedByUser = columnExtra.UsedAs == "CreatedByUser" || columnExtra.UsedAs == "CreatedBy";
+                        column.IsCreatedDate = columnExtra.UsedAs == "CreatedOn" || columnExtra.UsedAs == "CreatedDate";
+                        column.IsModifiedByUser = columnExtra.UsedAs == "ModifiedBy" || columnExtra.UsedAs == "ModifiedByUser";
+                        column.IsModifiedDate = columnExtra.UsedAs == "ModifiedOn" || columnExtra.UsedAs == "ModifiedDate" || columnExtra.UsedAs == "ChangedOn" || columnExtra.UsedAs == "ChangedDate";
 
                         column.UseInViewModel = column.UseInViewModel || columnExtra.IncludeInViewModel;
 
@@ -314,6 +315,7 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
                     column.IsReserved = reserved.Contains(column.Name.ToLowerInvariant());
 
                     column.PropertyName = propertyName;
+                    column.ContextualName = column.ExtractContextualName(tableName); // .Name.StartsWith(tableName)
 
                     if (column.UseLength)
                     {
@@ -331,7 +333,7 @@ where fkc.referenced_object_id = OBJECT_ID(@tableName)
                 return items;
             }
         }
-
+        
         public async Task<IEntity> GetEntity(string entityName, bool includeRelations = false)
         {
             if (string.IsNullOrEmpty(_config.ConnectionString))
@@ -372,9 +374,9 @@ where o.object_id = object_id(@entityName)";
                     entity.UsesIdentityColumn = entity.Columns.Any(c => c.IsIdentity);
                     entity.UsesGuidAsPrimaryKey = entity.Columns.Any(c => c.IsPrimaryKey && c.DataType.ToLowerInvariant() == "uniqueidentifier");
 
-                    var deleteColumn = entity.Columns.FirstOrDefault(c => markAsDeletedColumns.Contains(c.Name.ToLowerInvariant()));
+                    var deleteColumn = entity.Columns.FirstOrDefault(c => c.IsDeletedMarker);
 
-                    entity.UsesDeletedColumn = deleteColumn != null;
+                    entity.UsesDeletedColumn = entity.Columns.Any(c => c.IsDeletedMarker);
                     entity.DeletedColumnName = deleteColumn != null ? deleteColumn.Name : "";
 
                     if (entity.Type == "Table")
@@ -474,6 +476,7 @@ order by s.name, o.[type], o.name";
 
                 foreach (var table in items)
                 {
+                    table.ContextualName = table.Name.ContextualName(table.Name);
                     table.ModelName = table.Name.AsUpperCamelCase();
                     table.Alias = table.Name.Abrevation();
                 }
