@@ -13,6 +13,20 @@ namespace ModelHelper.Core.Extensions
 {
     public static class StringExtensions
     {
+        public static string ContextualName(this string name, string tableName)
+        {
+            var length = tableName.Length;
+            var startsWithTableName = name.StartsWith(tableName, StringComparison.InvariantCultureIgnoreCase);
+
+            if (!startsWithTableName || name.Length == length)
+            {
+                return name;
+            }
+
+            var contextual = name.Substring(length);
+            return contextual;
+        }
+
         public static List<string> WordExceptions = new List<string>
         {
             "process", "status"
