@@ -34,12 +34,14 @@ namespace ModelHelper.Core.Drops
             OptionKeys = new List<string> ();
 
             QueryOptions = new QueryOptionDrop(templateModel.Project.Code.QueryOptions);
+            UserContext = new UserContextDrop(templateModel.Project.Code.UserContext);
 
             ConnectionInterface = templateModel?.Project?.Code?.Connection != null ? templateModel.Project.Code.Connection.Interface : string.Empty;
             ConnectionVariable = templateModel?.Project?.Code?.Connection != null ? templateModel.Project.Code.Connection.Variable : string.Empty;
             ConnectionMethod = templateModel?.Project?.Code?.Connection != null ? templateModel.Project.Code.Connection.Method : string.Empty;
 
             UseQueryOptions = templateModel?.Project?.Code?.UseQueryOptions ?? false;
+            InjectUserContext = templateModel?.Project?.Code?.InjectUserContext ?? false;
 
             if (templateModel?.Project?.Code?.Locations != null)
             {
@@ -84,6 +86,7 @@ namespace ModelHelper.Core.Drops
         }
 
         public bool UseQueryOptions { get; }
+        public bool InjectUserContext { get; }
         public string ConnectionInterface { get; }
         public string ConnectionVariable { get; }
         public string ConnectionMethod { get; }
@@ -94,6 +97,7 @@ namespace ModelHelper.Core.Drops
         public Dictionary<string, string> Dictionary => TemplateModel.Dictionary ?? new Dictionary<string, string>();
 
         public QueryOptionDrop QueryOptions { get; set; }
+        public UserContextDrop UserContext { get; set; }
 
         public DatabaseDrop Database { get; set; }
         public ProjectDrop Project { get;  }        
