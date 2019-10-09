@@ -93,6 +93,66 @@ namespace ModelHelper.Core.Extensions
 
         }
 
+        private static Dictionary<string, string> SqlTypeToGraphQL()
+        {
+
+
+            return new Dictionary<string, string>
+                {
+                    { "bigint", "Int"},
+                    {"binary", "String"},
+                    {"bit", "Boolean"},
+                    {"char", "String"},
+                    {"date", "Date"},
+                    {"datetime", "Date"},
+                    {"datetime2", "Date"},
+                    {"datetimeoffset", "Date"},
+                    {"decimal", "Float"},
+                    {"float", "Float"},
+                    {"geography", "String"},
+                    {"geometry", "String"},
+                    {"image", "String"},
+                    {"int", "Int"},
+                    {"money", "Float"},
+                    {"nchar", "String"},
+                    {"ntext", "String"},
+                    {"numeric", "Float"},
+                    {"nvarchar", "String"},
+                    {"real", "Float"},
+                    {"smalldatetime", ""},
+                    {"smallint", "Int"},
+                    {"smallmoney", "Float"},
+                    {"text", "String"},
+                    {"time", "String"},
+                    {"timestamp", "String"},
+                    {"tinyint", "Int"},
+                    {"uniqueidentifier", "String"},
+                    {"varbinary", "String"},
+                    {"varchar", "String"},
+                    {"xml", "String"},
+                };
+
+        }
+
+        public static string Graphql(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return "";
+            }
+            var dict = SqlTypeToGraphQL();
+            var testKey = input.ToLowerInvariant();
+
+            //var converter = Converters.FirstOrDefault();
+            if (dict.ContainsKey(testKey))
+            {
+                return dict[testKey];
+            }
+
+            return input;
+
+        }
+
         private static Dictionary<string, string> SqlTypeToSCharp()
         {
             var dict = new Dictionary<string, string>
