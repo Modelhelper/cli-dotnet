@@ -59,7 +59,7 @@ namespace ModelHelper.Commands
         [Option(Key = "--except", Aliases = new []{"-x", "--except-table"})]
         public List<string> ExceptEntities { get; set; } = new List<string>();
 
-        [Option(Key = "--dump", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "DumpPath", Aliases = new []{"-d"})]
+        [Option(Key = "--dump-data", IsRequired = false, ParameterIsRequired = true, ParameterProperty = "DumpPath", Aliases = new []{"-dd"})]
         public bool Dump { get; set; } = false;
         public string DumpPath { get; set; }
 
