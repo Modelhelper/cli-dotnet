@@ -89,6 +89,7 @@
     <Compile Include="Extensions\TemplateFile.cs" />
     <Compile Include="Extensions\TextFilter.cs" />
     <Compile Include="Help\Constants.cs" />
+    <Compile Include="Help\Documentation.cs" />
     <Compile Include="Help\HelpItem.cs" />
     <Compile Include="Help\HelpOption.cs" />
     <Compile Include="Help\HelpSample.cs" />
