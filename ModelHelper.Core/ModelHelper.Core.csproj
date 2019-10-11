@@ -105,6 +105,7 @@
     <Compile Include="Project\ProjectData.cs" />
     <Compile Include="Project\ProjectDataColumnMapping.cs" />
     <Compile Include="Project\ProjectDataConnection.cs" />
+    <Compile Include="Project\UserContext.cs" />
     <Compile Include="Project\V0\BetaApi.cs" />
     <Compile Include="Project\V0\BetaColumnExtra.cs" />
     <Compile Include="Project\V0\BetaDataSection.cs" />
