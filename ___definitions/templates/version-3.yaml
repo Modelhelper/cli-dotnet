@@ -1,0 +1,11 @@
+Version: 3 
+Language: cs # mandatory field. connects with correct language definition
+Description: |
+    Long description if needed
+Tags: [tag1, tag2, tag3] 
+Groups: [group1, group2, group3]
+CanExport: true
+EntityIsMandatory: true
+ExportFileName: file-to-export {{fileName}}
+Body: |
+    This is the template body

@@ -1,0 +1,8 @@
+Language: <lang> # must be the same as template
+Version: 3
+Description: |
+  Describes this definition file
+UseNamespace: true
+ModuleLevelVariable: _{{ variableName}}
+Datatypes: 
+  varchar: string

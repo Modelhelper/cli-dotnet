@@ -1,0 +1,10 @@
+ConfigVersion: 3.0.0
+InstalledVersion: 2.5
+RemoteTemplateLocation: 
+TemplateLocations: 
+  Remote: <remote location>  
+  Locale: <local location> # points to git clone
+  Shared: <shared location> # if any shared location
+UpgradeLog: 
+    updatedTemplates: false
+    updatedConfig: true

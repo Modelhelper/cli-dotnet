@@ -1,0 +1,17 @@
+Root: CustomerName
+Customer: Patogen
+Data:
+  DefaultConnection: lab
+  Connections: [
+    {
+      Name: hist,
+      ConnectionString: data,
+      DefaultSchema: dbo,
+      DbType: mssql,
+      ConnectionMethod: CreateForHistology(),
+      Options: 
+        Folder: Histology    
+        Shared: Shared
+      
+    }
+  ]
