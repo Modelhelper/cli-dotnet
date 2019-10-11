@@ -1,17 +1,15 @@
-﻿GlobalTemplateDownloadLocation: https://github.com/Modelhelper/templates/releases/latest/download/mh-templates.zip
-TemplateLocations: 
-  Global: C:\dev\projects\hpe\mh-templates\src
-  Shared: C:\dev\projects\hpe\mh-templates\src
-Options:
-  Folder: Histology
-Projects:
-  cs.core:
-    Language: cs
-    Code: 
-      Locations:
-  cs.net:
-    Language: cs
-  angular:
-    Language: ts
-    Code: 
-      Locations:
+﻿Version: 3
+InstalledCliVersion: 2.5
+
+# Where to download latest template files, download, unzip to Global.TemplateLocation
+RemoteTemplateDownloadLocation: https://github.com/Modelhelper/templates/releases/latest/download/mh-templates.zip
+
+#The shared part is where the user can put templates etc for the organization
+Shared:
+  TemplateLocation: C:\dev\projects\patogen\mh\templates
+  ProjectDefinitions: C:\dev\projects\patogen\mh\projects
+  CodeDefinitions: C:\dev\projects\patogen\mh\code
+Global:
+  TemplateLocation: C:\dev\projects\hpe\mh-templates\src
+  ProjectDefinitions: .\projects
+  CodeDefinitions: .\code
