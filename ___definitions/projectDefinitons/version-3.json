@@ -30,13 +30,14 @@
                     "option_1": "value_1"
                 },
                 "ColumnMapping": [],
-                "TableGroups": [
+                "EntityGroups": [
                     { 
                         "Name": "Histology", 
-                        "ModelOptions": [
-                            {"Folder": "Histology"}
-                        ],
-                        "Tables": [
+                        "ModelOptions": {
+                            "CurrentFolder": "Histology"
+                        }
+                        ,
+                        "Entities": [
                             "HistologyPathologyType", 
                             "OrderHistologyTubeSampleHistologyPathologyType", 
                             "HistologyPathologyTypeSampleType", 
@@ -68,6 +69,12 @@
                             "HistologyPathologyCategory", 
                             "HistologyDiagnoseTypeOrderHistology" 
                         ]
+                    },
+                    {
+                        "Name": "Shared",
+                        "ModelOptions": {
+                            "CurrentFolder": "Shared"
+                        }
                     }
                 ]
             },
@@ -76,7 +83,7 @@
                 "ConnectionString": "Data Source=patest01;Initial Catalog=Patolog_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
                 "DefaultSchema": "dbo",
                 "DbType": "mssql",
-                "ModelOptions": [],
+                "ModelOptions": {},
                 "ColumnMapping": []
             },
             {
@@ -84,7 +91,7 @@
                 "ConnectionString": "Data Source=patest01;Initial Catalog=PatoStage_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
                 "DefaultSchema": "dbo",
                 "DbType": "mssql",     
-                "ModelOptions": [],        
+                "ModelOptions": {},        
                 "ColumnMapping": []
             },
             {
@@ -92,7 +99,7 @@
                 "ConnectionString": "Data Source=pasql03;Initial Catalog=PatoGen_Analyse_AS_MSCRM;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
                 "DefaultSchema": "dbo",
                 "DbType": "mssql",
-                "ModelOptions": [],
+                "ModelOptions": {},
                 "ColumnMapping": []
             }
         ],
@@ -155,7 +162,9 @@
     "Name": "PatoLab.Api",
     "Description": null,
     "RootPath": null,
-    "ModelOptions": {},
+    "ModelOptions": {
+        "CurrentFolder": "Histology"
+    },
     "Code": {
         "UseQueryOptions": false,
         "QueryOptions": {
@@ -182,51 +191,59 @@
                 "Key": "api.interfaces",
                 "Namespace": "PatoLab.Api.Core.Interfaces",
                 "Path": ".\\src\\PatoLab.Api.Core\\Interfaces",
-                "NamePostfix": "",
-                "NamePrefix": ""
+                "NamePostfix": "Repository",
+                "NamePrefix": "I"
             },
             {
                 "Key": "api.models",
                 "Namespace": "PatoLab.Api.Core.Models",
-                "Path": ".\\src\\PatoLab.Api.Core\\Models"
+                "Path": ".\\src\\PatoLab.Api.Core\\Models",
+                "NamePostfix": "Model"
             },
             {
                 "Key": "api.viewmodels",
                 "Namespace": "PatoLab.Api.Core.ViewModels",
-                "Path": ".\\src\\PatoLab.Api.Core\\ViewModels"
+                "Path": ".\\src\\PatoLab.Api.Core\\ViewModels",
+                "NamePostfix": "ViewModel"
             },
             {
                 "Key": "api.controllers",
                 "Namespace": "PatoLab.Api.Controllers",
-                "Path": ".\\controllers"
+                "Path": ".\\controllers",
+                "NamePostfix": "Controller"
             },
             {
                 "Key": "api.repositories",
                 "Namespace": "PatoLab.Api.Data.Repositories",
-                "Path": ".\\src\\PatoLab.Api.Data\\Repositories"
+                "Path": ".\\src\\PatoLab.Api.Data\\Repositories",
+                "NamePostfix": "Repository"
             },
             {
-                "Key": "gql.types",
+                "Key": "gql.query.types",
                 "Namespace": "PatoLab.Api.GraphQL.Histology.Query.Types",
-                "Path": ".\\src\\PatoLab.Api\\GraphQL\\Histology\\Query\\Types"
+                "Path": ".\\src\\PatoLab.Api\\GraphQL\\{{ CurrentFolder }}\\Query\\Types",
+                "NamePostfix": "QueryType"
             },
             {
-                "Key": "gql.groups",
+                "Key": "gql.query.groups",
                 "Namespace": "PatoLab.Api.GraphQL.Histology.Query",
-                "Path": ".\\src\\PatoLab.Api\\GraphQL\\Histology\\Query"
+                "Path": ".\\src\\PatoLab.Api\\GraphQL\\{{ CurrentFolder }}\\Query",
+                "NamePostfix": "QueryGroup"
             },            
             {
                 "Key": "gql.mutation.types",
                 "Namespace": "PatoLab.Api.GraphQL.Histology.Mutation.Types",
-                "Path": ".\\src\\PatoLab.Api\\GraphQL\\Histology\\Mutation\\Types"
+                "Path": ".\\src\\PatoLab.Api\\GraphQL\\{{ CurrentFolder }}\\Mutation\\Types",
+                "NamePostfix": "InputType"
             },
             {
                 "Key": "gql.mutation.groups",
                 "Namespace": "PatoLab.Api.GraphQL.Histology.Mutation",
-                "Path": ".\\src\\PatoLab.Api\\GraphQL\\Histology\\Mutation"
+                "Path": ".\\src\\PatoLab.Api\\GraphQL\\{{ CurrentFolder }}\\Mutation",
+                "NamePostfix": "MutationGroup"
             }
         ],
-        "Connection": {
+        "ConnectionFactory": {
             "Interface": "IConnectionFactory",
             "Variable": "connection",
             "Method": "CreateForPatoLab()"
