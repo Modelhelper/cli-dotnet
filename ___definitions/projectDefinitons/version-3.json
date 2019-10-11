@@ -1,0 +1,234 @@
+{
+    "RootNamespace": "Patogen",
+    "Customer": "Patogen",
+    "Data": {
+        "DefaultConnection": "lab",
+        "Connections": [
+            {
+                "Name": "hist",
+                "ConnectionString": "Data Source=patest01;Initial Catalog=PatoLabHistology_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
+                "DefaultSchema": "dbo",
+                "DbType": "mssql",
+                "ColumnMapping": [],
+                "ConnectionMethod": "CreateForHistology()"
+            },
+            {
+                "Name": "raw",
+                "ConnectionString": "Data Source=patest01;Initial Catalog=PatoLabRaw_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
+                "DefaultSchema": "dbo",
+                "DbType": "mssql",
+                "ModelOptions": [],
+                "ColumnMapping": [],
+                "ConnectionMethod": "CreateForPatolabRaw()"
+            },
+            {
+                "Name": "lab",
+                "ConnectionString": "Data Source=patest01;Initial Catalog=PatoLab_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
+                "DefaultSchema": "dbo",
+                "DbType": "mssql",                                
+                "ModelOptions": [],
+                "ColumnMapping": [],
+                "TableGroups": [
+                    { 
+                        "Name": "Histology", 
+                        "Options": [
+                            {"Folder": "Histology"}
+                        ],
+                        "Tables": [
+                            "HistologyPathologyType", 
+                            "OrderHistologyTubeSampleHistologyPathologyType", 
+                            "HistologyPathologyTypeSampleType", 
+                            "OrderHistologyPriorityType", 
+                            "OrderHistologyStatusType", 
+                            "OrderHistologyHistory", 
+                            "OrderHistology", 
+                            "OrderHistologyTubeHistory", 
+                            "OrderHistologyTube", 
+                            "OrderTubeOrderHistologyTube", 
+                            "OrderHistologyTubeSampleHistory", 
+                            "OrderHistologyTubeSample", 
+                            "Attachment", 
+                            "OrderHistologyTubeSampleAttachment", 
+                            "HistologyDiagnoseTypeOrderHistologyTubeType", 
+                            "HistologyDiagnoseTypeOrderHistologyTube", 
+                            "HistologyDiagnoseType", 
+                            "HistologyMagnitudeType", 
+                            "AttachmentType", 
+                            "HistologyQuantificationType", 
+                            "HistologyDistributionType", 
+                            "OrderHistologyTubeSampleHistologyPathologyTypeHistologyPathologyDescriptionType", 
+                            "HistologyPathologyDescriptionType", 
+                            "OrderHistologyTubeSampleHistologyPathologyTypeSampleComponentType", 
+                            "SampleTypeHistologyPathologyDescriptionType", 
+                            "SampleTypeSampleComponentType", 
+                            "SampleComponentType", 
+                            "SampleSubType", 
+                            "HistologyPathologyCategory", 
+                            "HistologyDiagnoseTypeOrderHistology" 
+                        ]
+                    }
+                ]
+            },
+            {
+                "Name": "log",
+                "ConnectionString": "Data Source=patest01;Initial Catalog=Patolog_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
+                "DefaultSchema": "dbo",
+                "DbType": "mssql",
+                "ModelOptions": [],
+                "ColumnMapping": []
+            },
+            {
+                "Name": "stage",
+                "ConnectionString": "Data Source=patest01;Initial Catalog=PatoStage_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
+                "DefaultSchema": "dbo",
+                "DbType": "mssql",     
+                "ModelOptions": [],        
+                "ColumnMapping": []
+            },
+            {
+                "Name": "crm",
+                "ConnectionString": "Data Source=pasql03;Initial Catalog=PatoGen_Analyse_AS_MSCRM;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
+                "DefaultSchema": "dbo",
+                "DbType": "mssql",
+                "ModelOptions": [],
+                "ColumnMapping": []
+            }
+        ],
+        "ColumnMapping": [
+            {
+                "Name": "IsActive",
+                "IsIgnored": false,
+                "UsedAs": "DeletedMarker"
+            },
+            {
+                "Name": "CreatedOn",
+                "IsIgnored": true,
+                "UsedAs": "CreatedOn"
+            },
+            {
+                "Name": "CreatedDate",
+                "IsIgnored": "True",
+                "UsedAs": "CreatedOn"
+            },
+            {
+                "Name": "CreatedBy",
+                "IsIgnored": "True",
+                "UsedAs": "CreatedBy"
+            },
+            {
+                "Name": "ChangedOn",
+                "IsIgnored": "True",
+                "UsedAs": "ModifiedOn"
+            },
+            {
+                "Name": "ChangedDate",
+                "IsIgnored": "True",
+                "UsedAs": "ModifiedOn"
+            },
+            {
+                "Name": "ChangedBy",
+                "IsIgnored": "True",
+                "UsedAs": "ModifiedBy"
+            },
+            {
+                "Name": "ModifiedOn",
+                "IsIgnored": "True",
+                "UsedAs": "ModifiedOn"
+            },
+            {
+                "Name": "ModifiedBy",
+                "IsIgnored": "True",
+                "UsedAs": "ModifiedBy"
+            },
+            {
+                "Name": "ValidFrom",
+                "IsIgnored": "True"
+            },
+            {
+                "Name": "ValidTo",                
+                "IsIgnored": "True"
+            }
+        ]
+    },
+    "Name": "PatoLab.Api",
+    "Description": null,
+    "RootPath": null,
+    "Options": [],
+    "Code": {
+        "UseQueryOptions": false,
+        "QueryOptions": {
+            "UseQueryOptions": false,
+            "ClassName": "QueryOptions",
+            "Namespace": "PatoLab.Api.Core",
+            "UserIdProperty": "UserName",
+            "UserIdType": "int",
+            "UseClaimsPrincipalExtension": false,
+            "ClaimsPrincipalExtensionMethod": "ToQueryOptions",
+            "ClaimsPrincipalExtensionNamespace": "PatoLab.Api.Core.Extensions"
+        },
+        "InjectUserContext": true,
+        "userContext": {            
+            "InterfaceName": "IUserContext",
+            "VariableName": "userContext",
+            "Namespace": "PatoLab.Api.Core",
+            "UserProperty": "UserName",
+            "UserType": "string"            
+        },
+        "Keys": [],
+        "Locations": [
+            {
+                "Key": "api.interfaces",
+                "Namespace": "PatoLab.Api.Core.Interfaces",
+                "Path": ".\\src\\PatoLab.Api.Core\\Interfaces",
+                "NamePostfix": "",
+                "NamePrefix": ""
+            },
+            {
+                "Key": "api.models",
+                "Namespace": "PatoLab.Api.Core.Models",
+                "Path": ".\\src\\PatoLab.Api.Core\\Models"
+            },
+            {
+                "Key": "api.viewmodels",
+                "Namespace": "PatoLab.Api.Core.ViewModels",
+                "Path": ".\\src\\PatoLab.Api.Core\\ViewModels"
+            },
+            {
+                "Key": "api.controllers",
+                "Namespace": "PatoLab.Api.Controllers",
+                "Path": ".\\controllers"
+            },
+            {
+                "Key": "api.repositories",
+                "Namespace": "PatoLab.Api.Data.Repositories",
+                "Path": ".\\src\\PatoLab.Api.Data\\Repositories"
+            },
+            {
+                "Key": "gql.types",
+                "Namespace": "PatoLab.Api.GraphQL.Histology.Query.Types",
+                "Path": ".\\src\\PatoLab.Api\\GraphQL\\Histology\\Query\\Types"
+            },
+            {
+                "Key": "gql.groups",
+                "Namespace": "PatoLab.Api.GraphQL.Histology.Query",
+                "Path": ".\\src\\PatoLab.Api\\GraphQL\\Histology\\Query"
+            },            
+            {
+                "Key": "gql.mutation.types",
+                "Namespace": "PatoLab.Api.GraphQL.Histology.Mutation.Types",
+                "Path": ".\\src\\PatoLab.Api\\GraphQL\\Histology\\Mutation\\Types"
+            },
+            {
+                "Key": "gql.mutation.groups",
+                "Namespace": "PatoLab.Api.GraphQL.Histology.Mutation",
+                "Path": ".\\src\\PatoLab.Api\\GraphQL\\Histology\\Mutation"
+            }
+        ],
+        "Connection": {
+            "Interface": "IConnectionFactory",
+            "Variable": "connection",
+            "Method": "CreateForPatoLab()"
+        }
+    },
+    "Version": "3.0.0"
+}

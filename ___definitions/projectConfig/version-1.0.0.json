@@ -1,0 +1,13 @@
+{
+    "configVersion": "1.0.0",
+    "RemoteTemplateLocation": "",
+    "upgradeLog": {
+        "updatedTemplates": false,
+        "updatedConfig": true
+    }
+
+    "RemoteTemplateLocation": "C:\\dev\\projects\\hpe\\mh-templates\\src",
+    "RemoteBinaryLocation": null,
+    "ScriptLocation": null,
+    "TemplateLocation": "C:\\dev\\projects\\hpe\\mh-templates\\src"
+}

@@ -1,0 +1,41 @@
+{
+    "Name": "",        
+    "Description": "",
+    "Customer": "",
+    "Database": {        
+        "Connection": "",
+        "ConnectionInterface": "",
+        "ConnectionVariable": "",
+        "ConnectionMethod": "",        
+        "queryOption": {
+            "useQueryOptions": true,
+            "className": "",
+            "namespace": "",
+            "userIdProperty": "",
+            "userIdType": "",
+            "useClaimsPrincipalExtension": true,
+            "claimsPrincipalExtensionMethod": "",
+            "claimsPrincipalExtensionNamespace": ""
+        },
+        "IgnoredColumns": [],
+        "Translations": [],
+        "NameMap": [],
+        "columnExtras": [
+            {"name": "", "IsIgnored": true, "IsModifiedByUser": true}
+        ]
+    },
+    "CodeLocations": [
+        {
+            "Key": "",
+            "Namespace": "",
+            "Path": ""
+        }
+    ],
+    "Options": [],
+    "Api": {
+        "UseLogger": false,
+        "UseTelemetry": false,
+        "UseUserRepository": false
+    },
+    "CustomTemplateDirectory": ".\\templates"
+}
