@@ -26,12 +26,14 @@
                 "ConnectionString": "Data Source=patest01;Initial Catalog=PatoLab_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
                 "DefaultSchema": "dbo",
                 "DbType": "mssql",                                
-                "ModelOptions": [],
+                "ModelOptions": {
+                    "option_1": "value_1"
+                },
                 "ColumnMapping": [],
                 "TableGroups": [
                     { 
                         "Name": "Histology", 
-                        "Options": [
+                        "ModelOptions": [
                             {"Folder": "Histology"}
                         ],
                         "Tables": [
@@ -153,7 +155,7 @@
     "Name": "PatoLab.Api",
     "Description": null,
     "RootPath": null,
-    "Options": [],
+    "ModelOptions": {},
     "Code": {
         "UseQueryOptions": false,
         "QueryOptions": {
