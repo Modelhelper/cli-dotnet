@@ -624,7 +624,7 @@ To export to a file the template the 'canExport' property must be set to true.
 
         }
 
-        private static List<string> GetTablesFromGroups(string[] groups, IDatabaseRepository repository)
+        private static List<string> GetTablesFromGroups(string[] groups, IDatabase repository)
         {
             var items = new List<string>();
 

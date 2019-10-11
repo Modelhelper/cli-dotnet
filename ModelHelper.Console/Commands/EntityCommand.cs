@@ -302,7 +302,7 @@ namespace ModelHelper.Commands
 
         }
 
-        private void DescribeEntity(string entityName, SqlServerRepository repo)
+        private void DescribeEntity(string entityName, SqlServerDatabase repo)
         {
             var tableDef = entityName.Split('.');
             var schema = tableDef.Length > 1 ? tableDef[0] : "dbo";
@@ -326,7 +326,7 @@ namespace ModelHelper.Commands
             }
         }
 
-        private void ListAnalyzeResult(string entityName, SqlServerRepository repo)
+        private void ListAnalyzeResult(string entityName, SqlServerDatabase repo)
         {
             var tableDef = entityName.Split('.');
             var schema = tableDef.Length > 1 ? tableDef[0] : "dbo";
@@ -358,7 +358,7 @@ namespace ModelHelper.Commands
 
             return "";
         }
-        private void ListEntityContent(string entityName, IDatabaseRepository repo)
+        private void ListEntityContent(string entityName, IDatabase repo)
         {
             var tableDef = entityName.Split('.');
             var schema = tableDef.Length > 1 ? tableDef[0] : "dbo";
@@ -477,7 +477,7 @@ namespace ModelHelper.Commands
             }
         }
 
-        private void ImportJsonData(IDatabaseRepository repo, IEntity entity, string dataPath)
+        private void ImportJsonData(IDatabase repo, IEntity entity, string dataPath)
         {
             if (File.Exists(dataPath) && entity != null)
             {
@@ -492,7 +492,7 @@ namespace ModelHelper.Commands
             }
         }
 
-        private void ListEntities(IDatabaseRepository repo, bool evaluate = false, string filter = "")
+        private void ListEntities(IDatabase repo, bool evaluate = false, string filter = "")
         {
             var columnName = WithColumn && !string.IsNullOrEmpty(ColumnName) ? ColumnName: "";
             var entities = repo.GetEntities(TablesOnly, ViewsOnly, filter, columnName).Result.ToList();

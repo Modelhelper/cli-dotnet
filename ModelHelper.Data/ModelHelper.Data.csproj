@@ -50,7 +50,7 @@
   <ItemGroup>
     <Compile Include="Data\SampleSourceRepository.cs" />
     <Compile Include="Data\SelectOneSqlGenerator.cs" />
-    <Compile Include="Data\SqlServerRepository.cs" />
+    <Compile Include="MsSql\SqlServerDatabase.cs" />
     <Compile Include="Data\SqlToPostgresConverter.cs" />
     <Compile Include="Data\CreateTableSqlGenerator.cs" />
     <Compile Include="Data\SqlToCSharpDatatypeConvert.cs" />
