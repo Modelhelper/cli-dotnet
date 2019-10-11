@@ -1,0 +1,14 @@
+﻿Welcome: |
+    This is the welcome message
+Commands:
+    Help:
+    Install:
+    Entity:
+        ShortDescription: |
+            This is a short description
+        Description: |
+            This is a longer description
+        Options:
+            "-model": 
+        Samples:
+        
