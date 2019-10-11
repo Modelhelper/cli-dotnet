@@ -5,6 +5,7 @@ using ModelHelper.Core.Help;
 
 namespace ModelHelper
 {
+    [Obsolete]
     public class HelpItems
     {
         public HelpItems()
@@ -14,7 +15,7 @@ namespace ModelHelper
         public List<HelpItem> Commands { get;set; }
     }
 
-
+    [Obsolete]
     public static class HelpFactory
     {
 

@@ -2,6 +2,7 @@
 
 namespace ModelHelper
 {
+    [Obsolete]
     public class Option
     {
         public string Key { get; set; }
