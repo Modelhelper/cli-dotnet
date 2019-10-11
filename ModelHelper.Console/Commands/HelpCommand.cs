@@ -19,8 +19,7 @@ namespace ModelHelper.Commands
         }
 
         public override void Execute(List<string> arguments)
-        {
-            var commands = new List<Command>(); //Create();
+        {            
             int cmdLen = 15;
             int descLen = 80;
 
