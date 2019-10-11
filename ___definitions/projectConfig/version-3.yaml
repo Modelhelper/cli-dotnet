@@ -1,10 +1,12 @@
-ConfigVersion: 3.0.0
+Version: 3
 InstalledVersion: 2.5
-RemoteTemplateLocation: 
-TemplateLocations: 
-  Remote: <remote location>  
-  Locale: <local location> # points to git clone
-  Shared: <shared location> # if any shared location
-UpgradeLog: 
-    updatedTemplates: false
-    updatedConfig: true
+RemoteTemplateDownloadLocation: https://github.com/Modelhelper/templates/releases/latest/download/mh-templates.zip
+Shared:
+  TemplateLocation: C:\dev\projects\patogen\mh\templates
+  ProjectDefinitions: C:\dev\projects\patogen\mh\projects
+  CodeDefinitions: C:\dev\projects\patogen\mh\code
+Global:
+  TemplateLocation: C:\dev\projects\hpe\mh-templates\src
+  ProjectDefinitions: .\projects
+  CodeDefinitions: .\code
+LogLocation: C:\dev\logs
