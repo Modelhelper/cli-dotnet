@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.IO;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Project;
@@ -26,9 +25,9 @@ namespace ModelHelper.Commands
             return true;
         }
 
-        public override void Execute(List<string> arguments)
+        public override void Execute(Core.ApplicationContext context)
         {
-            var s = arguments;
+            var s = context.Options;
             var skipTests = s.Contains("--skip-tests");
             var projectName = s.Count > 0 && !s[0].StartsWith("-") ? s[0] : "";
             var openForEdit = s.Contains("--open");
@@ -174,46 +173,6 @@ namespace ModelHelper.Commands
                 var projectPath = Path.Combine(Directory.GetCurrentDirectory(), ".model-helper");
                 projectWriter.Write(projectPath, project);
             }
-        }
-    }
-
-
-    [Export(typeof(ICommand))]   
-    public class RunScriptCommand : BaseCommand
-    {
-        public RunScriptCommand()
-        {
-            Key = "run";
-        }
-
-        public override bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator)
-        {
-            return true;
-        }
-
-        public override void Execute(List<string> arguments)
-        {
-            //var escapedArgs = cmd.Replace("\"", "\\\"");
-            var scriptLocations = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
-            var file = Path.Combine(scriptLocations, "ModelHelper", "scripts", "create-api.sh"); //.Replace("\\", "/").Replace("C:", "/C");
-
-            Console.WriteLine(File.Exists(file)); ;
-            Console.WriteLine("Location = " + file);
-
-            var psi = new ProcessStartInfo
-            {
-                FileName = @"C:\Program Files\Git\bin\bash.exe",
-                
-                Arguments = $"-c \"{file}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            };
-
-            var process = Process.Start(psi);
-
-            string result = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();            
         }
     }
 }

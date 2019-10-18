@@ -6,6 +6,7 @@ using System.Text;
 using ModelHelper.Core.Drops;
 using DotLiquid;
 using ModelHelper.Core.CommandLine;
+using ModelHelper.Core.Configuration;
 
 namespace ModelHelper.Core.Extensions
 {

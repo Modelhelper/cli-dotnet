@@ -31,4 +31,14 @@ namespace ModelHelper.Extensions
             return null;
         }
     }
+
+    public static class TemplateExtenstions
+    {
+
+    }
+
+    public static class ConfigExtenstions
+    {
+        
+    }
 }

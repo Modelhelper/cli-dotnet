@@ -58,6 +58,9 @@
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="ReadLine, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReadLine.2.0.1\lib\netstandard2.0\ReadLine.dll</HintPath>
+    </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.8.0\lib\net46\Serilog.dll</HintPath>
     </Reference>
@@ -73,9 +76,16 @@
     <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.Sinks.File.4.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
     </Reference>
+    <Reference Include="ShellProgressBar, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ShellProgressBar.4.3.0\lib\netstandard2.0\ShellProgressBar.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Text.Encoding.CodePages, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encoding.CodePages.4.0.1\lib\net46\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -87,11 +97,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application.cs" />
+    <Compile Include="Commands\ChangelogCommand.cs" />
+    <Compile Include="Commands\DocumentCommand.cs" />
     <Compile Include="Commands\EntityCommand.cs" />
+    <Compile Include="Commands\GetCommand.cs" />
+    <Compile Include="Commands\MigrationCommand.cs" />
     <Compile Include="Commands\OptimizeCommand.cs" />
+    <Compile Include="Commands\RunScriptCommand.cs" />
     <Compile Include="Extensions\ProjectExtensions.cs" />
+    <Compile Include="Helpers\Clipboard.cs" />
     <Compile Include="LogItem.cs" />
-    <Compile Include="___CommandExecutor.cs" />
     <Compile Include="Commands\AboutCommand.cs" />
     <Compile Include="Commands\BaseCommand.cs" />
     <Compile Include="Commands\CommandArgument.cs" />
@@ -102,7 +118,7 @@
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\ICommandArgumentRule.cs" />
     <Compile Include="Commands\IncludesMandatoryCommandArguments.cs" />
-    <Compile Include="Commands\InitCommand.cs" />
+    <Compile Include="Install\ApplicationInstaller.cs" />
     <Compile Include="Commands\NewCommand.cs" />
     <Compile Include="Commands\ProjectArgumentEvaluator.cs" />
     <Compile Include="Commands\ProjectArgumentsEvaluator.cs" />
@@ -125,52 +141,14 @@
     <Compile Include="RowValue.cs" />
     <Compile Include="TempHelpSetup.cs" />
     <Compile Include="EasterEgg\Tetrominoe.cs" />
+    <Compile Include="Update\ApplicationUpdate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Content Include="lang\c.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\cpp.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\cs.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\dart.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\default.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\elm.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\go.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\gql.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="defaults\Config.yaml" />
+    <EmbeddedResource Include="defaults\Config.yaml" />
     <None Include="help\help.en.yaml" />
     <None Include="help\help.no.json" />
     <None Include="help\help.no.yaml" />
-    <Content Include="lang\java.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\proto3.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\python.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\rust.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lang\ts.lang.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

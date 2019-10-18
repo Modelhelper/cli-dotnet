@@ -103,10 +103,10 @@ namespace ModelHelper.Commands
             throw new System.NotImplementedException();
         }
 
-        public override void Execute(List<string> arguments)
+        public override void Execute(Core.ApplicationContext context)
         {
-            var map = ArgumentParser.Parse(this, arguments);
-            var args = arguments;
+            var map = ArgumentParser.Parse(this, context.Options);
+            var args = context.Options;
 
             var entityName = args.Count > 0 && !args[0].StartsWith("-") ? args[0] : "";
             var projectReader = new DefaultProjectReader();

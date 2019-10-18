@@ -22,17 +22,17 @@ namespace ModelHelper
 
         
 
-        public void Execute(string key, List<string> args)
+        public void Execute(Core.ApplicationContext context)
         {
             
-            var command = _commands?.FirstOrDefault(c => c.Value.Key == key || c.Value.Alias == key);
+            var command = _commands?.FirstOrDefault(c => c.Value.Key == context.CommandKey || c.Value.Alias == context.CommandKey);
             var projectReader = new DefaultProjectReader();
             var projectPath = Path.Combine(Directory.GetCurrentDirectory(), ".model-helper");
 
             if (command != null)
             {
                 //var options = args.AsArgumentDictionary();
-                var showHelp = args.Contains("-h") || args.Contains("--help");
+                var showHelp = context.Options.Contains("-h") || context.Options.Contains("--help");
                 try
                 {
                     if (!showHelp)
@@ -51,7 +51,8 @@ Please run the following command to upgrade (use ctrl + v to paste the command)"
                                 upgradeMessage.WriteConsoleWarning();
                                 var commandPrompt = "mh project --upgrade";
                                 commandPrompt.WriteConsoleCommand();
-                                ModelHelperExtensions.ToClipboard(commandPrompt);
+                                //Clipboard.ToClipboard(commandPrompt);
+                                System.Windows.Clipboard.SetText(commandPrompt);
 
                                 Console.WriteLine("\n\n...or...");
                                 Console.Write("Upgrade right away by answering Y (default is no) [y/N]: ");
@@ -71,7 +72,7 @@ Please run the following command to upgrade (use ctrl + v to paste the command)"
                             }
                         }
 
-                        command.Value.Execute(args);
+                        command.Value.Execute(context);
                     }
                     else
                     {
@@ -92,7 +93,7 @@ Please run the following command to upgrade (use ctrl + v to paste the command)"
             }
             else
             {
-                Console.WriteLine($"The '{key}' is not a valid command. Run mh help for a list of valid commands and arguments");
+                Console.WriteLine($"The '{context.CommandKey}' is not a valid command. Run mh help for a list of valid commands and arguments");
             }
 
 

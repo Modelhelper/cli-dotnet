@@ -16,7 +16,7 @@ namespace ModelHelper.Commands
 
         List<CommandArgument> ValidArguments { get; set; }
         bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator);
-        void Execute(List<string> arguments);
+        void Execute(Core.ApplicationContext context);
     }
 
     /*

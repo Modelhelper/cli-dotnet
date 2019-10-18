@@ -18,12 +18,12 @@ namespace ModelHelper.Commands
             Alias = "h";
         }
 
-        public override void Execute(List<string> arguments)
+        public override void Execute(Core.ApplicationContext context)
         {            
             int cmdLen = 15;
             int descLen = 80;
 
-            var options = arguments; //.AsArgumentDictionary();
+            var options = context.Options; //.AsArgumentDictionary();
 
             if (options == null || options.Count == 0)
             {

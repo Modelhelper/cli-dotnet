@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using ModelHelper.Core;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Rules;
 using ModelHelper.Core.Templates;
 using ModelHelper.Extensions;
 using ModelHelper.Core.CommandLine;
+using ModelHelper.Core.Configuration;
 
 namespace ModelHelper.Commands
 {
@@ -52,14 +52,14 @@ namespace ModelHelper.Commands
             return true;
         }
 
-        public override void Execute(List<string> args)
+        public override void Execute(Core.ApplicationContext context)
         {
             
-            var argumentMap = this.Parse(args);
+            var argumentMap = this.Parse(context.Options);
 
             var showList = true; //s.Contains("--list") || s.Contains("-l");
             //var showContent = args.Contains("--show");
-            var templateName = args.Count > 0 && !args[0].StartsWith("-") ? args[0] : "";
+            var templateName = context.Options.Count > 0 && !context.Options[0].StartsWith("-") ? context.Options[0] : "";
             //var fetchRemote = args.Contains("--fetch-remote") || args.Contains("-fr");
             //var overwrite = args.Contains("--overwrite");
             //var verbose = args.Contains("--verbose");
@@ -72,7 +72,7 @@ namespace ModelHelper.Commands
                 Directory.CreateDirectory(modelHelperData);
             }
 
-            if (args.Contains("--new"))
+            if (context.Arguments.Contains("--new"))
             {
 
             }
@@ -293,11 +293,11 @@ namespace ModelHelper.Commands
         public bool GetRemote { get; set; }
 
 
-        public override void Execute(List<string> arguments)
+        public override void Execute(Core.ApplicationContext context)
         {
             var options = new Dictionary<string, Action<string>>();
             //var configReader = new JsonConfigReader();
-            var argumentList = this.Parse(arguments); // arguments.AsArgumentDictionary();
+            var argumentList = this.Parse(context.Options); // arguments.AsArgumentDictionary();
             var config = ModelHelperConfig.ReadConfig();
 
             if (SetRemote)

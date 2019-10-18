@@ -47,11 +47,11 @@ namespace ModelHelper.Commands
             return true;
         }
 
-        public override void Execute(List<string> arguments)
+        public override void Execute(Core.ApplicationContext context)
         {
-            var map = ArgumentParser.Parse(this, arguments);
+            var map = ArgumentParser.Parse(this, context.Options);
 
-            var entityName = arguments.Count > 0 && !arguments[0].StartsWith("-") ? arguments[0] : "";
+            var entityName = context.Options.Count > 0 && !context.Options[0].StartsWith("-") ? context.Options[0] : "";
             var projectReader = new DefaultProjectReader();
             var project = projectReader.Read(Path.Combine(Directory.GetCurrentDirectory(), ".model-helper"));
             var entityFilter = !string.IsNullOrEmpty(entityName) && entityName.Contains("%") ? entityName : "";

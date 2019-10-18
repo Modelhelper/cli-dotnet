@@ -52,9 +52,9 @@ namespace ModelHelper.Commands
             return true;
         }
 
-        public override void Execute(List<string> args)
+        public override void Execute(Core.ApplicationContext context)
         {
-            var argumentMap = this.Parse(args);
+            var argumentMap = this.Parse(context.Options);
 
             var writer = new DefaultProjectWriter();
             var projectReader = new DefaultProjectReader();
