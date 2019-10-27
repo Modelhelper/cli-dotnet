@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.IO;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Project;
@@ -26,20 +25,21 @@ namespace ModelHelper.Commands
             return true;
         }
 
-        public override void Execute(List<string> arguments)
+        public override void Execute(Core.ApplicationContext context)
         {
-            var s = arguments;
+            var s = context.Options;
             var skipTests = s.Contains("--skip-tests");
             var projectName = s.Count > 0 && !s[0].StartsWith("-") ? s[0] : "";
             var openForEdit = s.Contains("--open");
 
-            var projectExists = ModelHelperExtensions.ProjectFileExists();
+            var projectExists = Application.ProjectFileExists();
             var createProjectFile = true;
 
             if (projectExists)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("Det eksisterer en prosjektfil allerde, vil du overskrive denne (y/N)? ");
+                //Console.Write("Det eksisterer en prosjektfil allerde, vil du overskrive denne (y/N)? ");
+                Console.Write("A project file already exists, do you want to overwrite this (y/N)? ");
                 Console.ResetColor();
                 var result = Console.ReadLine();
 
@@ -55,7 +55,7 @@ namespace ModelHelper.Commands
                 var projectWriter = new DefaultProjectWriter();
 
 
-                Console.WriteLine("\nDu blir n� presentert noen f� sp�rsm�l\n");
+                Console.WriteLine("\nProject setup: \n");
 
                 if (string.IsNullOrEmpty(projectName))
                 {
@@ -71,7 +71,7 @@ namespace ModelHelper.Commands
                 Console.Write("Root Namespace: ");
                 project.RootNamespace = Console.ReadLine();
 
-                Console.Write("Add a connection now? (Y/n): ");
+                Console.Write("Add default connection now? (Y/n): ");
                 var createConnection = Console.ReadLine();
                 if (string.IsNullOrEmpty(createConnection) ||
                     (!string.IsNullOrEmpty(createConnection) &&
@@ -171,49 +171,9 @@ namespace ModelHelper.Commands
 
                // project.CustomTemplateDirectory = ".\\templates";
 
-                var projectPath = Path.Combine(Directory.GetCurrentDirectory(), ".model-helper");
+                var projectPath = context.ProjectFile.FullName; // Path.Combine(Directory.GetCurrentDirectory(), ".model-helper", "project.json");
                 projectWriter.Write(projectPath, project);
             }
-        }
-    }
-
-
-    [Export(typeof(ICommand))]   
-    public class RunScriptCommand : BaseCommand
-    {
-        public RunScriptCommand()
-        {
-            Key = "run";
-        }
-
-        public override bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator)
-        {
-            return true;
-        }
-
-        public override void Execute(List<string> arguments)
-        {
-            //var escapedArgs = cmd.Replace("\"", "\\\"");
-            var scriptLocations = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
-            var file = Path.Combine(scriptLocations, "ModelHelper", "scripts", "create-api.sh"); //.Replace("\\", "/").Replace("C:", "/C");
-
-            Console.WriteLine(File.Exists(file)); ;
-            Console.WriteLine("Location = " + file);
-
-            var psi = new ProcessStartInfo
-            {
-                FileName = @"C:\Program Files\Git\bin\bash.exe",
-                
-                Arguments = $"-c \"{file}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            };
-
-            var process = Process.Start(psi);
-
-            string result = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();            
         }
     }
 }

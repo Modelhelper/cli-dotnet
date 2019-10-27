@@ -6,9 +6,9 @@ using ModelHelper.Extensibility;
 
 namespace ModelHelper.Data
 {
-    [Export(typeof(IDatabaseRepository))]
+    [Export(typeof(IDatabase))]
     [ExportMetadata("Key", "sampledb")]
-    public class SampleSourceRepository : IDatabaseRepository
+    public class SampleSourceRepository : IDatabase
     {
         public string DatabaseType => "sampledb";
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Reflection;
-using ModelHelper.Core;
+using ModelHelper.Core.Configuration;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Rules;
 using ModelHelper.Extensions;
@@ -18,6 +18,7 @@ namespace ModelHelper.Commands
         public AboutCommand()
         {
             Key = "about";
+            IsPublic = false;
         }
 
         public override bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator)
@@ -25,7 +26,7 @@ namespace ModelHelper.Commands
             return true;
         }
 
-        public override void Execute(List<string> arguments)
+        public override void Execute(Core.ApplicationContext context)
         {
             Assembly execAssembly = Assembly.GetCallingAssembly();
 

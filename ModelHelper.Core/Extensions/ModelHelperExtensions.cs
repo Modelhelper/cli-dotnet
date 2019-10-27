@@ -4,12 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
+using ModelHelper.Core.Configuration;
 using Newtonsoft.Json;
 
 namespace ModelHelper.Core.Extensions
 {
+    [Obsolete]
     public static class ModelHelperExtensions
     {
+        [Obsolete("Moved to Application.RootFolder")]
         public static string RootFolder
         {
             get
@@ -19,27 +22,34 @@ namespace ModelHelper.Core.Extensions
             }
         }
 
+        [Obsolete("moved to application")]
         [DllImport("user32.dll")]
         internal static extern bool OpenClipboard(IntPtr hWndNewOwner);
 
+        [Obsolete("moved to application")]
         [DllImport("user32.dll")]
         internal static extern bool CloseClipboard();
 
+        [Obsolete("moved to application")]
         [DllImport("user32.dll")]
         internal static extern bool SetClipboardData(uint uFormat, IntPtr data);
 
+        [Obsolete("moved to application")]
         public static bool ProjectFileExists()
         {
             var file = Path.Combine(Directory.GetCurrentDirectory(), ".model-helper");
             return File.Exists(file);
         }
 
-
+        [Obsolete("moved to application")]
         public static bool RootDirectoryExists()
         {            
             return Directory.Exists(RootFolder);
         }
 
+        
+
+        [Obsolete]
         public static void CreateRootDirectory()
         {
             var binPath = new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -68,6 +78,7 @@ namespace ModelHelper.Core.Extensions
             }
         }
 
+        [Obsolete]
         public static int FetchRemoteTemplates(string remoteLocation, string modelHelperRoot, bool overwrite, Action<int, int> progress = null)
         {
             var index = 0;
@@ -124,6 +135,7 @@ namespace ModelHelper.Core.Extensions
             return index;
         }
 
+        [Obsolete]
         public static List<TemplateFile> GetTemplateFiles(this string folderPath, string scope)
         {
             var templateFiles = new List<TemplateFile>();
@@ -169,6 +181,7 @@ namespace ModelHelper.Core.Extensions
             return templateFiles;
         }
 
+        [Obsolete]
         public static void ToClipboard(string text)
         {
             OpenClipboard(IntPtr.Zero);

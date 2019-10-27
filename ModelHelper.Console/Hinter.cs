@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace ModelHelper
 {
+    [Obsolete]
     public class Hinter
     {
         public static string ReadHintedLine<T, TResult>(IEnumerable<T> hintSource, Func<T, TResult> hintField, string inputRegex = ".*", ConsoleColor hintColor = ConsoleColor.DarkGray)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -13,6 +14,18 @@ namespace ModelHelper.Core.Extensions
 {
     public static class StringExtensions
     {
+        public static string GetFullPath(this string relativePath, string parentDirectory = "")
+        {
+            if (relativePath.StartsWith(".\\"))
+            {
+                var part = relativePath.Substring(2);
+                return Path.Combine(parentDirectory, part);
+            }
+            else
+            {
+                return relativePath;
+            }
+        }
         public static string ContextualName(this string name, string tableName)
         {
             var length = tableName.Length;

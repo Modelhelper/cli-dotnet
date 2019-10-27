@@ -12,12 +12,14 @@ using System.Text;
 using System.Threading.Tasks;
 using ModelHelper.Commands;
 using ModelHelper.Core;
+using ModelHelper.Core.Configuration;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Templates;
 using ModelHelper.Extensions;
+using ModelHelper.Update;
 
 namespace ModelHelper
-{    
+{
     class Program
     {
 
@@ -44,6 +46,7 @@ namespace ModelHelper
                 Console.WriteLine(compositionException.ToString());
             }
         }
+        
         [STAThread]
         static void Main(string[] args)
         {
@@ -51,31 +54,61 @@ namespace ModelHelper
             Program p = new Program();
 
             Console.Title = "model-helper CLI";
-            //p.CommandExecutor.Execute("h", null);
 
-            //System.Console.ReadLine();
-
-            var playTetris = args.Length > 0 && (args[0] == "tetris" || args[0] == "easter");
-            var init = !ModelHelperExtensions.RootDirectoryExists();
-            var options = args.Length > 0 ? args.ToList().GetRange(1, args.Length - 1) : new List<string>();
-            var key = args.Length > 0 ? args[0] : "about";
-
-            if (init)
+            // first use?
+            if (!ApplicationDefaults.RootDirectory.Exists)
             {
-                var initCommand = new InitCommand();
+                var installer = new ApplicationInstaller();
+                installer.Run();
 
-                initCommand.Help = HelpFactory.Init();
-                initCommand.Execute(options);
-
-                //var command = CommandFactory.Init();
-                //command.Execute(null);
-
+                Console.WriteLine("Press any key to exit applicatoin");
+                Console.ReadLine();
                 return;
             }
-            else if (!playTetris)
+            else
             {
-                ModelHelperConfig.ReadConfig();
+                // do we need to update
+                
+                var updater = new ApplicationUpdater();
 
+                try
+                {
+                    var updated = updater.Run(args);
+
+                    if (!updater.ContinueWithCommand)
+                    {
+                        //return;
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Update was interrupted");
+                    return;
+                }
+                
+            }
+
+            
+
+            if (DoEaster(args))
+            {
+                RunEaster(args);
+            }
+            else 
+            {
+                var context = CreateContextBuilder(args, ApplicationDefaults.CurrentProjectDirectory)
+                    .Build();
+
+                // need to load templates
+                // 1: global
+                // 2: shared
+                // 3: project
+
+                // Application.Templates = Application.LoadTemplates();
+
+
+                // remove this (start)
                 var modelHelperData = ModelHelperConfig.TemplateLocation; // ConsoleExtensions.UserTemplateDirectory();
 
                 var templateReader = new JsonTemplateReader();
@@ -86,22 +119,51 @@ namespace ModelHelper
                 templateFiles.AddRange(customTemplatePath.GetTemplateFiles("project"));
                 templateFiles.AddRange(modelHelperData.GetTemplateFiles("mh"));
 
-                ModelHelperConfig.Templates =
+                Application.Templates =
                     templateFiles.Select(t => templateReader.Read(t.FileInfo.FullName, t.Name)).ToList();
 
-                p.CommandExecutor.Execute(key, options);
+                // end
+                context.ProjectFile = ApplicationDefaults.CurrentProjectFile;
+                context.ProjectDirectory = ApplicationDefaults.CurrentProjectDirectory;
+                
+                p.CommandExecutor.Execute(context);
                 
             }
-            else
-            {
-                Console.Clear();
-                EasterEgg.EasterEgg.Start();
-            }
+            
 
 #if DEBUG
             System.Console.ReadLine();
 #endif
             
         }                
+
+        static IApplicationContextBuilder CreateContextBuilder(string[] args, DirectoryInfo projectDirectory)
+        {
+            return new ApplicationContextBuilder(args, projectDirectory);
+        }
+
+        static bool DoEaster(string[] args)
+        {
+            var playTetris = args.Length > 0 && (args[0] == "tetris" || args[0] == "easter");
+            var doMatrix = args.Length > 0 && (args[0] == "matrix" || args[0] == "easter");
+            return doMatrix || playTetris;
+        }
+
+        static void RunEaster(string[] args)
+        {
+            Console.Clear();
+            var playTetris = args.Length > 0 && (args[0] == "tetris" || args[0] == "easter");
+            var doMatrix = args.Length > 0 && (args[0] == "matrix" || args[0] == "easter");
+
+            if (playTetris)
+            {
+                Console.Clear();
+                EasterEgg.EasterEgg.Start();
+            }
+            else if (doMatrix)
+            {
+                
+            }
+        }
     }
 }

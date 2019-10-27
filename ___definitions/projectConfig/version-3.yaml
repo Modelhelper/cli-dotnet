@@ -1,0 +1,12 @@
+Version: 3
+InstalledVersion: 2.5
+RemoteTemplateDownloadLocation: https://github.com/Modelhelper/templates/releases/latest/download/mh-templates.zip
+Shared:
+  TemplateLocation: C:\dev\projects\patogen\mh\templates
+  ProjectDefinitions: C:\dev\projects\patogen\mh\projects
+  CodeDefinitions: C:\dev\projects\patogen\mh\code
+Global:
+  TemplateLocation: C:\dev\projects\hpe\mh-templates\src
+  ProjectDefinitions: .\projects
+  CodeDefinitions: .\code
+LogLocation: C:\dev\logs

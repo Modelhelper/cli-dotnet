@@ -1,0 +1,17 @@
+{
+    "ConfigVersion": 3,
+    "InstalledVersion": "3.0",
+    "TemplateLocations": {
+        "Shared": "UNSET",
+        "Global": "UNSET"
+    },
+    "ProjectDefinitions": {
+        "Shared": "UNSET",
+        "Global": "UNSET"
+    },
+    "CodeDefinitions": {
+        "Shared": "UNSET",
+        "Global": "UNSET"
+    },
+    "RemoteTemplateDownloadLocation": "https://github.com/Modelhelper/templates/releases/latest/download/mh-templates.zip"
+}

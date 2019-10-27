@@ -1,0 +1,7 @@
+TargetVersion: 3
+Tasks:
+  UpdateConfig: true
+  UpdateCodeDefinitions: false
+  UpdateTemplates: true
+  UpdateProjectDefinitions: false
+  DeleteManifest: true

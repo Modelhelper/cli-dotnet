@@ -18,11 +18,11 @@ using ModelHelper.Core.Project.V1;
 
 namespace ModelHelper.Data
 {
-    [Export(typeof(IDatabaseRepository))]
+    [Export(typeof(IDatabase))]
     [ExportMetadata("Key", "mssql")]
-    public class SqlServerRepository : IDatabaseRepository
+    public class SqlServerDatabase : IDatabase
     {
-        private readonly RepositoryConfig _config;
+        private readonly DatabaseConfig _config;
 
         [Obsolete]
         private readonly string _connectionString;
@@ -38,19 +38,19 @@ namespace ModelHelper.Data
 
         public bool CanTraverseRelations => true;
 
-        public SqlServerRepository()
+        public SqlServerDatabase()
         {
 
         }
 
-        public SqlServerRepository(RepositoryConfig config)
+        public SqlServerDatabase(DatabaseConfig config)
         {
             _config = config;
             _connectionString = config.ConnectionString;
         }
 
         [Obsolete]
-        public SqlServerRepository(string connectionString, IProjectV1 project)
+        public SqlServerDatabase(string connectionString, IProjectV1 project)
         {
             _connectionString = connectionString;
             _project = project;

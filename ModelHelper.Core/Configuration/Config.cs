@@ -1,10 +1,10 @@
 ﻿using System.Security.Policy;
 
-namespace ModelHelper.Core
+namespace ModelHelper.Core.Configuration
 {
     public class Config
     {
-        public  string RemoteTemplateLocation { get; set; }
+        public string RemoteTemplateLocation { get; set; }
         public string RemoteBinaryLocation { get; set; }
 
         public string ScriptLocation { get; set; }

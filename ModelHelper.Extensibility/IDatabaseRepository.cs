@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace ModelHelper.Extensibility
 {
-    public interface IDatabaseRepository
+    public interface IDatabase
     {
         string DatabaseType {get;}
         Task<IEnumerable<ITableRelation>> GetParentEntityRelations(string entityName, bool includeColumns = false);
@@ -49,16 +49,20 @@ namespace ModelHelper.Extensibility
         string ServerName {get;}
         
     }
+
+    [Obsolete]
     public interface IDatabaseMetaData
     {
         string Database { get; }        
     }
 
+    [Obsolete]
     public interface IDatatypeConverter
     {
         string Convert(string from, string to);
     }
 
+    [Obsolete]
     public interface IDatatypeConverterMetaData
     {
         string From { get; }

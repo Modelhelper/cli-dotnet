@@ -4,6 +4,6 @@ namespace ModelHelper
 {
     public interface ICommandExecutor
     {
-        void Execute(string key, List<string> args);
+        void Execute(Core.ApplicationContext context);
     }
 }

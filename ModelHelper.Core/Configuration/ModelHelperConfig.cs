@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Templates;
 using Newtonsoft.Json;
 
-namespace ModelHelper.Core
+namespace ModelHelper.Core.Configuration
 {
+
+    [Obsolete]
     public static class ModelHelperConfig
     {
         private static Config _config;
@@ -17,10 +20,10 @@ namespace ModelHelper.Core
         //{
         //    foreach (var location in templateLocations)
         //    {
-                
+
         //    }
         //    var modelHelperData = ConsoleExtensions.UserTemplateDirectory();
-            
+
         //    var templateReader = new JsonTemplateReader();
         //    var customTemplatePath = ModelHelperConfig.TemplateLocation; // Path.Combine(Directory.GetCurrentDirectory(), "templates");
 
@@ -38,11 +41,11 @@ namespace ModelHelper.Core
         }
 
         public static Config ReadConfig(string path)
-        {           
+        {
             var config = new Config();
             if (File.Exists(path))
             {
-                var content = System.IO.File.ReadAllText(path);
+                var content = File.ReadAllText(path);
 
                 if (!string.IsNullOrEmpty(content))
                 {
@@ -64,7 +67,7 @@ namespace ModelHelper.Core
             if (File.Exists(path))
             {
                 var json = JsonConvert.SerializeObject(config);
-                System.IO.File.WriteAllText(path, json);
+                File.WriteAllText(path, json);
             }
         }
 
@@ -76,13 +79,13 @@ namespace ModelHelper.Core
 
             return location;
         }
-        public static string RemoteTemplateLocation => _config != null ? _config.RemoteTemplateLocation :"";
+        public static string RemoteTemplateLocation => _config != null ? _config.RemoteTemplateLocation : "";
         public static string RemoteBinaryLocation => _config != null ? _config.RemoteBinaryLocation : "";
 
-        public static string TemplateLocation => GetTemplateLocation(); 
+        public static string TemplateLocation => GetTemplateLocation();
         //_config != null && !string.IsNullOrEmpty(_config.TemplateLocation) ? 
-            //_config.TemplateLocation : 
-            //Path.Combine(Directory.GetCurrentDirectory(), "templates");
+        //_config.TemplateLocation : 
+        //Path.Combine(Directory.GetCurrentDirectory(), "templates");
 
         //public static string ScriptLocation => _config != null ? _config.ScriptLocation : "";
 

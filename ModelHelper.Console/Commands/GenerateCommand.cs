@@ -5,8 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using DotLiquid.FileSystems;
-using ModelHelper.Core;
 using ModelHelper.Core.CommandLine;
+using ModelHelper.Core.Configuration;
 using ModelHelper.Core.Database;
 using ModelHelper.Core.Extensions;
 using ModelHelper.Core.Help;
@@ -20,8 +20,8 @@ using ModelHelper.Extensions;
 namespace ModelHelper.Commands
 {
 
-    
-    
+
+
     [Export(typeof(ICommand))]
      [CommandSample(CommandText = "mh generate --entity * --template sql-select-all --show\nor...\n> mh g -e * -t sql-select-all -s", Description = "This will generate code for all entities in the database")]
 [CommandSample(CommandText = "mh generate --entity * --table-only --template sql-select-all --show\nor...\n> mh g -e * -to -t sql-select-all -s", Description = "This will generate code for all tables found in the database")]
@@ -285,14 +285,14 @@ To export to a file the template the 'canExport' property must be set to true.
 
         }
 
-        public override void Execute(List<string> arguments)
+        public override void Execute(Core.ApplicationContext context)
         {
             //var parser = new ArgumentParser<GenerateCommand>();
-            var map = ArgumentParser.Parse(this, arguments);
+            var map = ArgumentParser.Parse(this, context.Options);
 
             TextFilter.Converters = _dataTypeConverters?.Select(c => c.Value).ToList();
            
-            var s = arguments;
+            var s = context.Arguments;
             //var statistics = new Dictionary<string, int>();
             var log = new List<string>();
             //var dryRun = arguments.Contains("--dry-run") || arguments.Contains("-dr");
@@ -624,7 +624,7 @@ To export to a file the template the 'canExport' property must be set to true.
 
         }
 
-        private static List<string> GetTablesFromGroups(string[] groups, IDatabaseRepository repository)
+        private static List<string> GetTablesFromGroups(string[] groups, IDatabase repository)
         {
             var items = new List<string>();
 

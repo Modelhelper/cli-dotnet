@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ModelHelper.Core;
 using ModelHelper.Core.Help;
 using ModelHelper.Core.Rules;
 
@@ -11,6 +12,7 @@ namespace ModelHelper.Commands
             ValidArguments = new List<CommandArgument>();
             IsPublic = true;
             Help = new HelpItem();
+            
         }
 
         public string Key { get; set; }
@@ -22,6 +24,6 @@ namespace ModelHelper.Commands
         public List<CommandArgument> ValidArguments { get; set; }
 
         public abstract bool EvaluateArguments(IRuleEvaluator<Dictionary<string, string>> evaluator);
-        public abstract void Execute(List<string> arguments);
+        public abstract void Execute(ApplicationContext context);
     }
 }
