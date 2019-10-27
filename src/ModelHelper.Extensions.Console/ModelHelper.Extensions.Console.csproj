@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>ModelHelper.Extensions.Cli</RootNamespace>
+    <AssemblyName>ModelHelper.Extensions.Cli</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -19,8 +19,8 @@
     <ProjectReference Include="..\ModelHelper.Core\ModelHelper.Core.csproj" />
     <ProjectReference Include="..\ModelHelper.Extensions.Data\ModelHelper.Extensions.Data.csproj" />
     <ProjectReference Include="..\ModelHelper.Extensions.Project\ModelHelper.Extensions.Project.csproj" />
-    <ProjectReference Include="..\ModelHelper.Extenstions.Console\ModelHelper.Extenstions.Console.csproj" />
-    <ProjectReference Include="..\ModelHelper.Extenstions.Template\ModelHelper.Extenstions.Template.csproj" />
+    <ProjectReference Include="..\ModelHelper.Extensions.Console\ModelHelper.Extensions.Console.csproj" />
+    <ProjectReference Include="..\ModelHelper.Extensions.Template\ModelHelper.Extensions.Template.csproj" />
   </ItemGroup>
 
 </Project>
