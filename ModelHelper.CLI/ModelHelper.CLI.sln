@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29318.209
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelHelper.Console", "..\src\ModelHelper.Console\ModelHelper.Console.csproj", "{62B31FCA-0AA5-40C4-AEC2-FF99234C4266}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{62B31FCA-0AA5-40C4-AEC2-FF99234C4266}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62B31FCA-0AA5-40C4-AEC2-FF99234C4266}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62B31FCA-0AA5-40C4-AEC2-FF99234C4266}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62B31FCA-0AA5-40C4-AEC2-FF99234C4266}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {43DA5673-781F-42CC-82D7-72BFE706BBB5}
+	EndGlobalSection
+EndGlobal
