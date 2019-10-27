@@ -61,7 +61,9 @@ namespace ModelHelper.Core
                 Arguments = args,
                 ProjectDirectory = this.projectDiretory,
                 CommandKey = args.Length > 0 ? args[0] : "about",
-                Options = args.Length > 0 ? args.ToList().GetRange(1, args.Length - 1) : new List<string>()
+                Options = args.Length > 0 ? args.ToList().GetRange(1, args.Length - 1) : new List<string>(),
+                // ProjectFile = 
+
         };
             
             return context;

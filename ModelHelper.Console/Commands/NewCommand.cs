@@ -32,13 +32,14 @@ namespace ModelHelper.Commands
             var projectName = s.Count > 0 && !s[0].StartsWith("-") ? s[0] : "";
             var openForEdit = s.Contains("--open");
 
-            var projectExists = ModelHelperExtensions.ProjectFileExists();
+            var projectExists = Application.ProjectFileExists();
             var createProjectFile = true;
 
             if (projectExists)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("Det eksisterer en prosjektfil allerde, vil du overskrive denne (y/N)? ");
+                //Console.Write("Det eksisterer en prosjektfil allerde, vil du overskrive denne (y/N)? ");
+                Console.Write("A project file already exists, do you want to overwrite this (y/N)? ");
                 Console.ResetColor();
                 var result = Console.ReadLine();
 
@@ -54,7 +55,7 @@ namespace ModelHelper.Commands
                 var projectWriter = new DefaultProjectWriter();
 
 
-                Console.WriteLine("\nDu blir n� presentert noen f� sp�rsm�l\n");
+                Console.WriteLine("\nProject setup: \n");
 
                 if (string.IsNullOrEmpty(projectName))
                 {
@@ -70,7 +71,7 @@ namespace ModelHelper.Commands
                 Console.Write("Root Namespace: ");
                 project.RootNamespace = Console.ReadLine();
 
-                Console.Write("Add a connection now? (Y/n): ");
+                Console.Write("Add default connection now? (Y/n): ");
                 var createConnection = Console.ReadLine();
                 if (string.IsNullOrEmpty(createConnection) ||
                     (!string.IsNullOrEmpty(createConnection) &&
@@ -170,7 +171,7 @@ namespace ModelHelper.Commands
 
                // project.CustomTemplateDirectory = ".\\templates";
 
-                var projectPath = Path.Combine(Directory.GetCurrentDirectory(), ".model-helper");
+                var projectPath = context.ProjectFile.FullName; // Path.Combine(Directory.GetCurrentDirectory(), ".model-helper", "project.json");
                 projectWriter.Write(projectPath, project);
             }
         }

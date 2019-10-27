@@ -123,7 +123,9 @@ namespace ModelHelper
                     templateFiles.Select(t => templateReader.Read(t.FileInfo.FullName, t.Name)).ToList();
 
                 // end
-
+                context.ProjectFile = ApplicationDefaults.CurrentProjectFile;
+                context.ProjectDirectory = ApplicationDefaults.CurrentProjectDirectory;
+                
                 p.CommandExecutor.Execute(context);
                 
             }

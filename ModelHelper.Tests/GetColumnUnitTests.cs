@@ -20,7 +20,7 @@ namespace ModelHelper.Tests
         {
             var table = "clients";
             var project = new ProjectV1();
-            var repo = new ModelHelper.Data.SqlServerRepository(connectionString, project);
+            var repo = new ModelHelper.Data.SqlServerDatabase(connectionString, project);
             var items = await repo.GetTables();
 
             Assert.True(items.Any());
@@ -31,7 +31,7 @@ namespace ModelHelper.Tests
         {
             var table = "NoPrimaryKeys";
             var project = new ProjectV1();
-            var repo = new ModelHelper.Data.SqlServerRepository(connectionString, project);
+            var repo = new ModelHelper.Data.SqlServerDatabase(connectionString, project);
             var items = await repo.GetColumns("dbo", table);
 
             Assert.True(items.Any());
@@ -54,7 +54,7 @@ namespace ModelHelper.Tests
         {
             
             var project = new ProjectV1();
-            var repo = new ModelHelper.Data.SqlServerRepository(connectionString, project);
+            var repo = new ModelHelper.Data.SqlServerDatabase(connectionString, project);
 
             var actual = repo.GetUnionList("select Name = '{0}'", new List<string>());
             var expected = "select Name = 'HUMPYBUMPYDUMP'";
@@ -68,7 +68,7 @@ namespace ModelHelper.Tests
         {
 
             var project = new ProjectV1();
-            var repo = new ModelHelper.Data.SqlServerRepository(connectionString, project);
+            var repo = new ModelHelper.Data.SqlServerDatabase(connectionString, project);
 
             var actual = repo.GetUnionList("select Name = '{0}'", new List<string>{"CreatedBy", "ModifiedBy"});
             var expected = @"select Name = 'CreatedBy' union 

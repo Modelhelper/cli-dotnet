@@ -45,5 +45,14 @@ namespace ModelHelper.Core
                 return new DirectoryInfo(p);
             }
         }
+
+        public static FileInfo CurrentProjectFile
+        {
+            get
+            {
+                var p = Path.Combine(Directory.GetCurrentDirectory(), Constants.ProjectDirectoryName, Constants.ProjectFileName);
+                return new FileInfo(p);
+            }
+        }
     }
 }

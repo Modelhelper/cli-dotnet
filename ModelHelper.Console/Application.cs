@@ -23,10 +23,14 @@ namespace ModelHelper
 
         public static bool ProjectFileExists()
         {
-            var file = Path.Combine(Directory.GetCurrentDirectory(), ".model-helper");
+            var file = Path.Combine(Directory.GetCurrentDirectory(), ".model-helper", "project.json");
             return File.Exists(file);
         }
-
+        public static bool ProjectDirectoryExists()
+        {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), ".model-helper");
+            return Directory.Exists(path);
+        }
 
         public static bool RootDirectoryExists()
         {
