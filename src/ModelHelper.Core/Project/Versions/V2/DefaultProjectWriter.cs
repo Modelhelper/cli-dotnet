@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace ModelHelper.Project.V2
 {
     public class DefaultProjectWriter : IProjectWriter<Project2>
