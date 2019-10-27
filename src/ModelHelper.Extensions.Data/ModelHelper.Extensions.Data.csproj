@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,6 +8,10 @@
     <Folder Include="MsSql\" />
     <Folder Include="MySql\" />
     <Folder Include="Postgres\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ModelHelper.Core\ModelHelper.Core.csproj" />
   </ItemGroup>
 
 </Project>
