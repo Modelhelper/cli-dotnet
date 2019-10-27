@@ -6,9 +6,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Template\**" />
+    <EmbeddedResource Remove="Template\**" />
+    <None Remove="Template\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Cli\" />
-    <Folder Include="Project\" />
-    <Folder Include="Template\" />
+    <Folder Include="Project\Converters\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="2.7.9" />
+    <PackageReference Include="Fluid.Core" Version="1.0.0-beta-9605" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
 </Project>
