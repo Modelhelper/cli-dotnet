@@ -2,9 +2,9 @@
 
 namespace ModelHelper.Core.Project.V1
 {
-    public class ProjectV1 
+    public class Project1 
     {
-        public ProjectV1()
+        public Project1()
         {
             var Version = "1.0.0";
         }
