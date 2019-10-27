@@ -13,8 +13,4 @@
     <Folder Include="React\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ModelHelper.Core\ModelHelper.Core.csproj" />
-  </ItemGroup>
-
 </Project>
