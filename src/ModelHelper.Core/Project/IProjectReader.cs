@@ -5,13 +5,15 @@ namespace ModelHelper.Project
 {
     public interface IProjectReader<T>
     {
-        string CurrentVersion { get;  }
+        // string CurrentVersion { get;  }
         T Read(string path);
-        ProjectVersion CheckVersion(string path);
+        T ReadFromContent(string content);
+        //ProjectVersion CheckVersion(string path);
 
 
     }
 
+    
     public interface IProjectConverter<TFrom, TTo>
     {
         TTo Convert(TFrom from);

@@ -115,4 +115,8 @@ namespace ModelHelper.Core.Project
     }
 
 
+    public class ProjectVersionReader3: IProjectReader<Project3>
+    {
+        
+    }
 }
