@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace ModelHelper.Core.Templates
 {
-    public interface ITemplateReader
+    public interface ITemplateReader<T>
     {
-        ITemplate Read(string path, string name);
-        ITemplate ReadFromContent(string content, string name);
+        T Read(string path, string name);
+        T ReadFromContent(string content, string name);
     }
 }

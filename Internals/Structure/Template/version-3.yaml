@@ -1,26 +1,37 @@
-Key: api.interface # former ExportType
-Version: 3 
+Key: api.interface # optional (former ExportType). A key cannot contain .
+Version: 3 #mandatory
 Language: cs # mandatory field. connects with correct language definition
 Description: |
     Long description if needed. Will show when 'mh template <template>'
 
-# Should show then the user enter 
-# mh template
-ShortDescription: This should be short an consice
+# Should show then the user enter the 'mh template' command
+# optional
+ShortDescription: This should be short and concice
+
+# optional
 Tags: [tag1, tag2, tag3] 
+
+# what groups this template is included in
+# is used to fetch templates withing a group when using -tg in generate command
+# optional
 Groups: [group1, group2, group3]
 
-# If false the user do not need to input an entity to generate content
-EntityIsMandatory: true
+# indicates the model classes to be injected
+# optional
+Models: [table, tables, project, options, template, context?]
 
-CanExport: true
-ExportFileName: file-to-export {{fileName}}
+# optional
+ExportType: snippet | file | none
 
-# use for snippets only. If one need to insert som code
-# the InsertIdentifier should be found in the code file
-IsInsertableSnippet: true,
-InsertIdentifier: // MH-TRANSIENT-PLACEHOLDER,
+# can use template syntax to use information from the models
+# if snippet is used, this will be the filename to inject the snippets to
+# optional if ExportType = none
+ExportFileName: file-to-export {{ table.name | singular }}
+
+# optional (if ExportType is file or none)
+SnippetIdentifier: // MH-TRANSIENT-PLACEHOLDER,
 
 # the body of the template
+# mandatory
 Body: |
     This is the template body

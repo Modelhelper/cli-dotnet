@@ -2,8 +2,8 @@
 
 namespace ModelHelper.Core.Templates
 {
-    public interface ITemplateWriter
+    public interface ITemplateWriter<T>
     {
-        void Write(string path, ITemplate template);
+        void Write(string path, T template);
     }
 }
