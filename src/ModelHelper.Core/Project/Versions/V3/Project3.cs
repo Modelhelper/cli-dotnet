@@ -19,7 +19,7 @@ namespace ModelHelper.Core.Project
         public string RootPath { get; set; }
         public Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
         public ProjectCodeSection Code { get; set; } = new ProjectCodeSection();
-        public string Version { get; protected set; }
+        public string Version { get; private set; }
 
         public class ProjectCodeSection
         {
