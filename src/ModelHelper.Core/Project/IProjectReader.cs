@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace ModelHelper.Project
+namespace ModelHelper.Core.Project
 {
     public interface IProjectReader<T>
     {
         // string CurrentVersion { get;  }
         T Read(string path);
-        T ReadFromContent(string content);
+        //T ReadFromContent(string content);
         //ProjectVersion CheckVersion(string path);
 
 

@@ -1,6 +1,6 @@
 
 
-namespace ModelHelper.Project
+namespace ModelHelper.Core.Project
 {
     public interface IProjectWriter<T>
     {

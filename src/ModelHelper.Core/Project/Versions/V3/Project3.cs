@@ -1,4 +1,6 @@
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ModelHelper.Core.Project
 {
@@ -115,8 +117,5 @@ namespace ModelHelper.Core.Project
     }
 
 
-    public class ProjectVersionReader3: IProjectReader<Project3>
-    {
-        
-    }
+    
 }
