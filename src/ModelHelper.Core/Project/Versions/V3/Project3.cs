@@ -10,26 +10,24 @@ namespace ModelHelper.Core.Project
         {
             Version = "3.0.0";
         }
-
+        public string Version { get; private set; }
         public string RootNamespace { get; set; }
         public string Customer { get; set; }
-        public ProjectSource Source { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-
-
         public string RootPath { get; set; }
+        public ProjectSource Source { get; set; }
         public Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
         public ProjectCodeSection Code { get; set; } = new ProjectCodeSection();
-        public string Version { get; private set; }
 
         public class ProjectCodeSection
         {
-            public bool OmitColumnPrefix { get; set; } = true;
+            public bool UseLogging { get; set; } = false;
+            public bool RemoveColumnPrefixes { get; set; } = true;
             public bool UseConnectionFactory { get; set; } = true;
             public bool UseQueryOptions { get; set; } = false;
-            public bool UseUserContext { get; set; } = false;            
-            public string Key { get; set; }
+            public bool InjectUserContext { get; set; } = false;            
+            // public string Key { get; set; }
 
             public List<CodeLocation> Locations { get; set; }
 
