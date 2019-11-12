@@ -7,6 +7,11 @@
     <RootNamespace>ModelHelper.Cli</RootNamespace>
     <Version>3.0.0</Version>
     <noWarn>CS0612,CS0219</noWarn>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>

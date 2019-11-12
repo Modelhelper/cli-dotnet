@@ -29,7 +29,7 @@ ExportType: snippet | file | none
 ExportFileName: file-to-export {{ table.name | singular }}
 
 # optional (if ExportType is file or none)
-SnippetIdentifier: // MH-TRANSIENT-PLACEHOLDER,
+SnippetIdentifier: // MH-TRANSIENT-PLACEHOLDER
 
 # the body of the template
 # mandatory
