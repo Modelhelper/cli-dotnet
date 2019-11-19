@@ -1,5 +1,5 @@
 {
-    "RootNamespace": "Patogen",
+    "RootNamespace": "SKAL IKKE BRUKES SOM GRUNNLAG",
     "Customer": "Patogen",
     "Data": {
         "DefaultConnection": "lab",
@@ -193,40 +193,41 @@
             "UserType": "string"            
         },
         "Keys": [],
-        "Locations": [
+        "Structure": [
             {
-                "Key": "api.interfaces",
+                
+                "Key": "Interfaces",
                 "Namespace": "PatoLab.Api.Core.Interfaces",
                 "Path": ".\\src\\PatoLab.Api.Core\\Interfaces",
                 "NamePostfix": "Repository",
                 "NamePrefix": "I"
             },
             {
-                "Key": "api.models",
+                "Key": "Models",
                 "Namespace": "PatoLab.Api.Core.Models",
                 "Path": ".\\src\\PatoLab.Api.Core\\Models",
                 "NamePostfix": "Model"
             },
             {
-                "Key": "api.viewmodels",
+                "Key": "ViewModels",
                 "Namespace": "PatoLab.Api.Core.ViewModels",
                 "Path": ".\\src\\PatoLab.Api.Core\\ViewModels",
                 "NamePostfix": "ViewModel"
             },
             {
-                "Key": "api.controllers",
+                "Key": "RestApiControllers",
                 "Namespace": "PatoLab.Api.Controllers",
                 "Path": ".\\controllers",
                 "NamePostfix": "Controller"
             },
             {
-                "Key": "api.repositories",
+                "Key": "DataRepositories",
                 "Namespace": "PatoLab.Api.Data.Repositories",
                 "Path": ".\\src\\PatoLab.Api.Data\\Repositories",
                 "NamePostfix": "Repository"
             },
             {
-                "Key": "gql.query.types",
+                "Key": "GraphqlQueryTypes",
                 "Namespace": "PatoLab.Api.GraphQL.Histology.Query.Types",
                 "Path": ".\\src\\PatoLab.Api\\GraphQL\\{{ CurrentFolder }}\\Query\\Types",
                 "NamePostfix": "QueryType"
