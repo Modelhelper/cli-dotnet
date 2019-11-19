@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using Xunit;
 
@@ -64,6 +65,23 @@ namespace ModelHelper.UnitTests
         [Fact]
         public void Project_main_connection_Should_have_2_groups()
         {
+            // arrange
+            var expected = 2;
+            // act
+            var project = ModelHelper.Extensions.ProjectExtensions.LoadContent(ValidJson);
+            var actual = project.Source.Connections.FirstOrDefault(t => t.Name == "main").Groups.Count();
+            // assert            
+            Assert.Equal(expected, actual);
+        }
+
+
+        [Fact]
+        public void Project_main_connection_Should_have_2_groups_files()
+        {
+            var dir = new DirectoryInfo("");
+            var files = dir.GetFiles();
+
+            // files.OrderBy(f => f.FullName).Take
             // arrange
             var expected = 2;
             // act
