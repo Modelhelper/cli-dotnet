@@ -103,6 +103,8 @@ namespace ModelHelper.Core.Project
 
                 public Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
 
+
+                
             }
 
             public class ProjectSourceColumnMapping
