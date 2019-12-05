@@ -6,7 +6,7 @@ Description: |
 
 # Should show then the user enter the 'mh template' command
 # optional
-ShortDescription: This should be short and concice
+ShortDescription: This should be short and concise
 
 # optional
 Tags: [tag1, tag2, tag3] 
