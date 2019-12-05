@@ -6,3 +6,10 @@ Liste opp tabeller som er endret sise x- dager
 - kan også brukes i generering av kode
 
 -e * -entity-changed '3d' [h, d, w, y, mi, m] - days er default
+
+
+slette- regler må defineres i prosjektet
+-- cascading delete
+-- manuell delete
+
+hva med Parent%Id uten FK, skal man legge inn sjekk på den?
