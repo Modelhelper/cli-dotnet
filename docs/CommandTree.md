@@ -6,7 +6,7 @@
 - template
     - edit
     - create <name> --can-export --export-file --type [snippet | template] --group --tag --scope [project | team | global]
-    - clone [from-file] [file-name]
+    - clone [from-file] [file-name] [type = global | project | team]
     - group
 - project
     - init
