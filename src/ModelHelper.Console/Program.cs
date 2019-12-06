@@ -10,6 +10,11 @@ using Fluid.Tags;
 using Fluid.Values;
 using Irony.Parsing;
 using Microsoft.Extensions.FileProviders;
+using System.CommandLine;
+using System.CommandLine.Builder;
+using System.CommandLine.Invocation;
+using System.CommandLine.Rendering;
+using System.CommandLine.Rendering.Views;
 
 namespace TestingFluidTemplate
 {
@@ -33,10 +38,27 @@ namespace TestingFluidTemplate
     }
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
+
         {
+            var sc = new System.CommandLine.SystemConsole();
+            
+            //  System.CommandLine.Rendering.CommandLineBuilderExtensions.UseAnsiTerminalWhenAvailable.
+            // System.CommandLine.Builder.CommandLineBuilder.UseAnsiTerminalWhenAvailable();
+            var rootCommand = new RootCommand();
+            // var vy = new System.CommandLine.Rendering.VirtualTerminal()
+            rootCommand.Description = "My sample app";
+
+            rootCommand.Handler = CommandHandler.Create<int, bool, FileInfo>((intOption, boolOption, fileOption) =>
+            {
+                
+            });
+
+            // Parse the incoming args and invoke the handler
+            await rootCommand.InvokeAsync(args);
             Console.WriteLine("Hello World!");
 
+            // System.CommandLine.Rendering.Views.
             //setup our DI
             //var serviceProvider = new ServiceCollection()
             //    .AddLogging()
@@ -64,9 +86,9 @@ namespace TestingFluidTemplate
                 Firstname = "Bill",
                 Lastname = "Gates",
                 IsRich = true,
-                
+
             };
-            model.Data.Add(new DataItem { DataType = "varchar", Name = "Frank", Id = 1 , IsParent = true});
+            model.Data.Add(new DataItem { DataType = "varchar", Name = "Frank", Id = 1, IsParent = true });
             model.Data.Add(new DataItem { DataType = "varchar", Name = "Claire", Id = 2 });
 
             var snippet = @"{{ p.Firstname }}";
@@ -118,7 +140,7 @@ Kitchen products:
 
             ";
             TemplateContext.GlobalMemberAccessStrategy.Register<Model>();
-                TemplateContext.GlobalMemberAccessStrategy.Register<DataItem>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DataItem>();
             TemplateContext.GlobalFilters.AddFilter("kebab", StringFilters.Downcase);
             TemplateContext.GlobalFilters.AddFilter("datatype", StringFilters.Datatype);
 
@@ -134,21 +156,21 @@ Kitchen products:
             FluidTemplate.Factory.RegisterBlock<CustomSimpleBlock>("simple");
             FluidTemplate.Factory.RegisterBlock<CustomExpressionBlock>("exp");
             FluidTemplate.Factory.RegisterBlock<CustomArgumentsBlock>("argumentsblock");
-            
+
             if (FluidTemplate.TryParse(source, out var template, out var errors))
             {
                 var context = new TemplateContext();
                 context.FileProvider = new MockFileProvider()
                     .Add("cs.test.liquid", snippet)
                     .Add("row.liquid", rowSnippet);
-                    
-                
+
+
                 context.MemberAccessStrategy.Register(model.GetType()); // Allows any public property of the model to be used
-               // context.SetValue("p", model);
+                                                                        // context.SetValue("p", model);
                 context.SetValue("p", model);
                 context.SetValue("m", model);
 
-                
+
                 if (errors.Any())
 
                 {
@@ -390,7 +412,7 @@ Kitchen products:
         {
             foreach (var argument in arguments)
             {
-                
+
                 //await writer.WriteAsync(argument.Name + ":");
                 await writer.WriteAsync((await argument.Expression.EvaluateAsync(context)).ToStringValue());
             }
@@ -399,5 +421,5 @@ Kitchen products:
         }
     }
 
-    
+
 }
