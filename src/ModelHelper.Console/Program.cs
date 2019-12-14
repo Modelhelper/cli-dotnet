@@ -13,41 +13,51 @@ using Microsoft.Extensions.FileProviders;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Invocation;
+using System.CommandLine.Binding;
+using System.CommandLine.Hosting;
 using System.CommandLine.Rendering;
 using System.CommandLine.Rendering.Views;
-
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 namespace TestingFluidTemplate
 {
-    public class Model
-    {
-        public string Firstname { get; set; }
-        public string Lastname { get; set; }
-
-        public bool IsRich { get; set; }
-        public List<DataItem> Data { get; set; } = new List<DataItem>();
-
-    }
-
-    public class DataItem
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string DataType { get; set; }
-
-        public bool IsParent { get; set; }
-    }
+    
     class Program
     {
         static async Task Main(string[] args)
 
         {
+
+            
             var sc = new System.CommandLine.SystemConsole();
+            
+           var c = new SystemConsoleTerminal(sc);
+            if (c is ITerminal)
+            {
+                System.Console.WriteLine("sc is ITerminal");
+            }
+
+            c.OutputMode = OutputMode.Ansi;
+
+            c.Out.WriteLine("yo mother f...");
+// var consoleRenderer = new ConsoleRenderer(
+//                 sc,
+//                 mode: c.BindingContext.OutputMode(),
+//                 resetAfterRender: true);   
+
+//             var screen = new ScreenView()
+            
+            var clc = new System.CommandLine.Builder.CommandLineBuilder();
+            clc.UseAnsiTerminalWhenAvailable();
+
             
             //  System.CommandLine.Rendering.CommandLineBuilderExtensions.UseAnsiTerminalWhenAvailable.
             // System.CommandLine.Builder.CommandLineBuilder.UseAnsiTerminalWhenAvailable();
             var rootCommand = new RootCommand();
             // var vy = new System.CommandLine.Rendering.VirtualTerminal()
-            rootCommand.Description = "My sample app";
+            rootCommand.Description = "ModelHelper";
 
             rootCommand.Handler = CommandHandler.Create<int, bool, FileInfo>((intOption, boolOption, fileOption) =>
             {
@@ -58,6 +68,9 @@ namespace TestingFluidTemplate
             await rootCommand.InvokeAsync(args);
             Console.WriteLine("Hello World!");
 
+            Console.WriteLine("MESSAGE FROM CLASS TERMINAL");
+
+            
             // System.CommandLine.Rendering.Views.
             //setup our DI
             //var serviceProvider = new ServiceCollection()
@@ -81,7 +94,81 @@ namespace TestingFluidTemplate
 
             //logger.LogDebug("All done!");
 
-            var model = new Model
+            
+
+            Console.ReadLine();
+
+        }
+
+        
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                
+                
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    // Configure the app here.
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                   
+                    //services.AddSingleton<IPatoLabConfiguration, PatoLabConfiguration>();
+                    // services.AddTransient<IConnectionFactory, ConnectionFactory>();
+                    // services.AddTransient<IHistologyRepository, HistologyRepository>();
+
+                    // services.AddHostedService<Workers.HistologyReceiptWorker>();
+                    // services.AddHostedService<Workers.HistologyOrderWorker>();
+                    // services.AddHostedService<Workers.UpdateHistologyStatusWorker>();
+                    // services.AddHostedService<Workers.SyncMissingOrderCodeOnStatusTableWorker>();
+                    // services.AddHostedService<Workers.UpdateHistologyStatusWorker>();
+
+                })
+                
+                //.UseInvocationLifetime()
+                //.UseSerilog()
+                
+                // .ConfigureWebHostDefaults(webBuilder =>
+                // {
+                //     webBuilder.UseConfiguration(_config);
+                //     webBuilder.UseKestrel(options =>
+                //     {
+                //         options.ListenLocalhost(_config.GetValue<int>("HealthPort"));
+                //     });
+                    
+                //     webBuilder.UseStartup<Startup>();
+                // })
+                ;
+    }
+
+#region close off    
+
+public class Model
+    {
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
+
+        public bool IsRich { get; set; }
+        public List<DataItem> Data { get; set; } = new List<DataItem>();
+
+    }
+
+    public class DataItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string DataType { get; set; }
+
+        public bool IsParent { get; set; }
+    }
+public class FluidThings
+        {
+            public FluidThings()
+            {
+            }
+
+            public void Do()
+            {
+                var model = new Model
             {
                 Firstname = "Bill",
                 Lastname = "Gates",
@@ -179,11 +266,27 @@ Kitchen products:
                 Console.WriteLine(template.Render(context));
             }
 
+            }
+        }
 
-            Console.ReadLine();
+    public class TestTerminal
+    {
+        private readonly ITerminal _terminal;
 
+        public TestTerminal(ITerminal terminal)
+        {
+            this._terminal = terminal;
+        }
+
+        public void WriteToOut(string message)
+        {
+            if (_terminal != null)
+            {
+                _terminal.Out.WriteLine(message);
+            }
         }
     }
+
     public class NamespaceTag : IdentifierTag
     {
         public NamespaceTag()
@@ -421,5 +524,5 @@ Kitchen products:
         }
     }
 
-
+#endregion
 }
