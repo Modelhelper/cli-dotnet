@@ -4,7 +4,8 @@ using System.IO;
 
 namespace ModelHelper.Core.Project
 {
-    public class Project3
+
+    public class Project3 : IProject3
     {
         public Project3()
         {
@@ -20,13 +21,16 @@ namespace ModelHelper.Core.Project
         public Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
         public ProjectCodeSection Code { get; set; } = new ProjectCodeSection();
 
+
+    }
+
         public class ProjectCodeSection
         {
             public bool UseLogging { get; set; } = false;
             public bool RemoveColumnPrefixes { get; set; } = true;
             public bool UseConnectionFactory { get; set; } = true;
             public bool UseQueryOptions { get; set; } = false;
-            public bool InjectUserContext { get; set; } = false;            
+            public bool InjectUserContext { get; set; } = false;
             // public string Key { get; set; }
 
             public List<CodeLocation> Locations { get; set; }
@@ -49,7 +53,7 @@ namespace ModelHelper.Core.Project
             {
                 public string Interface { get; set; }
                 public string Variable { get; set; }
-                public string Method { get; set; }                
+                public string Method { get; set; }
                 public string CodeLocationKey { get; set; }
             }
 
@@ -104,7 +108,7 @@ namespace ModelHelper.Core.Project
                 public Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
 
 
-                
+
             }
 
             public class ProjectSourceColumnMapping
@@ -114,8 +118,7 @@ namespace ModelHelper.Core.Project
                 public string UsedAs { get; set; }
             }
         }
-    }
-
-
     
+    
+
 }
