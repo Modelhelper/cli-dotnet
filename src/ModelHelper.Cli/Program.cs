@@ -26,6 +26,7 @@ using ModelHelper.Cli.Extensions;
 using Microsoft.Extensions.Logging;
 using ModelHelper.Core;
 using ModelHelper.Core.Project;
+using ModelHelper.IO;
 
 namespace ModelHelper.Cli
 {
@@ -33,15 +34,32 @@ namespace ModelHelper.Cli
     class Program
     {
         static async Task Main(string[] args)
-
         {
+            var defaults = new ModelHelperDefaults();
+            
+            // check for configuration
+            if (!defaults.ConfigurationFile.Exists)
+            {
+                // Install
+                if (!defaults.RootDirectory.Exists)
+                {
+                    defaults.RootDirectory.Create();
+                }
+
+                var defaultConfig = ModelHelperConfiguration.CreateDefault();
+                var writer = new YamlWriter<ModelHelperConfiguration>();
+                writer.Write(defaults.ConfigurationFile.FullName, defaultConfig);
+            }
 
             // check for project file.
-            var reader = new ProjectReader();
-            var defaults = new ModelHelperDefaults();
+            var configReader = new YamlReader<ModelHelperConfiguration>();
+            var config = configReader.Read(defaults.ConfigurationFile.FullName);
+
+
+            var projectReader = new ProjectReader();
             // System.CommandLine.Rendering.Views.
 
-            var currentProject = reader.Read(defaults.CurrentProjectFile.FullName);
+            var currentProject = projectReader.Read(defaults.CurrentProjectFile.FullName);
             //setup our DI
             var serviceProvider = new ServiceCollection()
                .AddLogging()               
@@ -49,6 +67,7 @@ namespace ModelHelper.Cli
                .AddTransient<ProjectCommand>()
                .AddTransient<TemplateCommand>()
                .AddTransient<ModelHelperRootCommand>()
+               .AddSingleton<IModelHelperConfiguration>(config)
                .AddSingleton<IModelHelperDefaults>(defaults)
                .AddSingleton<IProject3>(currentProject)
                .AddTransient<IConsole, System.CommandLine.SystemConsole>()
@@ -135,8 +154,6 @@ namespace ModelHelper.Cli
                 // })
                 ;
     }
-    
-    
     #region close off    
 
     public class Model

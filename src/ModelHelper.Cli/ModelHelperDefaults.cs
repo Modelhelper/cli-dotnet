@@ -10,7 +10,7 @@ namespace ModelHelper.Cli
         {
             get
             {
-                var p = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ModelHelper", "v3");
+                var p = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ModelHelper");
                 return new DirectoryInfo(p);
             }
         }
@@ -32,17 +32,21 @@ namespace ModelHelper.Cli
                 return new FileInfo(p);
             }
         }
+        public FileInfo ConfigurationFile
+        {
+            get
+            {
+                var p = Path.Combine(RootDirectory.FullName, VersionfolderName, ConfigFileName);
+                return new FileInfo(p);
+            }
+        }
         
         public string ProjectFileName => "project.json";
-
         public string ProjectDirectoryName => ".model-helper";
-
         public string ConfigFileName => "config.yaml";
-
+        public string VersionfolderName => "v3";
         public string RemoteProjectDefinitionZipFile => "project-definitions.zip";
-
         public string RemoteCodeDefinitionZipFile => "code-definitions.zip";
-
         public string RemoteTemplateZipFile => "mh-templates.zip";
     }
 

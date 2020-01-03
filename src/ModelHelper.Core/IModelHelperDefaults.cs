@@ -8,13 +8,14 @@ namespace ModelHelper.Core
 
         DirectoryInfo CurrentProjectDirectory { get; }
         FileInfo CurrentProjectFile { get; }
+        FileInfo ConfigurationFile { get; }
         string ProjectFileName { get; } //= "project.json";
         string ProjectDirectoryName { get; } // = ".modelhelper"
         string ConfigFileName { get; } // = ".config.yaml"
+        string VersionfolderName { get; } // = ".config.yaml"
         string RemoteProjectDefinitionZipFile { get; } // = "project-definitions.zip"
         string RemoteCodeDefinitionZipFile { get; } // = "code-definitions.zip"
         string RemoteTemplateZipFile { get; } // = "mh-templates.zip"
-
 
     }
 }
