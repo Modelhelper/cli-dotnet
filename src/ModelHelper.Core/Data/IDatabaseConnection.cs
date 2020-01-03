@@ -42,4 +42,8 @@ namespace ModelHelper.Data
         Task<IDatabaseInformation> TestConnectionAsync();
     }
 
+    public interface IConnectionFactory
+    {
+        IDatabaseConnection Create(string connectionName);
+    }
 }

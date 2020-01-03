@@ -1,5 +1,5 @@
-Version: 3
-InstalledVersion: 2.5
+ConfigVersion: 3
+AppVersion: 2.5
 RemoteTemplateDownloadLocation: https://github.com/Modelhelper/templates/releases/latest/download/mh-templates.zip
 Shared:
   TemplateLocation: C:\dev\projects\patogen\mh\templates

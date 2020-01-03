@@ -11,6 +11,7 @@ namespace ModelHelper.Core.Project
         {
             Version = "3.0.0";
         }
+        public bool Exists { get; set;}
         public string Version { get; private set; }
         public string RootNamespace { get; set; }
         public string Customer { get; set; }

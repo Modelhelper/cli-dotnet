@@ -4,6 +4,7 @@ namespace ModelHelper.Core.Project
 {
     public interface IProject3
     {
+        bool Exists { get; set;}
         string Version { get; }
         string RootNamespace { get; set; }
         string Customer { get; set; }

@@ -1,0 +1,78 @@
+{
+    "Exists": false,
+    "Version": "3.0.0",
+    "RootNamespace": null,
+    "Customer": "Demo",
+    "Name": null,
+    "Description": null,
+    "RootPath": null,
+    "Source": {
+        "DefaultSource": "main",
+        "Connections": [
+            {
+                "Name": "demo-sql",
+                "ConnectionString": "DEMO-SQL",
+                "DefaultSchema": "dbo",
+                "Type": "mssql",
+                "CreateConnectionMethod": "CreateForDemo()",
+                "Mapping": [
+                    {
+                        "Name": "CreatedOn",
+                        "IsIgnored": true,
+                        "UsedAs": "CreatedDate"
+                    }
+                ],
+                "Groups": [
+                    {
+                        "Name": "person_group",
+                        "Schema": "dbo",
+                        "Options": {
+                            "folder": "Person"
+                        },
+                        "Entities": [
+                            "Person",
+                            "Contact",
+                            "Phone",
+                            "Email",
+                            "Address"
+                        ]
+                    },
+                    {
+                        "Name": "order_group",
+                        "Schema": "dbo",
+                        "Options": {
+                            "folder": "Order"
+                        },
+                        "Entities": [
+                            "OrderHead",
+                            "OrderItem"
+                        ]
+                    }
+                ],
+                "Options": {}
+            }
+        ],
+        "Groups": [],
+        "Mapping": []
+    },
+    "Options": {},
+    "Code": {
+        "UseLogging": false,
+        "RemoveColumnPrefixes": true,
+        "UseConnectionFactory": true,
+        "UseQueryOptions": false,
+        "InjectUserContext": false,
+        "Locations": [
+            {
+                "Key": "data",
+                "Namespace": "{root}.Data.{folder | Upper}",
+                "Path": ".\\Data\\{folder | Upper}",
+                "NamePrefix": null,
+                "NamePostfix": "Repository"
+            }
+        ],
+        "ConnectionFactory": null,
+        "UserContext": null,
+        "QueryOptions": null
+    }
+}

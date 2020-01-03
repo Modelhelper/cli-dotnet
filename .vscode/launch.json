@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/ModelHelper.Console/bin/Debug/netcoreapp3.1/win-x64/mh.dll",
+            "program": "${workspaceFolder}/src/ModelHelper.Cli/bin/Debug/netcoreapp3.1/win-x64/mh.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/ModelHelper.Console",
+            "cwd": "${workspaceFolder}/src/ModelHelper.Cli",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false

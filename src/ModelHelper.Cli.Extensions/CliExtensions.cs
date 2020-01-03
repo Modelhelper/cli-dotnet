@@ -1,15 +1,17 @@
-﻿using ModelHelper.Extensions.Presentation;
+﻿using ModelHelper.Core.Project;
+using ModelHelper.Extensions.Presentation;
 using System;
 using System.Collections.Generic;
+using System.CommandLine.Rendering;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace ModelHelper.Extensions.Cli
+namespace ModelHelper.Cli.Extensions
 {
     public static class CliExtensions
     {
-        
+
         public static string GetSlogan()
         {
             var preps = new List<string>
@@ -142,49 +144,50 @@ namespace ModelHelper.Extensions.Cli
 
 
         };
-            
+
             var asciiRnd = new Random();
             var ascIndex = asciiRnd.Next(asciiArt.Count);
             var sloganString = asciiArt[ascIndex];
 
             return sloganString;
         }
-    
-        public static void WriteSlogan()
+
+        public static void WriteSlogan(this ITerminal terminal)
         {
             var slogan = GetSlogan();
-            $"\n\n{slogan}".WriteConsoleGray();
+            terminal.WithGrayText($"\n\n{slogan}\n");
+            // $"\n\n{slogan}".WriteConsoleGray();
         }
-   
 
-    public static void WriteToConsole(this Table table, bool includeHeader = true)
+
+        public static void WriteToConsole(this Table table, bool includeHeader = true)
         {
             table.UseHeader = includeHeader;
             var pads = new Dictionary<int, int>();
             var margin = 5;
             for (int i = 0; i < table.Rows.Count; i++)
             {
-                
-                    for (int j = 0; j < table.Rows[i].Values.Count; j++)
+
+                for (int j = 0; j < table.Rows[i].Values.Count; j++)
+                {
+                    var len = table.Rows[i].Values[j].Value.Length + margin;
+                    if (!pads.ContainsKey(j))
                     {
-                        var len = table.Rows[i].Values[j].Value.Length + margin;
-                        if (!pads.ContainsKey(j))
+                        pads.Add(j, len);
+                    }
+                    else
+                    {
+                        if (len > pads[j])
                         {
-                            pads.Add(j, len);
+                            pads[j] = len;
                         }
-                        else
-                        {
-                            if (len > pads[j])
-                            {
-                                pads[j] = len;
-                            }
-                        }
+                    }
                 }
-                    
-                    
+
+
             }
 
-            
+
 
             if (table.UseHeader)
             {
@@ -217,7 +220,7 @@ namespace ModelHelper.Extensions.Cli
                 }
 
                 System.Console.WriteLine(builder.ToString());
-                
+
             }
 
             var maxWidth = pads.Sum(p => p.Value);
@@ -233,10 +236,10 @@ namespace ModelHelper.Extensions.Cli
                 {
                     var val = row.Values[i];
                     var pad = pads[i];
-                    
+
                     if (val.Alignment == RowValueAlignment.Left)
                     {
-                        
+
                         builder.Append($"{val.Value.PadRight(pads[i])}");
                     }
                     else
@@ -248,19 +251,19 @@ namespace ModelHelper.Extensions.Cli
 
                 System.Console.WriteLine(builder.ToString());
             }
-            
-            
-            
+
+
+
         }
-    
-    
-            public static Table ToConsoleTable<T>(this IEnumerable<T> source, params string[] properties) where T : class
+
+
+        public static Table ToConsoleTable<T>(this IEnumerable<T> source, params string[] properties) where T : class
         {
             var table = new Table();
             var list = source.ToList();
             if (list.Any())
             {
-               // var t = source.First().GetType();
+                // var t = source.First().GetType();
 
                 var rows = new List<Row>();
                 var header = list.First().ToTableHeader(properties);
@@ -275,7 +278,7 @@ namespace ModelHelper.Extensions.Cli
                 table.Header = header;
                 table.Rows = rows;
             }
-            
+
             return table;
         }
         internal static Row ToTableHeader<T>(this T source, params string[] properties)
@@ -291,140 +294,216 @@ namespace ModelHelper.Extensions.Cli
                     Value = p.Name,
                     Alignment = p.PropertyType == typeof(int) ? RowValueAlignment.Right : RowValueAlignment.Left
                 }).ToList();
-            
+
             return row;
         }
 
-        internal static Row ToTableRow<T>(this T source, Row header)
+        public static void WriteProjectInfo(this ITerminal terminal, IProject3 project)
         {
-            var row = new Row();
-
-            var props = source.GetType().GetProperties();
-            var propertyList = header != null && header.Values.Any()
-                ? props.Where(p => header.Values.Select(h => h.Value).Contains(p.Name)).ToList() //.Select( h => new { h.Value, h.Alignment }
-                : props.ToList();
-
-            
-            row.Values = propertyList.Select(p => new RowValue
+            // Current Project info
+            if (project != null && !project.Exists)
             {
-                Value = p.GetValue(source).ToString(),
-                Alignment = p.PropertyType == typeof(int) ? RowValueAlignment.Right : RowValueAlignment.Left
-            }).ToList();
-            
-            return row;
-        }
-        public static string WriteConsoleSuccess(this string input)
-        {
-            System.Console.ForegroundColor = ConsoleColor.Green;
-            System.Console.WriteLine(input);
-            System.Console.ResetColor();
-
-            return input;
-        }
-
-        public static string WriteConsoleWarning(this string input)
-        {
-            System.Console.ForegroundColor = ConsoleColor.Yellow;
-            System.Console.WriteLine(input);
-            System.Console.ResetColor();
-
-            return input;
-        }
-
-        public static string WriteConsoleError(this string input)
-        {
-            System.Console.ForegroundColor = ConsoleColor.Red;
-            System.Console.WriteLine(input);
-            System.Console.ResetColor();
-
-            return input;
-        }
-
-        public static string WriteConsoleGray(this string input)
-        {
-            System.Console.ForegroundColor = ConsoleColor.DarkGray;
-            System.Console.WriteLine(input);
-            System.Console.ResetColor();
-
-            return input;
-        }
-
-        public static string WriteConsoleCommand(this string command)
-        {
-            System.Console.ForegroundColor = ConsoleColor.White;
-            System.Console.WriteLine($"\n> {command}");
-            System.Console.ResetColor();
-
-            return command;
-        }
-
-        
-        public static void WriteConsoleLogo()
-        {
-            System.Console.ForegroundColor = ConsoleColor.Blue;
-            System.Console.WriteLine(GetAsciiText());
-            System.Console.ResetColor();
-            
-        }
-
-        public static void ShowPercentProgress(string message, int currElementIndex, int totalElementCount, string operation = "")
-        {
-            //if (currElementIndex < 0 || currElementIndex > totalElementCount)
-            //{
-            //    throw new InvalidOperationException("currElement out of range");
-            //}
-            int percent = (100 * (currElementIndex)) / totalElementCount;
-            if (percent > 100) percent = 100;
-
-            var operationString = string.IsNullOrEmpty(operation) ? "" : "=> " + operation;
-            System.Console.Write("\r{0}: {1}% {2}", message, percent.ToString().PadLeft(4), operationString);
-            if (currElementIndex == totalElementCount - 1)
-            {
-                System.Console.WriteLine(Environment.NewLine);
+                terminal.WriteError($"\n\nCannot find any valid project file for Model-Helper on this location, Use 'mh init' to create a project");
             }
-            
-        }
-
-        public static void WriteConsoleTitle(this string title)
-        {
-            var screenLen = 100;
-            var totalLen = title.Length > screenLen ? title.Length : screenLen;
-            var len = title.Length;
-            var padLeft = ((totalLen - len) / 2) + len;
-            //Console.ForegroundColor = ConsoleColor.DarkBlue;
-            System.Console.WriteLine("\n");
-            System.Console.WriteLine("".PadRight(screenLen, '-'));
-            System.Console.WriteLine($"{title.ToUpper().PadLeft(padLeft)}");
-            System.Console.WriteLine("".PadRight(screenLen, '-'));
-            System.Console.ResetColor();
-        }
-
-        public static void WriteConsoleSubTitle(this string subTitle, string small = "")
-        {
-            System.Console.WriteLine($"\n  {subTitle.ToUpper()} {small}\n");
-            //Console.WriteLine("".PadRight(subTitle.Length, '-'));            
-        }
-
-        public static void WriteIfContent(this string input)
-        {
-            if (!string.IsNullOrEmpty(input))
+            else
             {
-                System.Console.WriteLine(input);
-            }            
+                terminal.Out.Write("\n\nCurrent ModelHelper Project\n\n");
+
+                var list = new Dictionary<string, string>
+                {
+                    {"Name", project.Name},
+                    {"Customer", project.Customer},
+                    {
+                        "Version", project.Version
+
+                    }
+                };
+
+                var padding = list.Max(i => i.Key.Length) + 1;
+
+                foreach (var item in list)
+                {
+                    Console.WriteLine($"{ item.Key.PadRight(padding)}{":".PadRight(3)} {item.Value}");
+                }
+
+
+
+
+                if (project.Source != null && project.Source.Connections != null)
+                {
+                    var connections = project.Source.Connections.Select(i => new
+                    {
+                        Name = i.Name,
+                        i.Type,
+                        DefaultSchema = string.IsNullOrEmpty(i.DefaultSchema) ? "" : i.DefaultSchema,
+                        Server = "", //new SqlConnectionStringBuilder(i.ConnectionString).DataSource,
+                        Database = "" //new SqlConnectionStringBuilder(i.ConnectionString).InitialCatalog
+
+                    });
+
+                    $"Connections".WriteConsoleSubTitle();
+                    connections.ToConsoleTable().WriteToConsole();
+                }
+
+
+            // "\n\nFor more about the current project use the 'mh project --verbose' command".WriteConsoleWarning();
+        }
+        // WriteToConsole(project);
+
+
+    }
+
+    internal static Row ToTableRow<T>(this T source, Row header)
+    {
+        var row = new Row();
+
+        var props = source.GetType().GetProperties();
+        var propertyList = header != null && header.Values.Any()
+            ? props.Where(p => header.Values.Select(h => h.Value).Contains(p.Name)).ToList() //.Select( h => new { h.Value, h.Alignment }
+            : props.ToList();
+
+
+        row.Values = propertyList.Select(p => new RowValue
+        {
+            Value = p.GetValue(source).ToString(),
+            Alignment = p.PropertyType == typeof(int) ? RowValueAlignment.Right : RowValueAlignment.Left
+        }).ToList();
+
+        return row;
+    }
+    public static string WriteConsoleSuccess(this string input)
+    {
+        System.Console.ForegroundColor = ConsoleColor.Green;
+        System.Console.WriteLine(input);
+        System.Console.ResetColor();
+
+        return input;
+    }
+
+    public static string WriteConsoleWarning(this string input)
+    {
+        System.Console.ForegroundColor = ConsoleColor.Yellow;
+        System.Console.WriteLine(input);
+        System.Console.ResetColor();
+
+        return input;
+    }
+
+    public static string WriteError(this ITerminal terminal, string input)
+    {
+        terminal.ForegroundColor = ConsoleColor.Red;
+        terminal.Out.Write($"\n{input}");
+        terminal.ResetColor();
+
+        return input;
+    }
+
+    [Obsolete]
+    public static string WriteConsoleError(this string input)
+    {
+        System.Console.ForegroundColor = ConsoleColor.Red;
+        System.Console.WriteLine(input);
+        System.Console.ResetColor();
+
+        return input;
+    }
+
+    public static string WriteConsoleGray(this string input)
+    {
+        System.Console.ForegroundColor = ConsoleColor.DarkGray;
+        System.Console.WriteLine(input);
+        System.Console.ResetColor();
+
+        return input;
+    }
+
+    public static string WithGrayText(this ITerminal terminal, string input)
+    {
+        terminal.ForegroundColor = ConsoleColor.DarkGray;
+        terminal.Out.Write(input);
+        terminal.ResetColor();
+
+        return input;
+    }
+
+
+    public static string WriteConsoleCommand(this string command)
+    {
+        System.Console.ForegroundColor = ConsoleColor.White;
+        System.Console.WriteLine($"\n> {command}");
+        System.Console.ResetColor();
+
+        return command;
+    }
+
+
+    public static void WriteLogo(this ITerminal terminal, string version = "")
+    {
+        terminal.ForegroundColor = ConsoleColor.Blue;
+        terminal.Out.Write(GetAsciiText(version));
+        terminal.ResetColor();
+
+    }
+
+    public static void ShowPercentProgress(string message, int currElementIndex, int totalElementCount, string operation = "")
+    {
+        //if (currElementIndex < 0 || currElementIndex > totalElementCount)
+        //{
+        //    throw new InvalidOperationException("currElement out of range");
+        //}
+        int percent = (100 * (currElementIndex)) / totalElementCount;
+        if (percent > 100) percent = 100;
+
+        var operationString = string.IsNullOrEmpty(operation) ? "" : "=> " + operation;
+        System.Console.Write("\r{0}: {1}% {2}", message, percent.ToString().PadLeft(4), operationString);
+        if (currElementIndex == totalElementCount - 1)
+        {
+            System.Console.WriteLine(Environment.NewLine);
         }
 
-        public static string UserTemplateDirectory()
-        {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-            var modelHelperData =
-                Path.Combine(appData, "ModelHelper", "templates");
+    }
 
-            return modelHelperData;
+    public static void WriteConsoleTitle(this string title)
+    {
+        var screenLen = 100;
+        var totalLen = title.Length > screenLen ? title.Length : screenLen;
+        var len = title.Length;
+        var padLeft = ((totalLen - len) / 2) + len;
+        //Console.ForegroundColor = ConsoleColor.DarkBlue;
+        System.Console.WriteLine("\n");
+        System.Console.WriteLine("".PadRight(screenLen, '-'));
+        System.Console.WriteLine($"{title.ToUpper().PadLeft(padLeft)}");
+        System.Console.WriteLine("".PadRight(screenLen, '-'));
+        System.Console.ResetColor();
+    }
+
+    public static void WriteConsoleSubTitle(this string subTitle, string small = "")
+    {
+        System.Console.WriteLine($"\n  {subTitle.ToUpper()} {small}\n");
+        //Console.WriteLine("".PadRight(subTitle.Length, '-'));            
+    }
+
+    public static void WriteIfContent(this string input)
+    {
+        if (!string.IsNullOrEmpty(input))
+        {
+            System.Console.WriteLine(input);
         }
+    }
 
-        public static string GetAsciiText()
-        {
-            var ascii = @"
+    public static string UserTemplateDirectory()
+    {
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+        var modelHelperData =
+            Path.Combine(appData, "ModelHelper", "templates");
+
+        return modelHelperData;
+    }
+
+    public static string GetAsciiText(string version = "")
+    {
+        var v = string.IsNullOrEmpty(version) ? "".PadLeft(10, ' ') : version.PadLeft(10, ' ');
+        var ascii = @"
 
         :::   :::    ::::::::  :::::::::  :::::::::: :::  
       :+:+: :+:+:  :+:    :+: :+:    :+: :+:        :+:   
@@ -443,8 +522,9 @@ namespace ModelHelper.Extensions.Cli
 
 ";
 
+        // var v = $"v.{Environment.Version.Major}.{Environment.Version.Minor}".PadRight(7, ' ');
 
-            var ascii2 = @"
+        var ascii2 = $@"
 888b     d888               888          888 888    888          888                           
 8888b   d8888               888          888 888    888          888                           
 88888b.d88888               888          888 888    888          888                           
@@ -455,100 +535,101 @@ namespace ModelHelper.Extensions.Cli
 888       888  ""Y88P""   ""Y88888  ""Y8888  888 888    888  ""Y8888  888 88888P""   ""Y8888  888     
                                                                      888                       
                                                                      888                       
-                                                                     888                       
+                                                                     888           {v}  
+                                                                     
 ";
-            return ascii2;
+        return ascii2;
+    }
+
+
+    public static string ToStringTable<T>(
+this IEnumerable<T> values,
+string[] columnHeaders,
+params Func<T, object>[] valueSelectors)
+    {
+        return ToStringTable(values.ToArray(), columnHeaders, valueSelectors);
+    }
+
+
+
+    public static string ToStringTable<T>(
+      this T[] values,
+      string[] columnHeaders,
+      params Func<T, object>[] valueSelectors)
+    {
+
+
+        var arrValues = new string[values.Length + 1, valueSelectors.Length];
+
+        // Fill headers
+        for (int colIndex = 0; colIndex < arrValues.GetLength(1); colIndex++)
+        {
+            arrValues[0, colIndex] = columnHeaders[colIndex];
         }
 
-
-        public static string ToStringTable<T>(
-    this IEnumerable<T> values,
-    string[] columnHeaders,
-    params Func<T, object>[] valueSelectors)
+        // Fill table rows
+        for (int rowIndex = 1; rowIndex < arrValues.GetLength(0); rowIndex++)
         {
-            return ToStringTable(values.ToArray(), columnHeaders, valueSelectors);
-        }
-
-        
-
-        public static string ToStringTable<T>(
-          this T[] values,
-          string[] columnHeaders,
-          params Func<T, object>[] valueSelectors)
-        {
-            
-
-            var arrValues = new string[values.Length + 1, valueSelectors.Length];
-
-            // Fill headers
             for (int colIndex = 0; colIndex < arrValues.GetLength(1); colIndex++)
             {
-                arrValues[0, colIndex] = columnHeaders[colIndex];
+                arrValues[rowIndex, colIndex] = valueSelectors[colIndex]
+                  .Invoke(values[rowIndex - 1]).ToString();
             }
-
-            // Fill table rows
-            for (int rowIndex = 1; rowIndex < arrValues.GetLength(0); rowIndex++)
-            {
-                for (int colIndex = 0; colIndex < arrValues.GetLength(1); colIndex++)
-                {
-                    arrValues[rowIndex, colIndex] = valueSelectors[colIndex]
-                      .Invoke(values[rowIndex - 1]).ToString();
-                }
-            }
-
-            return ToStringTable(arrValues);
         }
 
-        public static string ToStringTable(this string[,] arrValues)
-        {
-            int[] maxColumnsWidth = GetMaxColumnsWidth(arrValues);
-            var headerSpliter = new string('-', maxColumnsWidth.Sum(i => i + 3) - 1);
+        return ToStringTable(arrValues);
+    }
 
-            var sb = new StringBuilder();
+    public static string ToStringTable(this string[,] arrValues)
+    {
+        int[] maxColumnsWidth = GetMaxColumnsWidth(arrValues);
+        var headerSpliter = new string('-', maxColumnsWidth.Sum(i => i + 3) - 1);
+
+        var sb = new StringBuilder();
+        for (int rowIndex = 0; rowIndex < arrValues.GetLength(0); rowIndex++)
+        {
+            for (int colIndex = 0; colIndex < arrValues.GetLength(1); colIndex++)
+            {
+                // Print cell
+                string cell = arrValues[rowIndex, colIndex];
+                cell = cell.PadRight(maxColumnsWidth[colIndex]);
+                sb.Append(" | ");
+                sb.Append(cell);
+            }
+
+            // Print end of line
+            sb.Append(" | ");
+            sb.AppendLine();
+
+            // Print splitter
+            if (rowIndex == 0)
+            {
+                sb.AppendFormat(" |{0}| ", headerSpliter);
+                sb.AppendLine();
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private static int[] GetMaxColumnsWidth(string[,] arrValues)
+    {
+        var maxColumnsWidth = new int[arrValues.GetLength(1)];
+        for (int colIndex = 0; colIndex < arrValues.GetLength(1); colIndex++)
+        {
             for (int rowIndex = 0; rowIndex < arrValues.GetLength(0); rowIndex++)
             {
-                for (int colIndex = 0; colIndex < arrValues.GetLength(1); colIndex++)
-                {
-                    // Print cell
-                    string cell = arrValues[rowIndex, colIndex];
-                    cell = cell.PadRight(maxColumnsWidth[colIndex]);
-                    sb.Append(" | ");
-                    sb.Append(cell);
-                }
+                int newLength = arrValues[rowIndex, colIndex].Length;
+                int oldLength = maxColumnsWidth[colIndex];
 
-                // Print end of line
-                sb.Append(" | ");
-                sb.AppendLine();
-
-                // Print splitter
-                if (rowIndex == 0)
+                if (newLength > oldLength)
                 {
-                    sb.AppendFormat(" |{0}| ", headerSpliter);
-                    sb.AppendLine();
+                    maxColumnsWidth[colIndex] = newLength;
                 }
             }
-
-            return sb.ToString();
         }
 
-        private static int[] GetMaxColumnsWidth(string[,] arrValues)
-        {
-            var maxColumnsWidth = new int[arrValues.GetLength(1)];
-            for (int colIndex = 0; colIndex < arrValues.GetLength(1); colIndex++)
-            {
-                for (int rowIndex = 0; rowIndex < arrValues.GetLength(0); rowIndex++)
-                {
-                    int newLength = arrValues[rowIndex, colIndex].Length;
-                    int oldLength = maxColumnsWidth[colIndex];
-
-                    if (newLength > oldLength)
-                    {
-                        maxColumnsWidth[colIndex] = newLength;
-                    }
-                }
-            }
-
-            return maxColumnsWidth;
-        }
+        return maxColumnsWidth;
     }
+}
 }

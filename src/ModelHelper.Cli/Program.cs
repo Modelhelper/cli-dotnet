@@ -21,10 +21,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ModelHelper.Console.Commands;
+using ModelHelper.Cli.Commands;
+using ModelHelper.Cli.Extensions;
 using Microsoft.Extensions.Logging;
+using ModelHelper.Core;
+using ModelHelper.Core.Project;
 
-namespace TestingFluidTemplate
+namespace ModelHelper.Cli
 {
 
     class Program
@@ -33,13 +36,21 @@ namespace TestingFluidTemplate
 
         {
 
+            // check for project file.
+            var reader = new ProjectReader();
+            var defaults = new ModelHelperDefaults();
             // System.CommandLine.Rendering.Views.
+
+            var currentProject = reader.Read(defaults.CurrentProjectFile.FullName);
             //setup our DI
             var serviceProvider = new ServiceCollection()
                .AddLogging()               
                .AddTransient<GenerateCommand>()
+               .AddTransient<ProjectCommand>()
+               .AddTransient<TemplateCommand>()
                .AddTransient<ModelHelperRootCommand>()
-               .AddTransient<CommandFactory>()
+               .AddSingleton<IModelHelperDefaults>(defaults)
+               .AddSingleton<IProject3>(currentProject)
                .AddTransient<IConsole, System.CommandLine.SystemConsole>()
                .AddTransient<ITerminal, SystemConsoleTerminal>()
 
@@ -60,24 +71,28 @@ namespace TestingFluidTemplate
             var logger = serviceProvider.GetService<ILoggerFactory>()
                .CreateLogger<Program>();
 
+            var terminal = serviceProvider.GetService<ITerminal>();
 
             logger.LogInformation("Starting application");            
 
             var parser = new CommandLineBuilder(serviceProvider.GetService<ModelHelperRootCommand>().Create())
                 .AddCommand(serviceProvider.GetService<GenerateCommand>().Create())
+                .AddCommand(serviceProvider.GetService<TemplateCommand>().Create())
+                .AddCommand(serviceProvider.GetService<ProjectCommand>().Create())
                 .UseAnsiTerminalWhenAvailable()
                 .UseVersionOption()
                 .UseHelp()
                 .UseTypoCorrections()
                 .UseParseDirective()
                 .UseSuggestDirective()
+                //.UseExceptionHandler()                
                 .Build();
 
             await parser.InvokeAsync(args);
 
-            Console.WriteLine("\n\nCatch phrase");
+            terminal.WriteSlogan();
 
-            Console.ReadLine();
+            //Console.ReadLine();
 
         }
 
@@ -120,7 +135,8 @@ namespace TestingFluidTemplate
                 // })
                 ;
     }
-
+    
+    
     #region close off    
 
     public class Model
