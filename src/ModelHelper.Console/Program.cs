@@ -21,97 +21,78 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ModelHelper.Console.Commands;
+using Microsoft.Extensions.Logging;
+
 namespace TestingFluidTemplate
 {
-    
+
     class Program
     {
         static async Task Main(string[] args)
 
         {
 
-            
-            var sc = new System.CommandLine.SystemConsole();
-            
-           var c = new SystemConsoleTerminal(sc);
-            if (c is ITerminal)
-            {
-                System.Console.WriteLine("sc is ITerminal");
-            }
-
-            c.OutputMode = OutputMode.Ansi;
-
-            c.Out.WriteLine("yo mother f...");
-// var consoleRenderer = new ConsoleRenderer(
-//                 sc,
-//                 mode: c.BindingContext.OutputMode(),
-//                 resetAfterRender: true);   
-
-//             var screen = new ScreenView()
-            
-            var clc = new System.CommandLine.Builder.CommandLineBuilder();
-            clc.UseAnsiTerminalWhenAvailable();
-
-            
-            //  System.CommandLine.Rendering.CommandLineBuilderExtensions.UseAnsiTerminalWhenAvailable.
-            // System.CommandLine.Builder.CommandLineBuilder.UseAnsiTerminalWhenAvailable();
-            var rootCommand = new RootCommand();
-            // var vy = new System.CommandLine.Rendering.VirtualTerminal()
-            rootCommand.Description = "ModelHelper";
-
-            rootCommand.Handler = CommandHandler.Create<int, bool, FileInfo>((intOption, boolOption, fileOption) =>
-            {
-                
-            });
-
-            // Parse the incoming args and invoke the handler
-            await rootCommand.InvokeAsync(args);
-            Console.WriteLine("Hello World!");
-
-            Console.WriteLine("MESSAGE FROM CLASS TERMINAL");
-
-            
             // System.CommandLine.Rendering.Views.
             //setup our DI
-            //var serviceProvider = new ServiceCollection()
-            //    .AddLogging()
-            //    .AddSingleton<IFooService, FooService>()
+            var serviceProvider = new ServiceCollection()
+               .AddLogging()               
+               .AddTransient<GenerateCommand>()
+               .AddTransient<ModelHelperRootCommand>()
+               .AddTransient<CommandFactory>()
+               .AddTransient<IConsole, System.CommandLine.SystemConsole>()
+               .AddTransient<ITerminal, SystemConsoleTerminal>()
+
             //    .AddSingleton<IBarService, BarService>()
-            //    .BuildServiceProvider();
+               .BuildServiceProvider();
 
             ////configure console logging
-            //serviceProvider
-            //    .GetService<ILoggerFactory>()
-            //    .AddConsole(LogLevel.Debug);
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    // .AddFilter("Microsoft", LogLevel.Warning)
+                    // .AddFilter("System", LogLevel.Warning)
+                    .AddFilter("TestingFluidTemplate.Program", LogLevel.Debug)
+                    .AddConsole();
 
-            //var logger = serviceProvider.GetService<ILoggerFactory>()
-            //    .CreateLogger<Program>();
-            //logger.LogDebug("Starting application");
+            });
 
-            ////do the actual work here
-            //var bar = serviceProvider.GetService<IBarService>();
-            //bar.DoSomeRealWork();
+            var logger = serviceProvider.GetService<ILoggerFactory>()
+               .CreateLogger<Program>();
 
-            //logger.LogDebug("All done!");
 
-            
+            logger.LogInformation("Starting application");            
+
+            var parser = new CommandLineBuilder(serviceProvider.GetService<ModelHelperRootCommand>().Create())
+                .AddCommand(serviceProvider.GetService<GenerateCommand>().Create())
+                .UseAnsiTerminalWhenAvailable()
+                .UseVersionOption()
+                .UseHelp()
+                .UseTypoCorrections()
+                .UseParseDirective()
+                .UseSuggestDirective()
+                .Build();
+
+            await parser.InvokeAsync(args);
+
+            Console.WriteLine("\n\nCatch phrase");
 
             Console.ReadLine();
 
         }
 
-        
+
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                
-                
+
+
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     // Configure the app here.
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                   
+
                     //services.AddSingleton<IPatoLabConfiguration, PatoLabConfiguration>();
                     // services.AddTransient<IConnectionFactory, ConnectionFactory>();
                     // services.AddTransient<IHistologyRepository, HistologyRepository>();
@@ -123,10 +104,10 @@ namespace TestingFluidTemplate
                     // services.AddHostedService<Workers.UpdateHistologyStatusWorker>();
 
                 })
-                
+
                 //.UseInvocationLifetime()
                 //.UseSerilog()
-                
+
                 // .ConfigureWebHostDefaults(webBuilder =>
                 // {
                 //     webBuilder.UseConfiguration(_config);
@@ -134,15 +115,15 @@ namespace TestingFluidTemplate
                 //     {
                 //         options.ListenLocalhost(_config.GetValue<int>("HealthPort"));
                 //     });
-                    
+
                 //     webBuilder.UseStartup<Startup>();
                 // })
                 ;
     }
 
-#region close off    
+    #region close off    
 
-public class Model
+    public class Model
     {
         public string Firstname { get; set; }
         public string Lastname { get; set; }
@@ -160,15 +141,15 @@ public class Model
 
         public bool IsParent { get; set; }
     }
-public class FluidThings
+    public class FluidThings
+    {
+        public FluidThings()
         {
-            public FluidThings()
-            {
-            }
+        }
 
-            public void Do()
-            {
-                var model = new Model
+        public void Do()
+        {
+            var model = new Model
             {
                 Firstname = "Bill",
                 Lastname = "Gates",
@@ -266,8 +247,8 @@ Kitchen products:
                 Console.WriteLine(template.Render(context));
             }
 
-            }
         }
+    }
 
     public class TestTerminal
     {
@@ -524,5 +505,5 @@ Kitchen products:
         }
     }
 
-#endregion
+    #endregion
 }
