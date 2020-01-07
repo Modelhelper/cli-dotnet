@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.Builder;
 
 namespace ModelHelper.Cli.Commands
 {
@@ -11,7 +12,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--env", "Sets the environment that the url should point to. Default value: Prod");
                 option.AddAlias("--environment");
-                option.Argument = new Argument<Environment>(defaultValue: () => Environment.Prod);
+                option.Argument = new Argument<Environment>(defaultValue: () => Environment.Prod).WithSuggestions("apple", "banana", "cherry");
 
                 return option;
             }

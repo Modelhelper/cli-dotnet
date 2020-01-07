@@ -15,6 +15,9 @@ if (!(Test-Path -Path $PROFILE )) { New-Item -Type File -Path $PROFILE -Force }
 notepad $PROFILE
 ```
 
+```
+iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Preview"'
+```
 
 Agnoster
 Agnoster Theme

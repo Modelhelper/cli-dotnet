@@ -12,5 +12,6 @@ namespace ModelHelper.Core
 
          ConfigLocation Shared { get; set; }
          ConfigLocation Global { get; set; }
+         
     }
 }

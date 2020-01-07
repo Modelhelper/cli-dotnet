@@ -18,4 +18,3 @@ $env:DOTNET_SUGGEST_SCRIPT_VERSION = "1.0.0"
 Import-Module posh-git
 Import-Module oh-my-posh
 Set-Theme Paradox
-

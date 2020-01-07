@@ -104,6 +104,7 @@ namespace ModelHelper.Cli
                 .UseTypoCorrections()
                 .UseParseDirective()
                 .UseSuggestDirective()
+                .RegisterWithDotnetSuggest()
                 //.UseExceptionHandler()                
                 .Build();
 
