@@ -8,7 +8,7 @@ namespace ModelHelper.Extensions
 {
     public static class ProjectExtensions
     {
-                public static Project3 OpenProject(this DirectoryInfo projectDirectory)
+        public static Project3 OpenProject(this DirectoryInfo projectDirectory)
         {
             if (projectDirectory.Exists)
             {

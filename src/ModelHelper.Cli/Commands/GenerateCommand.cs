@@ -29,6 +29,7 @@ namespace ModelHelper.Cli.Commands
             var common = new CommonOptions();
             var command = new Command("generate", _description);
             command.AddAlias("g");
+            
             command.AddOption(common.Entities);
             command.AddOption(common.EntityGroups);
             command.AddOption(common.Templates);

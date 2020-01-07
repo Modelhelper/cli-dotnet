@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace ModelHelper.Core.Project
 {
+    [Obsolete]
     public interface IProjectReader<T>
     {
         // string CurrentVersion { get;  }

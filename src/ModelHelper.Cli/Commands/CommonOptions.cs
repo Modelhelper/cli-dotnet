@@ -12,7 +12,11 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--env", "Sets the environment that the url should point to. Default value: Prod");
                 option.AddAlias("--environment");
-                option.Argument = new Argument<Environment>(defaultValue: () => Environment.Prod).WithSuggestions("apple", "banana", "cherry");
+                option.Argument = new Argument<Environment>(defaultValue: () => Environment.Prod)
+                    .WithSuggestions("one", "two");
+                
+                // System.CommandLine.SuggestionSource;
+                
 
                 return option;
             }
@@ -24,8 +28,9 @@ namespace ModelHelper.Cli.Commands
                 var option = new Option("--template-group", "A list of template groups to use for code generation");
                 option.AddAlias("-tg");
                 option.AddAlias("-grp");
+            
                 option.Argument = new Argument<List<string>>();
-
+                
                 return option;
 
             }
