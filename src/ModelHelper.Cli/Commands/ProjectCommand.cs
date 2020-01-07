@@ -31,7 +31,7 @@ namespace ModelHelper.Cli.Commands
             var common = new CommonOptions();
             var command = new Command("project", _description);
             command.AddAlias("p");
-
+            
             command.Handler = CommandHandler.Create(async () => await HandleCommand());
 
             var newCommand = new NewProjectCommand(_terminal, currentProject, defaults);

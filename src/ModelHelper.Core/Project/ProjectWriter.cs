@@ -1,7 +1,9 @@
+using System;
 using Newtonsoft.Json;
 
 namespace ModelHelper.Core.Project
 {
+    [Obsolete]
     public class ProjectWriter : IProjectWriter<IProject3>
     {
         public void Write(string path, IProject3 project)

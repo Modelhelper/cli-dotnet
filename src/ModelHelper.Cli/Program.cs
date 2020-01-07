@@ -98,15 +98,18 @@ namespace ModelHelper.Cli
                 .AddCommand(serviceProvider.GetService<GenerateCommand>().Create())
                 .AddCommand(serviceProvider.GetService<TemplateCommand>().Create())
                 .AddCommand(serviceProvider.GetService<ProjectCommand>().Create())
+                
                 .UseAnsiTerminalWhenAvailable()
                 .UseVersionOption()
                 .UseHelp()
                 .UseTypoCorrections()
                 .UseParseDirective()
-                .UseSuggestDirective()
-                //.UseExceptionHandler()                
+                .UseSuggestDirective()  
+                .RegisterWithDotnetSuggest()              
                 .Build();
 
+            var parseresult = parser.Parse(args);
+            
             await parser.InvokeAsync(args);
 
             terminal.WriteSlogan();

@@ -25,7 +25,7 @@ namespace ModelHelper.Cli.Commands
         {
             var rootCommand = new RootCommand();
             rootCommand.Description = "ModelHelper";
-
+            
             // rootCommand.AddCommand(generateCommand.Create());
 
             rootCommand.Handler = CommandHandler.Create(() =>
