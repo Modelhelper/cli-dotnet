@@ -6,7 +6,7 @@ namespace ModelHelper.Core
     public interface IModelHelperConfiguration
     {
         string ConfigVersion { get; set; }
-        string AppVersion { get; set; }
+        string InstalledVersion { get; set; }
         string RemoteTemplateDownloadLocation { get; set; }
         string LogLocation { get; set;  }
 

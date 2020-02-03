@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>ModelHelper</RootNamespace>
+        <noWarn>CS0612,CS0219,CS1998,CS0169</noWarn>
+
   </PropertyGroup>
 
   <ItemGroup>

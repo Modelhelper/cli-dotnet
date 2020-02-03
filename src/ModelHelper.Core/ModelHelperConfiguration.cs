@@ -3,7 +3,7 @@ namespace ModelHelper.Core
     public class ModelHelperConfiguration : IModelHelperConfiguration
     {
         public string ConfigVersion { get; set; } = "3";
-        public string AppVersion { get; set; } = "3.0";
+        public string InstalledVersion { get; set; } = "3.0";
         public string RemoteTemplateDownloadLocation { get; set; }
         public string LogLocation { get; set; }
 

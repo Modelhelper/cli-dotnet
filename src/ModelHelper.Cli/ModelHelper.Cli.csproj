@@ -6,7 +6,7 @@
     <AssemblyName>mh</AssemblyName>
     <RootNamespace>ModelHelper.Cli</RootNamespace>
     <Version>3.0.0</Version>
-    <noWarn>CS0612,CS0219,CS1998</noWarn>
+    <noWarn>CS0612,CS0219,CS1998,CS0169</noWarn>
 
     <PublishTrimmed>true</PublishTrimmed>
     <PublishReadyToRun>true</PublishReadyToRun>
