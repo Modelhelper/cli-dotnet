@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Rendering;
+
 using Microsoft.Extensions.Logging;
 
 namespace ModelHelper.Cli.Commands
@@ -21,6 +22,10 @@ namespace ModelHelper.Cli.Commands
 
         public Command Create()
         {
+            // ISuggestionRegistration suggestionProvider = GetSuggestionRegistration();
+            
+
+
             var common = new CommonOptions();
             var command = new Command("generate", _description);
             command.AddAlias("g");

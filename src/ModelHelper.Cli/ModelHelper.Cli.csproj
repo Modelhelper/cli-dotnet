@@ -6,7 +6,7 @@
     <AssemblyName>mh</AssemblyName>
     <RootNamespace>ModelHelper.Cli</RootNamespace>
     <Version>3.0.0</Version>
-    <noWarn>CS0612,CS0219,CS1998</noWarn>
+    <noWarn>CS0612,CS0219,CS1998,CS0169</noWarn>
 
     <PublishTrimmed>true</PublishTrimmed>
     <PublishReadyToRun>true</PublishReadyToRun>
@@ -20,9 +20,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.0.0" />
-    <PackageReference Include="System.CommandLine.Experimental" Version="0.3.0-alpha.19577.1" />
-    <PackageReference Include="System.CommandLine.Hosting" Version="0.3.0-alpha.19577.1" />
-    <PackageReference Include="System.CommandLine.Rendering" Version="0.3.0-alpha.19577.1" />
+    <PackageReference Include="System.CommandLine" Version="0.3.0-alpha.20054.1" />
+    <PackageReference Include="System.CommandLine.Hosting" Version="0.3.0-alpha.20054.1" />
+    <PackageReference Include="System.CommandLine.Rendering" Version="0.3.0-alpha.20054.1" />
   </ItemGroup>
 
   <ItemGroup>

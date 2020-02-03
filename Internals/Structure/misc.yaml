@@ -73,3 +73,5 @@ table: #IEntity
     isSelfJoin: true | false
     table: # IEntity
       columns:
+  
+  Mode: Demo|Prod
