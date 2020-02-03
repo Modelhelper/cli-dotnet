@@ -51,4 +51,23 @@ Project: |
 
     1. Kan hovedvindu være angular
     2. Kan Knockout legges inn slik det brukes i dag
-  
+
+# Table layout
+
+table: #IEntity
+  columns: #IEntityColumn
+  indexes: #IEntityCIndex
+  parents: #IEntityRelation
+    constraintName: #string
+    parentColumnName: #string
+    childColumnName: #string
+    isSelfJoin: true | false
+    table: #IEntity
+      columns: #IEntityColumn
+  children:
+    constraintName:
+    parentColumnName:
+    childColumnName:
+    isSelfJoin: true | false
+    table: # IEntity
+      columns:
