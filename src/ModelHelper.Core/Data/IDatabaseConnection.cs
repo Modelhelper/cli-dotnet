@@ -6,29 +6,29 @@ namespace ModelHelper.Data
     public interface IDatabaseConnection
     {
         string DatabaseType { get; }
-        Task<IEnumerable<IEntityRelation>> GetParentEntityRelations(string entityName, bool includeColumns = false);
-        Task<IEnumerable<IEntityRelation>> GetRelatedChildren(string entityName, bool includeColumns = false);
-        Task<IEnumerable<IColumn>> GetColumns(string schema, string entityName);
+        Task<IEnumerable<EntityRelation>> GetParentEntityRelations(string entityName, bool includeColumns = false);
+        Task<IEnumerable<EntityRelation>> GetRelatedChildren(string entityName, bool includeColumns = false);
+        Task<IEnumerable<Column>> GetColumns(string schema, string entityName);
 
         //[Obsolete]
         //Task<IEnumerable<IEntity>> GetTables(bool includeViews = false, string filter = "");
-        Task<IEnumerable<IEntity>> GetEntities(bool tablesOnly = false, bool viewsOnly = false, string filter = "", string columnName = "");
+        Task<IEnumerable<Entity>> GetEntities(bool tablesOnly = false, bool viewsOnly = false, string filter = "", string columnName = "");
 
-        Task<IEnumerable<IIndex>> GetIndexes(string entityName);
+        Task<IEnumerable<Index>> GetIndexes(string entityName);
 
-        Task<IEntity> GetEntity(string entityName, bool includeChildRelations = false);
+        Task<Entity> GetEntity(string entityName, bool includeChildRelations = false);
 
-        Task<IEnumerable<IEntityGroup>> SuggestEntityGroups();
-        Task<IEntityGroup> SuggestEntityGroup(string schema, string entityName);
+        Task<IEnumerable<EntityGroup>> SuggestEntityGroups();
+        Task<EntityGroup> SuggestEntityGroup(string schema, string entityName);
 
-        Task<IEnumerable<IEntityName>> SuggestEntityGroupName(string entityName);
+        Task<IEnumerable<EntityName>> SuggestEntityGroupName(string entityName);
 
         IEnumerable<string> ReservedKeywords();
 
         Task<bool> OptimizeDatabase();
 
         Task<bool> DumpContentAsJson(string entityName, string path, int limit = -1);
-        Task<int> ImportJsonData(IEntity entity, string json);
+        Task<int> ImportJsonData(Entity entity, string json);
 
         bool CanReorganizeIndexes { get; }
         bool CanRebuildIndexes { get; }
@@ -37,7 +37,7 @@ namespace ModelHelper.Data
         Task<bool> ReorganizeIndex(string indexName, string entityName);
         Task<bool> RebuildIndex(string indexName, string entityName, double fillFactor = 80);
 
-        Task<IEnumerable<IRelation>> TraverseRelations(string baseTable, int depth = 1, int maxLevel = -1);
+        Task<IEnumerable<Relation>> TraverseRelations(string baseTable, int depth = 1, int maxLevel = -1);
 
         Task<IDatabaseInformation> TestConnectionAsync();
     }
