@@ -46,19 +46,18 @@ namespace ModelHelper.Cli.Commands
 
                     foreach (var e in entity)
                     {
-                        this.terminal.Out.WriteLine(e);
-                        // System.Console.WriteLine(e);
+                        System.Console.WriteLine(e);
 
                     }
 
                     foreach (var t in template)
                     {
-                        this.terminal.Out.WriteLine(t);
+                        System.Console.WriteLine(t);
 
                     }
 
-                    this.terminal.Out.WriteLine(environment.ToString());
-                    this.terminal.Out.WriteLine(exportByKey.ToString());
+                    System.Console.WriteLine(environment.ToString());
+                    System.Console.WriteLine(exportByKey.ToString());
 
 
                 }

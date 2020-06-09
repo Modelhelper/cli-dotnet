@@ -12,17 +12,10 @@ using Irony.Parsing;
 using Microsoft.Extensions.FileProviders;
 using System.CommandLine;
 using System.CommandLine.Builder;
-using System.CommandLine.Invocation;
-using System.CommandLine.Binding;
-using System.CommandLine.Hosting;
 using System.CommandLine.Rendering;
-using System.CommandLine.Rendering.Views;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ModelHelper.Cli.Commands;
-using ModelHelper.Cli.Extensions;
 using Microsoft.Extensions.Logging;
 using ModelHelper.Core;
 using ModelHelper.Core.Project;
@@ -70,8 +63,8 @@ namespace ModelHelper.Cli
                .AddSingleton<IModelHelperConfiguration>(config)
                .AddSingleton<IModelHelperDefaults>(defaults)
                .AddSingleton<IProject3>(currentProject)
-               .AddTransient<IConsole, System.CommandLine.SystemConsole>()
-               .AddTransient<ITerminal, SystemConsoleTerminal>()
+               .AddTransient<IConsole, System.CommandLine.IO.SystemConsole>()
+            //    .AddTransient<ITerminal, System.CommandLine.Rendering.SystemConsoleTerminal>()
 
             //    .AddSingleton<IBarService, BarService>()
                .BuildServiceProvider();
@@ -110,9 +103,9 @@ namespace ModelHelper.Cli
 
             var parseresult = parser.Parse(args);
             
-            await parser.InvokeAsync(args);
+            // await parser.InvokeAsync(args);
 
-            terminal.WriteSlogan();
+            // terminal.WriteSlogan();
 
             //Console.ReadLine();
 
@@ -285,24 +278,7 @@ Kitchen products:
 
         }
     }
-
-    public class TestTerminal
-    {
-        private readonly ITerminal _terminal;
-
-        public TestTerminal(ITerminal terminal)
-        {
-            this._terminal = terminal;
-        }
-
-        public void WriteToOut(string message)
-        {
-            if (_terminal != null)
-            {
-                _terminal.Out.WriteLine(message);
-            }
-        }
-    }
+   
 
     public class NamespaceTag : IdentifierTag
     {

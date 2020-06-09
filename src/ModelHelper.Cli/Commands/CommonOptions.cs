@@ -12,7 +12,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--env", "Sets the environment that the url should point to. Default value: Prod");
                 option.AddAlias("--environment");
-                option.Argument = new Argument<Environment>(defaultValue: () => Environment.Prod)
+                option.Argument = new Argument<Environment>(getDefaultValue: () => Environment.Prod)
                     .WithSuggestions("one", "two");
                 
                 // System.CommandLine.SuggestionSource;
@@ -95,7 +95,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--export-bykey", "The group that the list belongs to");
                 option.AddAlias("-ek");
-                option.Argument = new Argument<bool>(defaultValue: () => false);
+                option.Argument = new Argument<bool>(getDefaultValue: () => false);
 
                 return option;
 
@@ -108,7 +108,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--overwrite", "The group that the list belongs to");
                 option.AddAlias("-o");
-                option.Argument = new Argument<bool>(defaultValue: () => false);
+                option.Argument = new Argument<bool>(getDefaultValue: () => false);
 
                 return option;
 
@@ -147,7 +147,7 @@ namespace ModelHelper.Cli.Commands
                 var option = new Option("--include-relations", "The group that the list belongs to");
                 option.AddAlias("-ir");
                 option.AddAlias("-r");
-                option.Argument = new Argument<bool>(defaultValue: () => false);
+                option.Argument = new Argument<bool>(getDefaultValue: () => false);
 
                 return option;
 
@@ -159,7 +159,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--show", "The group that the list belongs to");
                 option.AddAlias("-s");
-                option.Argument = new Argument<bool>(defaultValue: () => false);
+                option.Argument = new Argument<bool>(getDefaultValue: () => false);
 
                 return option;
 
@@ -172,7 +172,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--skip-clipboard", "The group that the list belongs to");
                 option.AddAlias("-sc");
-                option.Argument = new Argument<bool>(defaultValue: () => false);
+                option.Argument = new Argument<bool>(getDefaultValue: () => false);
 
                 return option;
 
@@ -185,7 +185,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--verbose", "The group that the list belongs to");
                 option.AddAlias("-v");
-                option.Argument = new Argument<bool>(defaultValue: () => false);
+                option.Argument = new Argument<bool>(getDefaultValue: () => false);
 
                 return option;
 
@@ -200,7 +200,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--view-only", "The group that the list belongs to");
                 option.AddAlias("-vo");
-                option.Argument = new Argument<bool>(defaultValue: () => false);
+                option.Argument = new Argument<bool>(getDefaultValue: () => false);
 
                 return option;
 
@@ -212,7 +212,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--table-only", "The group that the list belongs to");
                 option.AddAlias("-to");
-                option.Argument = new Argument<bool>(defaultValue: () => false);
+                option.Argument = new Argument<bool>(getDefaultValue: () => false);
 
                 return option;
 

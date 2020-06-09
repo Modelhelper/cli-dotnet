@@ -1,16 +1,19 @@
 # Funksjoner som skal støttes i versjon 3 (kjernen)
 
 ## Prosjektfiler
+
     - Åpne
     - Lagre
     - Opprette
 
 ## Maler
+
     - Åpne
     - Parse
     - Clone(Type: global | team | project)
 
 ## vurderinger:
+
 hvordan benytte definisjonsfiler på datatypekobling
     - leses inn i context ved oppstart
     - leses inn i context kun på de kommando som behøver det
@@ -20,7 +23,8 @@ skal snippets leses inn ved behov?
 
 Hva med global configuration
 
-## Kommando:
+## Kommando
+
 Update
 Install
 Execute
@@ -44,6 +48,7 @@ Execute
         change | c
 
 ## Models
+
 project
 code
 table
@@ -53,7 +58,8 @@ options
 
 ## Console Mode
 
-## Release notes - skal jeg vise det i oppstart?
+## Release notes - skal jeg vise det i oppstart
+
 - Hvis det kan hentes ut automatisk...
 
 ## Demodata

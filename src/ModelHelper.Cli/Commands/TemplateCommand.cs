@@ -34,7 +34,7 @@ namespace ModelHelper.Cli.Commands
 
         internal async Task HandleCommand()
         {
-            _terminal.Out.WriteLine("In template");
+            System.Console.WriteLine("In template");
         }
 
     }

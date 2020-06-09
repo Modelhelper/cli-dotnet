@@ -1,6 +1,12 @@
+
 Key: api.interface # optional (former ExportType). A key cannot contain .
+
 Version: 3 #mandatory
+TemplateVersion: 3
+
 Language: cs # mandatory field. connects with correct language definition
+LanguageVersion: 8
+
 Description: |
     Long description if needed. Will show when 'mh template <template>'
 
@@ -13,23 +19,28 @@ Tags: [tag1, tag2, tag3]
 
 # what groups this template is included in
 # is used to fetch templates withing a group when using -tg in generate command
-# optional
+# optional, default is null
 Groups: [group1, group2, group3]
 
 # indicates the model classes to be injected
-# optional
-Models: [table, tables, project, options, template, context?]
+# optional, default is none
+Models: [table, tables, project, options, template, context, none, graphql, json]
 
-# optional
+# optional, default is none
 ExportType: snippet | file | none
+
+Export:
+    Key: api.interface # optional (former ExportType). A key cannot contain .
+    FileName: file_to_export
+    Type: snippet
 
 # can use template syntax to use information from the models
 # if snippet is used, this will be the filename to inject the snippets to
 # optional if ExportType = none
 ExportFileName: file-to-export {{ table.name | singular }}
 
-# optional (if ExportType is file or none)
-SnippetIdentifier: // MH-TRANSIENT-PLACEHOLDER
+# optional (use if ExportType is snippet)
+SnippetIdentifier: // SNIPPET_PLACEHOLDER
 
 # the body of the template
 # mandatory

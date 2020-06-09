@@ -16,7 +16,7 @@
                 "Name": "raw",
                 "ConnectionString": "Data Source=patest01;Initial Catalog=PatoLabRaw_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
                 "DefaultSchema": "dbo",
-                "DbType": "mssql",
+                "DbType": "postgres",
                 "ModelOptions": [],
                 "ColumnMapping": [],
                 "ConnectionMethod": "CreateForPatolabRaw()"
@@ -79,26 +79,9 @@
                 ]
             },
             {
-                "Name": "log",
-                "ConnectionString": "Data Source=patest01;Initial Catalog=Patolog_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
-                "DefaultSchema": "dbo",
-                "DbType": "mssql",
-                "ModelOptions": {},
-                "ColumnMapping": []
-            },
-            {
-                "Name": "stage",
-                "ConnectionString": "Data Source=patest01;Initial Catalog=PatoStage_test;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
-                "DefaultSchema": "dbo",
-                "DbType": "mssql",     
-                "ModelOptions": {},        
-                "ColumnMapping": []
-            },
-            {
-                "Name": "crm",
-                "ConnectionString": "Data Source=pasql03;Initial Catalog=PatoGen_Analyse_AS_MSCRM;Integrated Security=True;Connect Timeout=10;Application Name=ModelHelper",
-                "DefaultSchema": "dbo",
-                "DbType": "mssql",
+                "Name": "api",
+                "ConnectionString": "http://localhost:5000/graphql",
+                "DbType": "graphql",
                 "ModelOptions": {},
                 "ColumnMapping": []
             }

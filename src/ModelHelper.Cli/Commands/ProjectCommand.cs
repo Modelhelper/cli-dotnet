@@ -45,7 +45,7 @@ namespace ModelHelper.Cli.Commands
 
         internal async Task HandleCommand()
         {
-            _terminal.Out.WriteLine("In main project");
+            System.Console.WriteLine("In main project");
         }
 
 
@@ -64,7 +64,7 @@ namespace ModelHelper.Cli.Commands
 
         internal async Task HandleUpgradeCommand()
         {
-            _terminal.Out.WriteLine($"Upgrade project");
+            System.Console.WriteLine($"Upgrade project");
         }
 
 
@@ -84,7 +84,7 @@ namespace ModelHelper.Cli.Commands
 
         internal async Task HandleAddCommand()
         {
-            _terminal.Out.WriteLine($"Add subcommand");
+            System.Console.WriteLine($"Add subcommand");
         }
 
         internal Command CreateAddConnectionCommand()
@@ -104,7 +104,7 @@ namespace ModelHelper.Cli.Commands
 
         internal async Task HandleAddConnectionCommand()
         {
-            _terminal.Out.WriteLine($"Add connection");
+            System.Console.WriteLine($"Add connection");
         }
 
         internal Command CreateAddLocationCommand()
@@ -124,7 +124,7 @@ namespace ModelHelper.Cli.Commands
 
         internal async Task HandleAddLocationCommand()
         {
-            _terminal.Out.WriteLine($"Add location");
+            System.Console.WriteLine($"Add location");
         }
     }
 
@@ -167,7 +167,7 @@ namespace ModelHelper.Cli.Commands
         {
             if (_defaults.CurrentProjectDirectory.Exists || _defaults.CurrentProjectFile.Exists)
             {
-                _terminal.Error.Write("\nA project file already exists, do you want to overwrite this (y/N)? ");
+                System.Console.WriteLine("\nA project file already exists, do you want to overwrite this (y/N)? ");
             }
             else
             {
@@ -178,7 +178,7 @@ namespace ModelHelper.Cli.Commands
                 _currentProject = ProjectFactory.Create(type);
                 
                 writer.Write(_defaults.CurrentProjectFile.FullName, _currentProject);
-                _terminal.Out.WriteLine($"New project created at '{_defaults.CurrentProjectDirectory.FullName}'");
+                System.Console.WriteLine($"New project created at '{_defaults.CurrentProjectDirectory.FullName}'");
             }
         }
 
@@ -188,7 +188,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--verbose", "Output all log statement during initialization");
                 option.AddAlias("-v");
-                option.Argument = new Argument<bool>(defaultValue: () => false);
+                option.Argument = new Argument<bool>(getDefaultValue: () => false);
 
                 return option;
 
@@ -200,7 +200,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--type", "Sets the content of the new project based on type");
                 option.AddAlias("-t");
-                option.Argument = new Argument<ProjectCreateType>(defaultValue: () => ProjectCreateType.Default);
+                option.Argument = new Argument<ProjectCreateType>(getDefaultValue: () => ProjectCreateType.Default);
 
                 return option;
 
@@ -213,7 +213,7 @@ namespace ModelHelper.Cli.Commands
             {
                 var option = new Option("--scan", "Scan sub folders for solutions and projects");
                 option.AddAlias("-s");
-                option.Argument = new Argument<bool>(defaultValue: () => false);
+                option.Argument = new Argument<bool>(getDefaultValue: () => false);
 
                 return option;
 

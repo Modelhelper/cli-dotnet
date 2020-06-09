@@ -36,15 +36,15 @@ namespace ModelHelper.Cli.Commands
                 var fullVersion = name.Version;
                 var logoVersion = $"v.{fullVersion.Major.ToString()}.{fullVersion.Minor.ToString()}";
                 
-                _terminal.WriteLogo(logoVersion);
+                // _terminal.WriteLogo(logoVersion);
 
-                _terminal.Out.Write($"\n\nVersion: \t\t{fullVersion.ToString()}"); //  for .Net ({execAssembly.ImageRuntimeVersion})
-                _terminal.Out.Write($"\nApp name: \t\t{name.Name}.exe");
-                _terminal.Out.Write($"\nApp Location: \t\t{Assembly.GetExecutingAssembly().Location}");
+                System.Console.Write($"\n\nVersion: \t\t{fullVersion.ToString()}"); //  for .Net ({execAssembly.ImageRuntimeVersion})
+                System.Console.Write($"\nApp name: \t\t{name.Name}.exe");
+                System.Console.Write($"\nApp Location: \t\t{Assembly.GetExecutingAssembly().Location}");
 
-                _terminal.Out.Write($"\nConfiguration: \t\t{_modelHelperDefaults.RootDirectory.FullName}");
+                System.Console.Write($"\nConfiguration: \t\t{_modelHelperDefaults.RootDirectory.FullName}");
 
-                _terminal.WriteProjectInfo(_currentProject);
+                // _terminal.WriteProjectInfo(_currentProject);
 
             });
 
