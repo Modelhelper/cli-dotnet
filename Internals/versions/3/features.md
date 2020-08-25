@@ -59,3 +59,4 @@ ng
 vue
 react
 proto
+rust
