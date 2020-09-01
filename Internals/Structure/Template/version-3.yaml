@@ -1,48 +1,49 @@
 
-Key: api.interface # optional (former ExportType). A key cannot contain .
+key: api.interface # optional (former ExportType). A key cannot contain .
 
-Version: 3 #mandatory
-TemplateVersion: 3
+version: 3 #mandatory
+templateVersion: 3
 
-Language: cs # mandatory field. connects with correct language definition
-LanguageVersion: 8
+language: cs # mandatory field. connects with correct language definition
+languageVersion: 8
 
-Description: |
+description: |
     Long description if needed. Will show when 'mh template <template>'
 
 # Should show then the user enter the 'mh template' command
 # optional
-ShortDescription: This should be short and concise
+shortDescription: This should be short and to the point
 
 # optional
-Tags: [tag1, tag2, tag3] 
+tags: [tag1, tag2, tag3] 
 
 # what groups this template is included in
-# is used to fetch templates withing a group when using -tg in generate command
+# is used to fetch templates within a group when using -tg in generate command
 # optional, default is null
-Groups: [group1, group2, group3]
+groups: [group1, group2, group3]
+
+# Models: [table, tables, project, options, template, context, none, graphql, json]
 
 # indicates the model classes to be injected
 # optional, default is none
-Models: [table, tables, project, options, template, context, none, graphql, json]
+import: table # values table | tables | project | options | template | context | none | graphql | json
+export:
 
-# optional, default is none
-ExportType: snippet | file | none
-
-Export:
-    Key: api.interface # optional (former ExportType). A key cannot contain .
-    FileName: file_to_export
-    Type: snippet
-
-# can use template syntax to use information from the models
-# if snippet is used, this will be the filename to inject the snippets to
-# optional if ExportType = none
-ExportFileName: file-to-export {{ table.name | singular }}
+    # optional (former ExportType). A key cannot contain .
+    key: api.interface 
+    
+    # can use template syntax to use information from the models
+    # if snippet is used, this will be the filename to inject the snippets to
+    # optional if ExportType = none
+    fileName: file_to_export
+    
+    # optional, default is none
+    type: snippet
 
 # optional (use if ExportType is snippet)
-SnippetIdentifier: // SNIPPET_PLACEHOLDER
+snippetIdentifier: // SNIPPET_PLACEHOLDER
 
 # the body of the template
 # mandatory
-Body: |
+body: |
     This is the template body

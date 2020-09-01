@@ -2,6 +2,7 @@
 
 - help
 - generate [--source | --entity] --template --export ["path"] --options... => no options given == Console Mode
+    - template | template-file
 - entity
 - template
     - edit
