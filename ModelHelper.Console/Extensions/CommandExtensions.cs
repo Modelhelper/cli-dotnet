@@ -39,7 +39,7 @@ namespace ModelHelper.Extensions
                 "diligent",
                 "accurate",
                 "coherent",
-                "colourful",
+                "colorful",
                 "concise",
                 "confident",
                 "courageous",
