@@ -1,13 +1,13 @@
 Key: api.interface # former ExportType
-Version: 3 
+Version: 3
 Language: cs # mandatory field. connects with correct language definition
 Description: |
     Long description if needed. Will show when 'mh template <template>'
 
-# Should show then the user enter 
+# Should show then the user enter
 # mh template
 ShortDescription: This should be short an consice
-Tags: [tag1, tag2, tag3] 
+Tags: [tag1, tag2, tag3]
 Groups: [group1, group2, group3]
 
 # If false the user do not need to input an entity to generate content
